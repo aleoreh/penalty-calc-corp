@@ -11,44 +11,9 @@ import dayjs, { Dayjs } from "dayjs"
 import React, { useState } from "react"
 import { NumericFormat, NumericFormatProps } from "react-number-format"
 
-const STARTDELAYDAYCOUNT = 11
-const STARTPENALTYDAYCOUNT = 31
-
-function delayStartDate(date: Dayjs, startDelayDaysCount: number): Dayjs {
-    return date.add(startDelayDaysCount, "day")
-}
-
-function deferredCoef(d: Dayjs, startCalcDate: Dayjs) {
-    return d.diff(startCalcDate) < 0 ? 0 : 1
-}
-
-function delayDelta(d: Dayjs, start: Dayjs) {
-    return d.diff(start, "day")
-}
-
-function keyRateFraction(delayDays: number, fractionChangeDay: number) {
-    return delayDays < fractionChangeDay ? 1 / 300 : 1 / 130
-}
-
-function keyRate(calcDate: Dayjs) {
-    return 9.5 // TODO: брать из справочника
-}
-
-function moratoryCoef(calcDate: Dayjs) {
-    return 1 // TODO: брать из справочника
-}
-
-function penalty(
-    deferredCoef: number,
-    keyRateFraction: number,
-    keyRate: number,
-    debt: number,
-    moratoryCoef: number
-) {
-    return (
-        ((deferredCoef * keyRateFraction * keyRate) / 100) * debt * moratoryCoef
-    )
-}
+import * as Penalty from "../penalty/penalty"
+import { DataGrid } from "@mui/x-data-grid/DataGrid"
+import { GridColDef } from "@mui/x-data-grid/models/colDef"
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void
@@ -84,36 +49,69 @@ export function PenaltyCalc() {
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
     const [calcPeriod, setCalcPeriod] = useState<Dayjs | null>(null)
     const [debtSum, setDebtSum] = useState<number>(0)
+    const [result, setResult] = useState<
+        {
+            id: number
+            date: Dayjs
+            debt: number
+            delayDaysCount: number
+            fraction: string
+            moratorium: boolean
+            penalty: number
+        }[]
+    >([])
 
-    function isValid() {
+    const columns: GridColDef[] = [
+        { field: "id", headerName: "id" },
+        {
+            field: "date",
+            headerName: "Дата",
+            width: 200,
+            valueFormatter: (x) => x.value.format("LL"),
+        },
+        { field: "debt", headerName: "Сумма долга" },
+        { field: "delayDaysCount", headerName: "Количество дней просрочки" },
+        {
+            field: "fraction",
+            headerName: "Доля ключевой ставки",
+        },
+        { field: "moratorium", headerName: "Действует мораторий" },
+        {
+            field: "penalty",
+            headerName: "Сумма пени",
+            type: "number",
+        },
+    ]
+
+    function isValid(): boolean {
         return !(calcPeriod === null || calcDate === null)
     }
 
-    function startCalculation() {
+    function startCalculation(): void {
         if (calcPeriod === null || calcDate === null) return
 
-        const res: [Dayjs, number, number, number, number, number][] = []
+        const res: typeof result = []
 
-        const start = calcPeriod.endOf("month")
+        const start = Penalty.startDate(calcPeriod)
 
-        for (let i = start; i.diff(calcDate, "day") <= 0; i = i.add(1, "day")) {
-            res.push([
-                i,
-                debtSum,
-                delayDelta(i, start),
-                keyRateFraction(delayDelta(i, start), 90),
-                moratoryCoef(i),
-                penalty(
-                    deferredCoef(i, start),
-                    keyRateFraction(delayDelta(i, start), 90),
-                    keyRate(calcDate),
-                    debtSum,
-                    moratoryCoef(i)
-                ),
-            ])
+        for (let i = 1; start.add(i, "day").diff(calcDate, "day") <= 0; i++) {
+            const day = start.add(i, "day")
+            const delayDaysCount = Penalty.delayDaysCount(day, start)
+            res.push({
+                id: i,
+                date: day,
+                debt: debtSum,
+                delayDaysCount: Penalty.delayDaysCount(day, start),
+                fraction: Penalty.keyRateFraction(
+                    delayDaysCount,
+                    Penalty.FRACTION_CHANGE_DAY
+                ).repr,
+                moratorium: Penalty.doesMoratoriumActs(day),
+                penalty: Penalty.penalty(calcDate, calcPeriod, debtSum, day),
+            })
         }
 
-        console.log(res)
+        setResult(res)
     }
 
     return (
@@ -184,6 +182,7 @@ export function PenaltyCalc() {
                     </Stack>
                 </Stack>
             </Container>
+            <DataGrid columns={columns} rows={result} />
         </Box>
     )
 }
