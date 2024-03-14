@@ -18,6 +18,7 @@
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "dayjs": "^1.11.10",
+    "itertools-ts": "^1.27.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-imask": "^7.5.0",

@@ -1,119 +1,94 @@
 import { Dayjs } from "dayjs"
 
-const FRACTION_CHANGE_DAY = 90
+export class Penalty {
+    static dueDaysAfter = 10
+    static _fractionChangeDay = 91
 
-/**
- * Начальный день отсчета (следующий после последнего дня периода расчета)
- *
- * @param {Dayjs} calcPeriod
- * @return {*}  {Dayjs}
- */
-function startDate(calcPeriod: Dayjs): Dayjs {
-    return calcPeriod.endOf("month")
-}
+    private _debtPeriod: Dayjs
+    private _debt: number
 
-/**
- * Дата начала просрочки
- *
- * @param {Dayjs} startDate
- * @return {*}  {Dayjs}
- */
-function delayStartDate(startDate: Dayjs): Dayjs {
-    // крайний срок платежа за расчетный период
-    const startDelayDaysCount = 11
+    /**
+     * Ключевая ставка на дату
+     *
+     * @param {Dayjs} calcDate
+     * @return {*}  {number}
+     */
+    static getKeyRate(calcDate: Dayjs): number {
+        return 9.5 // TODO: брать из справочника
+    }
 
-    return startDate.add(startDelayDaysCount, "day")
-}
+    /**
+     * Показывает, действует ли на данную дату мораторий на начисление пени
+     *
+     * @param {Dayjs} calcDate
+     * @return {*}  {boolean}
+     */
+    static doesMoratoriumActs(calcDate: Dayjs): boolean {
+        return false // TODO: брать из справочника
+    }
 
-/**
- * Коэффициент для применения до и после начала просрочки (0, 1)
- *
- * @param {Dayjs} date
- * @return {*}  {number}
- */
-function deferredCoef(date: Dayjs, delayStartDate: Dayjs): number {
-    // Количество дней, в течение которых пеня не начисляется
-    const deferredDaysCount = 31
+    constructor(debtPeriod: Dayjs, debt: number) {
+        this._debt = debt
+        this._debtPeriod = debtPeriod
+    }
 
-    return date.diff(delayStartDate.add(deferredDaysCount, "day")) < 0 ? 0 : 1
-}
+    /**
+     * Дата начала просрочки
+     *
+     * @return {*}  {Dayjs}
+     */
+    get dueDate(): Dayjs {
+        return this._debtPeriod.endOf("month").add(Penalty.dueDaysAfter, "day")
+    }
 
-/**
- * Количество дней просрочки
- *
- * @param {Dayjs} date
- * @param {Dayjs} delayStartDate
- * @return {*}  {number}
- */
-function delayDaysCount(date: Dayjs, delayStartDate: Dayjs): number {
-    return date.diff(delayStartDate, "day")
-}
+    /**
+     * Коэффициент для применения до и после начала просрочки (0, 1)
+     *
+     * @param {Dayjs} date
+     * @return {*}  {number}
+     */
+    getDeferredCoef(date: Dayjs): number {
+        // Количество дней, в течение которых пеня не начисляется
+        const deferredDaysCount = 31
 
-/**
- * Доля ключевой ставки, зависящая от количества дней просрочки
- *
- * @param {number} delayDaysCount
- * @param {number} fractionChangeDay
- * @return {*}  {{ value: number; repr: string }}
- */
-function keyRateFraction(
-    delayDaysCount: number,
-    fractionChangeDay: number
-): { value: number; repr: string } {
-    return delayDaysCount < fractionChangeDay
-        ? { value: 1 / 300, repr: "1/300" }
-        : { value: 1 / 130, repr: "1/130" }
-}
+        return date.diff(this.dueDate.add(deferredDaysCount, "day")) < 0 ? 0 : 1
+    }
 
-/**
- * Ключевая ставка на дату
- *
- * @param {Dayjs} calcDate
- * @return {*}  {number}
- */
-function keyRate(calcDate: Dayjs): number {
-    return 9.5 // TODO: брать из справочника
-}
+    /**
+     * Количество дней просрочки
+     *
+     * @param {Dayjs} date
+     * @return {*}  {number}
+     */
+    getDaysOverdue(date: Dayjs): number {
+        return date.diff(this.dueDate, "day")
+    }
 
-/**
- * Показывает, действует ли на данную дату мораторий на начисление пени
- *
- * @param {Dayjs} calcDate
- * @return {*}  {boolean}
- */
-function doesMoratoriumActs(calcDate: Dayjs): boolean {
-    return false // TODO: брать из справочника
-}
+    /**
+     * Доля ключевой ставки, зависящая от количества дней просрочки
+     *
+     * @param {Dayjs} date
+     * @return {*}  {{ value: number; repr: string }}
+     */
+    getKeyRateFraction(date: Dayjs): { value: number; repr: string } {
+        return this.getDaysOverdue(date) < Penalty._fractionChangeDay
+            ? { value: 1 / 300, repr: "1/300" }
+            : { value: 1 / 130, repr: "1/130" }
+    }
 
-/**
- * Рассчитывает сумму пени за день date
- *
- * @param {Dayjs} calcDate - дата произведения расчета
- * @param {Dayjs} calcPeriod - расчетный период
- * @param {number} debt - сумма долга
- * @param {Dayjs} day - день, за который рассчитывается пеня
- * @return {*}  {number}
- */
-function penalty(
-    calcDate: Dayjs,
-    calcPeriod: Dayjs,
-    debt: number,
-    day: Dayjs
-): number {
-    const start = startDate(calcPeriod)
-    const b = deferredCoef(day, delayStartDate(start))
-    const k = keyRateFraction(delayDaysCount(day, start), 90).value
-    const r = keyRate(calcDate)
-    const m = doesMoratoriumActs(day) ? 0 : 1
+    /**
+     * Рассчитывает на дату calcDate сумму пени за день day
+     *
+     * @param {Dayjs} calcDate - дата произведения расчета
+     * @param {Dayjs} day - день, за который рассчитывается пеня
+     * @return {*}  {number}
+     */
+    calculate(calcDate: Dayjs, day: Dayjs): number {
+        const b = this.getDeferredCoef(day)
+        const k = this.getKeyRateFraction(day).value
+        const r = Penalty.getKeyRate(calcDate)
+        const m = Penalty.doesMoratoriumActs(day) ? 0 : 1
 
-    return b * k * (r / 100) * debt * m
-}
-
-export {
-    FRACTION_CHANGE_DAY,
-    startDate,
-    delayDaysCount,
-    keyRateFraction,
-    doesMoratoriumActs,
-    penalty,
+        return b * k * (r / 100) * this._debt * m
+    }
 }

@@ -6,14 +6,14 @@ import {
     TextField,
     Typography,
 } from "@mui/material"
+import { DataGrid } from "@mui/x-data-grid/DataGrid"
+import { GridColDef } from "@mui/x-data-grid/models/colDef"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import React, { useState } from "react"
 import { NumericFormat, NumericFormatProps } from "react-number-format"
 
-import * as Penalty from "../penalty/penalty"
-import { DataGrid } from "@mui/x-data-grid/DataGrid"
-import { GridColDef } from "@mui/x-data-grid/models/colDef"
+import { Penalty } from "../penalty/penalty"
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void
@@ -45,73 +45,149 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
     }
 )
 
+type PenaltiesTable = {
+    id: number
+    date: Dayjs
+    debt: number
+    delayDaysCount: number
+    fraction: string
+    moratorium: boolean
+    rate: number
+    penalty: number
+    deferredCoef: number
+}[]
+
+type ResultTable = {
+    id: number
+    debt: number
+    dateFrom: Dayjs
+    dateTo: Dayjs
+    daysCount: number
+    fraction: string
+    moratorium: boolean
+    rate: number
+    penalty: number
+    deferredCoef: number
+}[]
+
+function penaltiesToResultTable(
+    penalty: Penalty,
+    table: PenaltiesTable
+): ResultTable {
+    function addResultRow(row: PenaltiesTable[number]): ResultTable[number] {
+        return {
+            ...row,
+            dateFrom: row.date,
+            dateTo: row.date,
+            daysCount: 1,
+            fraction: penalty.getKeyRateFraction(row.date).repr,
+        }
+    }
+
+    function joinResultRow(
+        resultRow: ResultTable[number],
+        row: PenaltiesTable[number]
+    ): ResultTable[number] {
+        return {
+            ...resultRow,
+            dateTo: row.date,
+            daysCount: resultRow.daysCount + 1,
+            penalty: resultRow.penalty + row.penalty,
+        }
+    }
+
+    function resultRowEqual(
+        row1: Pick<
+            ResultTable[number],
+            "debt" | "rate" | "fraction" | "moratorium" | "deferredCoef"
+        >,
+        row2: Pick<
+            PenaltiesTable[number],
+            "debt" | "rate" | "fraction" | "moratorium" | "deferredCoef"
+        >
+    ) {
+        return (
+            row1.debt === row2.debt &&
+            row1.rate === row2.rate &&
+            row1.fraction === row2.fraction &&
+            row1.moratorium === row2.moratorium &&
+            row1.deferredCoef === row2.deferredCoef
+        )
+    }
+
+    return table.reduce((acc, row, i) => {
+        return acc.length === 0 || !resultRowEqual(acc[acc.length - 1], row)
+            ? [...acc, addResultRow(row)]
+            : [...acc.slice(0, -1), joinResultRow(acc[acc.length - 1], row)]
+    }, [] as ResultTable)
+}
+
 export function PenaltyCalc() {
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
-    const [calcPeriod, setCalcPeriod] = useState<Dayjs | null>(null)
+    const [debtPeriod, setDebtPeriod] = useState<Dayjs | null>(null)
     const [debtSum, setDebtSum] = useState<number>(0)
-    const [result, setResult] = useState<
-        {
-            id: number
-            date: Dayjs
-            debt: number
-            delayDaysCount: number
-            fraction: string
-            moratorium: boolean
-            penalty: number
-        }[]
-    >([])
+    const [result, setResult] = useState<ResultTable>([])
 
     const columns: GridColDef[] = [
-        { field: "id", headerName: "id" },
+        { field: "id" },
+        { field: "debt", headerName: "Сумма долга" },
         {
-            field: "date",
-            headerName: "Дата",
+            field: "dateFrom",
+            headerName: "Период с",
             width: 200,
             valueFormatter: (x) => x.value.format("LL"),
         },
-        { field: "debt", headerName: "Сумма долга" },
-        { field: "delayDaysCount", headerName: "Количество дней просрочки" },
         {
-            field: "fraction",
-            headerName: "Доля ключевой ставки",
+            field: "dateTo",
+            headerName: "Период по",
+            width: 200,
+            valueFormatter: (x) => x.value.format("LL"),
         },
+        { field: "daysCount", headerName: "Дней" },
+        { field: "fraction", headerName: "Доля ставки" },
         { field: "moratorium", headerName: "Действует мораторий" },
+        { field: "rate", headerName: "Ставка" },
         {
             field: "penalty",
             headerName: "Сумма пени",
-            type: "number",
+        },
+        {
+            field: "deferredCoef",
+            headerName: "Отсрочка",
+            valueGetter: (x) => !x.value,
         },
     ]
 
     function isValid(): boolean {
-        return !(calcPeriod === null || calcDate === null)
+        return !(debtPeriod === null || calcDate === null)
     }
 
     function startCalculation(): void {
-        if (calcPeriod === null || calcDate === null) return
+        if (debtPeriod === null || calcDate === null) return
 
-        const res: typeof result = []
+        const penaltiesTable: PenaltiesTable = []
 
-        const start = Penalty.startDate(calcPeriod)
+        const penalty = new Penalty(debtPeriod, debtSum)
 
-        for (let i = 1; start.add(i, "day").diff(calcDate, "day") <= 0; i++) {
-            const day = start.add(i, "day")
-            const delayDaysCount = Penalty.delayDaysCount(day, start)
-            res.push({
-                id: i,
+        for (let i = 1; i <= calcDate.diff(penalty.dueDate, "day"); i++) {
+            const day = penalty.dueDate.add(i, "day")
+
+            const value = {
+                id: day.unix(),
                 date: day,
                 debt: debtSum,
-                delayDaysCount: Penalty.delayDaysCount(day, start),
-                fraction: Penalty.keyRateFraction(
-                    delayDaysCount,
-                    Penalty.FRACTION_CHANGE_DAY
-                ).repr,
+                delayDaysCount: penalty.getDaysOverdue(day),
+                fraction: penalty.getKeyRateFraction(day).repr,
                 moratorium: Penalty.doesMoratoriumActs(day),
-                penalty: Penalty.penalty(calcDate, calcPeriod, debtSum, day),
-            })
+                rate: Penalty.getKeyRate(calcDate),
+                deferredCoef: penalty.getDeferredCoef(day),
+                penalty: penalty.calculate(calcDate, day),
+            }
+
+            penaltiesTable.push(value)
         }
 
-        setResult(res)
+        setResult(penaltiesToResultTable(penalty, penaltiesTable))
     }
 
     return (
@@ -131,7 +207,7 @@ export function PenaltyCalc() {
                         <DatePicker
                             label="Дата расчета"
                             value={calcDate}
-                            onAccept={setCalcDate}
+                            onChange={setCalcDate}
                         />
                     </Stack>
                     <Stack>
@@ -142,8 +218,8 @@ export function PenaltyCalc() {
                             <DatePicker
                                 label="Расчетный период, месяц/год"
                                 views={["year", "month"]}
-                                value={calcPeriod}
-                                onChange={setCalcPeriod}
+                                value={debtPeriod}
+                                onChange={setDebtPeriod}
                             />
                             <TextField
                                 id="debt-sum-input"
