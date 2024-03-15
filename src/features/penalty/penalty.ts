@@ -1,5 +1,7 @@
 import { Dayjs } from "dayjs"
 
+import { doesMoratoriumActs, getKeyRate } from "./catalogs"
+
 export class Penalty {
     static dueDaysAfter = 10
     static _fractionChangeDay = 91
@@ -7,29 +9,13 @@ export class Penalty {
     private _debtPeriod: Dayjs
     private _debt: number
 
-    /**
-     * Ключевая ставка на дату
-     *
-     * @param {Dayjs} calcDate
-     * @return {*}  {number}
-     */
-    static getKeyRate(calcDate: Dayjs): number {
-        return 9.5 // TODO: брать из справочника
-    }
-
-    /**
-     * Показывает, действует ли на данную дату мораторий на начисление пени
-     *
-     * @param {Dayjs} calcDate
-     * @return {*}  {boolean}
-     */
-    static doesMoratoriumActs(calcDate: Dayjs): boolean {
-        return false // TODO: брать из справочника
-    }
-
     constructor(debtPeriod: Dayjs, debt: number) {
         this._debt = debt
         this._debtPeriod = debtPeriod
+    }
+
+    get debtSum(): number {
+        return this._debt
     }
 
     /**
@@ -86,8 +72,8 @@ export class Penalty {
     calculate(calcDate: Dayjs, day: Dayjs): number {
         const b = this.getDeferredCoef(day)
         const k = this.getKeyRateFraction(day).value
-        const r = Penalty.getKeyRate(calcDate)
-        const m = Penalty.doesMoratoriumActs(day) ? 0 : 1
+        const r = getKeyRate(calcDate)
+        const m = doesMoratoriumActs(day) ? 0 : 1
 
         return b * k * (r / 100) * this._debt * m
     }
