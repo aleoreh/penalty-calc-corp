@@ -201,10 +201,6 @@ export function PenaltyCalc() {
         },
     ]
 
-    function isValid(): boolean {
-        return !(debtPeriod === null || calcDate === null)
-    }
-
     function startCalculation(): void {
         const params = createCalculationParams({
             calcDate,
