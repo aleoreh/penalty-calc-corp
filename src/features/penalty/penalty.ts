@@ -1,10 +1,37 @@
-import { Dayjs } from "dayjs"
+import dayjs, { Dayjs } from "dayjs"
+import isBetween from "dayjs/plugin/isBetween"
+import { keyRates, moratoriums } from "./penalty.data"
 
-import { doesMoratoriumActs, getKeyRate } from "./catalogs"
+dayjs.extend(isBetween)
 
 export class Penalty {
     static dueDaysAfter = 10
     static _fractionChangeDay = 91
+
+    /**
+     * Ключевая ставка на дату
+     *
+     * @param {Dayjs} date
+     * @return {*}  {number}
+     */
+    static getKeyRate(date: Dayjs): number {
+        return keyRates.filter(([startDate, _]) => {
+            // return date.diff(dayjs(startDate)) >= 0
+            return date.isAfter(startDate)
+        })[keyRates.length - 1][1]
+    }
+
+    /**
+     * Показывает, действует ли на данную дату мораторий на начисление пени
+     *
+     * @param {Dayjs} date
+     * @return {*}  {boolean}
+     */
+    static doesMoratoriumActs(date: Dayjs): boolean {
+        return moratoriums.some(([start, end]) => {
+            return date.isBetween(start, end, "day", "[]")
+        })
+    }
 
     private _debtPeriod: Dayjs
     private _debt: number
@@ -72,9 +99,9 @@ export class Penalty {
     calculate(calcDate: Dayjs, day: Dayjs): number {
         const b = this.getDeferredCoef(day)
         const k = this.getKeyRateFraction(day).value
-        const r = getKeyRate(calcDate)
-        const m = doesMoratoriumActs(day) ? 0 : 1
+        const r = Penalty.getKeyRate(calcDate)
+        const m = Penalty.doesMoratoriumActs(day) ? 0 : 1
 
-        return b * k * (r / 100) * this._debt * m
+        return Math.round(b * k * r * this._debt * m * 100) / 100
     }
 }
