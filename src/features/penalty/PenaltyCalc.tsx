@@ -13,6 +13,7 @@ import { NumericFormat, NumericFormatProps } from "react-number-format"
 
 import { PenaltyGrid } from "./PenaltyGrid"
 import { PenaltyParams, ResultTable, penaltiesFoldedForPeriod } from "./penalty"
+import { debtFromNullable } from "./penalty.types"
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void
@@ -44,7 +45,7 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
     }
 )
 
-function createPenaltyParams(params: {
+function createCalcParams(params: {
     debtPeriod: Dayjs | undefined | null
     debtSum: number | undefined | null
     calcDate: Dayjs | undefined | null
@@ -64,17 +65,13 @@ export function PenaltyCalc() {
     const [debtSum, setDebtSum] = useState<number | null>(null)
     const [paymentDate, setPaymentDate] = useState<Dayjs | null>(null)
     const [paymentSum, setPaymentSum] = useState<number | null>(null)
-    const [result, setResult] = useState<ResultTable>([])
+    const [results, setResults] = useState<ResultTable[]>([])
 
     function startCalculation(): void {
-        const params = createPenaltyParams({
-            calcDate,
-            debtPeriod,
-            debtSum,
-        })
+        const debt = debtFromNullable({ period: debtPeriod, sum: debtSum })
 
-        if (params !== undefined) {
-            setResult(penaltiesFoldedForPeriod(params))
+        if (!!debt && !!calcDate) {
+            setResults(penaltiesFoldedForPeriod(calcDate, [debt]))
         }
     }
 
@@ -174,7 +171,7 @@ export function PenaltyCalc() {
                             variant="contained"
                             fullWidth
                             disabled={
-                                createPenaltyParams({
+                                createCalcParams({
                                     calcDate,
                                     debtPeriod,
                                     debtSum,
@@ -184,11 +181,13 @@ export function PenaltyCalc() {
                         >
                             Рассчитать
                         </Button>
-                        <Button onClick={() => setResult([])}>Очистить</Button>
+                        <Button onClick={() => setResults([])}>Очистить</Button>
                     </Stack>
                 </Stack>
             </Container>
-            <PenaltyGrid resultTable={result} />
+            {results.map((result) => (
+                <PenaltyGrid resultTable={result} />
+            ))}
         </Box>
     )
 }

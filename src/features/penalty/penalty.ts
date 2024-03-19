@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from "dayjs"
 import isBetween from "dayjs/plugin/isBetween"
 import { keyRates, moratoriums } from "./penalty.data"
+import { Debt } from "./penalty.types"
 
 dayjs.extend(isBetween)
 
@@ -65,23 +66,7 @@ class Penalty {
         })
     }
 
-    private _debtPeriod: Dayjs
-    private _debt: number
-    private _calcDate: Dayjs
-
-    constructor({ debtPeriod, debtSum, calcDate }: PenaltyParams) {
-        this._debt = debtSum
-        this._debtPeriod = debtPeriod
-        this._calcDate = calcDate
-    }
-
-    get debtSum(): number {
-        return this._debt
-    }
-
-    get calcDate(): Dayjs {
-        return this._calcDate
-    }
+    constructor(public debt: Debt) {}
 
     /**
      * Дата начала просрочки
@@ -89,7 +74,7 @@ class Penalty {
      * @return {*}  {Dayjs}
      */
     get dueDate(): Dayjs {
-        return this._debtPeriod
+        return this.debt.period
             .endOf("month")
             .add(Penalty.daysCountToPay, "day")
     }
@@ -142,26 +127,26 @@ class Penalty {
         const r = Penalty.getKeyRate(calcDate)
         const m = Penalty.doesMoratoriumActs(day) ? 0 : 1
 
-        return Math.round(b * k * r * this._debt * m * 100) / 100
+        return Math.round(b * k * r * this.debt.sum * m * 100) / 100
     }
 }
 
-function calculatePenalties(penalty: Penalty): PenaltiesTable {
+function calculatePenalties(calcDate: Dayjs, penalty: Penalty): PenaltiesTable {
     const res: PenaltiesTable = []
 
-    for (let i = 1; i <= penalty.calcDate.diff(penalty.dueDate, "day"); i++) {
+    for (let i = 1; i <= calcDate.diff(penalty.dueDate, "day"); i++) {
         const day = penalty.dueDate.add(i, "day")
 
         const value = {
             id: day.unix(),
             date: day,
-            debt: penalty.debtSum,
+            debt: penalty.debt.sum,
             delayDaysCount: penalty.getDaysOverdue(day),
             fraction: penalty.getKeyRateFraction(day).repr,
             moratorium: Penalty.doesMoratoriumActs(day),
-            rate: Penalty.getKeyRate(penalty.calcDate),
+            rate: Penalty.getKeyRate(calcDate),
             deferredCoef: penalty.getDeferredCoef(day),
-            penalty: penalty.calculate(penalty.calcDate, day),
+            penalty: penalty.calculate(calcDate, day),
         }
 
         res.push(value)
@@ -227,8 +212,13 @@ function penaltiesToResultTable(
     )
 }
 
-export function penaltiesFoldedForPeriod(penaltyParams: PenaltyParams) {
-    const penalty = new Penalty(penaltyParams)
-    const penalties = calculatePenalties(penalty)
-    return penaltiesToResultTable(penalty, penalties)
+export function penaltiesFoldedForPeriod(
+    calcDate: Dayjs,
+    debts: Debt[]
+): ResultTable[] {
+    return debts.map((debt) => {
+        const penalty = new Penalty(debt)
+        const penalties = calculatePenalties(calcDate, penalty)
+        return penaltiesToResultTable(penalty, penalties)
+    })
 }
