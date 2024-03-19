@@ -12,7 +12,7 @@ import React, { useState } from "react"
 import { NumericFormat, NumericFormatProps } from "react-number-format"
 
 import { PenaltyGrid } from "./PenaltyGrid"
-import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
+import { PenaltyParams, ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void
@@ -44,19 +44,17 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
     }
 )
 
-type CalculationParams = {
-    debtPeriod: Dayjs
-    debtSum: number
-    calcDate: Dayjs
-} & { __brand: "CalculationParams" }
-
-function createCalculationParams(params: {
+function createPenaltyParams(params: {
     debtPeriod: Dayjs | undefined | null
     debtSum: number | undefined | null
     calcDate: Dayjs | undefined | null
-}): CalculationParams | undefined {
+}): PenaltyParams | undefined {
     return !!params.calcDate && !!params.debtPeriod && !!params.debtSum
-        ? (params as CalculationParams)
+        ? {
+              debtPeriod: params.debtPeriod,
+              debtSum: params.debtSum,
+              calcDate: params.calcDate,
+          }
         : undefined
 }
 
@@ -69,20 +67,14 @@ export function PenaltyCalc() {
     const [result, setResult] = useState<ResultTable>([])
 
     function startCalculation(): void {
-        const params = createCalculationParams({
+        const params = createPenaltyParams({
             calcDate,
             debtPeriod,
             debtSum,
         })
 
         if (params !== undefined) {
-            setResult(
-                penaltiesFoldedForPeriod(
-                    params.debtPeriod,
-                    params.debtSum,
-                    params.calcDate
-                )
-            )
+            setResult(penaltiesFoldedForPeriod(params))
         }
     }
 
@@ -182,7 +174,7 @@ export function PenaltyCalc() {
                             variant="contained"
                             fullWidth
                             disabled={
-                                createCalculationParams({
+                                createPenaltyParams({
                                     calcDate,
                                     debtPeriod,
                                     debtSum,

@@ -31,7 +31,7 @@ type ResultRow = {
 
 export type ResultTable = ResultRow[]
 
-type PenaltyParams = {
+export type PenaltyParams = {
     debtPeriod: Dayjs
     debtSum: number
     calcDate: Dayjs
