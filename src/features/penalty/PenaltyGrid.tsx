@@ -1,6 +1,7 @@
 import { GridColDef } from "@mui/x-data-grid"
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
-import { ResultTable } from "./penalty.tables"
+
+import { ResultTable } from "./penalty"
 
 type PenaltyGridProps = {
     resultTable: ResultTable

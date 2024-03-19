@@ -12,12 +12,7 @@ import React, { useState } from "react"
 import { NumericFormat, NumericFormatProps } from "react-number-format"
 
 import { PenaltyGrid } from "./PenaltyGrid"
-import { Penalty } from "./penalty"
-import {
-    ResultTable,
-    calculatePenalties,
-    penaltiesToResultTable,
-} from "./penalty.tables"
+import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void
@@ -81,9 +76,13 @@ export function PenaltyCalc() {
         })
 
         if (params !== undefined) {
-            const penalty = new Penalty(params.debtPeriod, params.debtSum)
-            const penalties = calculatePenalties(penalty, params.calcDate)
-            setResult(penaltiesToResultTable(penalty, penalties))
+            setResult(
+                penaltiesFoldedForPeriod(
+                    params.debtPeriod,
+                    params.debtSum,
+                    params.calcDate
+                )
+            )
         }
     }
 
