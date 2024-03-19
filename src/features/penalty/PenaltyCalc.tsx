@@ -12,8 +12,8 @@ import React, { useState } from "react"
 import { NumericFormat, NumericFormatProps } from "react-number-format"
 
 import { PenaltyGrid } from "./PenaltyGrid"
-import { PenaltyParams, ResultTable, penaltiesFoldedForPeriod } from "./penalty"
-import { debtFromNullable } from "./penalty.types"
+import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
+import { Debt, Payment, debtFromNullable } from "./penalty.types"
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void
@@ -45,20 +45,6 @@ const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
     }
 )
 
-function createCalcParams(params: {
-    debtPeriod: Dayjs | undefined | null
-    debtSum: number | undefined | null
-    calcDate: Dayjs | undefined | null
-}): PenaltyParams | undefined {
-    return !!params.calcDate && !!params.debtPeriod && !!params.debtSum
-        ? {
-              debtPeriod: params.debtPeriod,
-              debtSum: params.debtSum,
-              calcDate: params.calcDate,
-          }
-        : undefined
-}
-
 export function PenaltyCalc() {
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
     const [debtPeriod, setDebtPeriod] = useState<Dayjs | null>(null)
@@ -66,6 +52,29 @@ export function PenaltyCalc() {
     const [paymentDate, setPaymentDate] = useState<Dayjs | null>(null)
     const [paymentSum, setPaymentSum] = useState<number | null>(null)
     const [results, setResults] = useState<ResultTable[]>([])
+
+    function validateDebtInput(): Debt[] {
+        return !!debtPeriod && !!debtSum
+            ? [
+                  {
+                      period: debtPeriod,
+                      sum: debtSum,
+                  },
+              ]
+            : []
+    }
+
+    function validatePaymentInput(): Payment[] {
+        return !!debtPeriod && !!paymentDate && !!paymentSum
+            ? [
+                  {
+                      period: debtPeriod,
+                      date: paymentDate,
+                      sum: paymentSum,
+                  },
+              ]
+            : []
+    }
 
     function startCalculation(): void {
         const debt = debtFromNullable({ period: debtPeriod, sum: debtSum })
@@ -170,13 +179,7 @@ export function PenaltyCalc() {
                         <Button
                             variant="contained"
                             fullWidth
-                            disabled={
-                                createCalcParams({
-                                    calcDate,
-                                    debtPeriod,
-                                    debtSum,
-                                }) === undefined
-                            }
+                            disabled={validateDebtInput().length === 0}
                             onClick={startCalculation}
                         >
                             Рассчитать
