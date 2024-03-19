@@ -13,7 +13,7 @@ import { NumericFormat, NumericFormatProps } from "react-number-format"
 
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
-import { Debt, Payment, debtFromNullable } from "./penalty.types"
+import { Debt, Payment } from "./penalty.types"
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void
@@ -53,7 +53,7 @@ export function PenaltyCalc() {
     const [paymentSum, setPaymentSum] = useState<number | null>(null)
     const [results, setResults] = useState<ResultTable[]>([])
 
-    function validateDebtInput(): Debt[] {
+    function debtsFromInput(): Debt[] {
         return !!debtPeriod && !!debtSum
             ? [
                   {
@@ -64,7 +64,7 @@ export function PenaltyCalc() {
             : []
     }
 
-    function validatePaymentInput(): Payment[] {
+    function paymentsFromInput(): Payment[] {
         return !!debtPeriod && !!paymentDate && !!paymentSum
             ? [
                   {
@@ -77,10 +77,14 @@ export function PenaltyCalc() {
     }
 
     function startCalculation(): void {
-        const debt = debtFromNullable({ period: debtPeriod, sum: debtSum })
-
-        if (!!debt && !!calcDate) {
-            setResults(penaltiesFoldedForPeriod(calcDate, [debt]))
+        if (!!calcDate) {
+            setResults(
+                penaltiesFoldedForPeriod(
+                    calcDate,
+                    debtsFromInput(),
+                    paymentsFromInput()
+                )
+            )
         }
     }
 
@@ -179,7 +183,7 @@ export function PenaltyCalc() {
                         <Button
                             variant="contained"
                             fullWidth
-                            disabled={validateDebtInput().length === 0}
+                            disabled={debtsFromInput().length === 0}
                             onClick={startCalculation}
                         >
                             Рассчитать
@@ -188,8 +192,8 @@ export function PenaltyCalc() {
                     </Stack>
                 </Stack>
             </Container>
-            {results.map((result) => (
-                <PenaltyGrid resultTable={result} />
+            {results.map((result, i) => (
+                <PenaltyGrid resultTable={result} key={i} />
             ))}
         </Box>
     )

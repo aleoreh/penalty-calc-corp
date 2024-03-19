@@ -1,200 +1,211 @@
 import dayjs, { Dayjs } from "dayjs"
 import isBetween from "dayjs/plugin/isBetween"
 import { keyRates, moratoriums } from "./penalty.data"
-import { Debt } from "./penalty.types"
+import { Debt, Payment } from "./penalty.types"
 
 dayjs.extend(isBetween)
 
-type PenaltiesTable = {
+type PenaltyRow = {
     id: number
     date: Dayjs
-    debt: number
-    delayDaysCount: number
-    fraction: string
+    debtAmount: number
+    keyRateFraction: { value: number; repr: string }
     moratorium: boolean
-    rate: number
-    penalty: number
+    keyRate: number
+    penaltyAmount: number
     deferredCoef: number
-}[]
+}
+
+type PenaltiesTable = PenaltyRow[]
 
 type ResultRow = {
     id: number
-    debt: number
+    debtAmount: number
     dateFrom: Dayjs
     dateTo: Dayjs
     daysCount: number
-    fraction: string
+    keyRateFraction: { value: number; repr: string }
     moratorium: boolean
-    rate: number
-    penalty: number
+    keyRate: number
+    penaltyAmount: number
     deferredCoef: number
 }
 
 export type ResultTable = ResultRow[]
 
-export type PenaltyParams = {
-    debtPeriod: Dayjs
-    debtSum: number
-    calcDate: Dayjs
+/**
+ * Дата начала просрочки
+ */
+function dueDate(debtPeriod: Dayjs, daysToPay: number): Dayjs {
+    return debtPeriod.endOf("month").add(daysToPay + 1, "day")
 }
 
-class Penalty {
-    static daysCountToPay = 10
-    private static _fractionChangeDay = 91
-
-    /**
-     * Ключевая ставка на дату
-     *
-     * @param {Dayjs} date
-     * @return {*}  {number}
-     */
-    static getKeyRate(date: Dayjs): number {
-        return keyRates.filter(([startDate, _]) => {
-            return date.isAfter(startDate)
-        })[keyRates.length - 1][1]
-    }
-
-    /**
-     * Показывает, действует ли на данную дату мораторий на начисление пени
-     *
-     * @param {Dayjs} date
-     * @return {*}  {boolean}
-     */
-    static doesMoratoriumActs(date: Dayjs): boolean {
-        return moratoriums.some(([start, end]) => {
-            return date.isBetween(start, end, "day", "[]")
-        })
-    }
-
-    constructor(public debt: Debt) {}
-
-    /**
-     * Дата начала просрочки
-     *
-     * @return {*}  {Dayjs}
-     */
-    get dueDate(): Dayjs {
-        return this.debt.period
-            .endOf("month")
-            .add(Penalty.daysCountToPay, "day")
-    }
-
-    /**
-     * Коэффициент для применения до и после начала просрочки (0, 1)
-     *
-     * @param {Dayjs} date
-     * @return {*}  {number}
-     */
-    getDeferredCoef(date: Dayjs): number {
-        // Количество дней, в течение которых пеня не начисляется
-        const deferredDaysCount = 31
-
-        return date.diff(this.dueDate.add(deferredDaysCount, "day")) < 0 ? 0 : 1
-    }
-
-    /**
-     * Количество дней просрочки
-     *
-     * @param {Dayjs} date
-     * @return {*}  {number}
-     */
-    getDaysOverdue(date: Dayjs): number {
-        return date.diff(this.dueDate, "day")
-    }
-
-    /**
-     * Доля ключевой ставки, зависящая от количества дней просрочки
-     *
-     * @param {Dayjs} date
-     * @return {*}  {{ value: number; repr: string }}
-     */
-    getKeyRateFraction(date: Dayjs): { value: number; repr: string } {
-        return this.getDaysOverdue(date) < Penalty._fractionChangeDay
-            ? { value: 1 / 300, repr: "1/300" }
-            : { value: 1 / 130, repr: "1/130" }
-    }
-
-    /**
-     * Рассчитывает на дату calcDate сумму пени за день day
-     *
-     * @param {Dayjs} calcDate - дата произведения расчета
-     * @param {Dayjs} day - день, за который рассчитывается пеня
-     * @return {*}  {number}
-     */
-    calculate(calcDate: Dayjs, day: Dayjs): number {
-        const b = this.getDeferredCoef(day)
-        const k = this.getKeyRateFraction(day).value
-        const r = Penalty.getKeyRate(calcDate)
-        const m = Penalty.doesMoratoriumActs(day) ? 0 : 1
-
-        return Math.round(b * k * r * this.debt.sum * m * 100) / 100
-    }
+/**
+ * Коэффициент для применения до и после начала просрочки (0, 1)
+ *
+ */
+function deferredCoef(
+    deferredDaysCount: number,
+    dueDate: Dayjs,
+    date: Dayjs
+): number {
+    return date.isBefore(dueDate.add(deferredDaysCount, "day"), "day") ? 0 : 1
 }
 
-function calculatePenalties(calcDate: Dayjs, penalty: Penalty): PenaltiesTable {
-    const res: PenaltiesTable = []
+/**
+ * Количество дней просрочки
+ *
+ */
+function daysOverdue(dueDate: Dayjs, date: Dayjs): number {
+    return date.diff(dueDate, "day")
+}
 
-    for (let i = 1; i <= calcDate.diff(penalty.dueDate, "day"); i++) {
-        const day = penalty.dueDate.add(i, "day")
+/**
+ * Доля ключевой ставки, зависящая от количества дней просрочки
+ *
+ */
+function keyRateFraction(
+    fractionChangeDay: number,
+    daysOverdue: number
+): { value: number; repr: string } {
+    return daysOverdue < fractionChangeDay
+        ? { value: 1 / 300, repr: "1/300" }
+        : { value: 1 / 130, repr: "1/130" }
+}
 
-        const value = {
-            id: day.unix(),
-            date: day,
-            debt: penalty.debt.sum,
-            delayDaysCount: penalty.getDaysOverdue(day),
-            fraction: penalty.getKeyRateFraction(day).repr,
-            moratorium: Penalty.doesMoratoriumActs(day),
-            rate: Penalty.getKeyRate(calcDate),
-            deferredCoef: penalty.getDeferredCoef(day),
-            penalty: penalty.calculate(calcDate, day),
+/**
+ * Ключевая ставка на дату
+ *
+ */
+function keyRate(date: Dayjs): number {
+    return keyRates.filter(([startDate, _]) => {
+        return date.isAfter(startDate)
+    })[keyRates.length - 1][1]
+}
+
+/**
+ * Показывает, действует ли на данную дату мораторий на начисление пени
+ *
+ */
+function doesMoratoriumActs(date: Dayjs): boolean {
+    return moratoriums.some(([start, end]) => {
+        return date.isBetween(start, end, "day", "[]")
+    })
+}
+
+function createCalculator(
+    init: { debt: Debt } & { calcDate: Dayjs } & {
+        paymentsPerPeriod: Payment[]
+    }
+) {
+    // отсрочка платежа по пене
+    const deferredDaysCount = 30
+
+    // количество дней, отведенное на оплату
+    const daysToPay = 10
+
+    // день, после которого наступает изменение доли ставки расчета пени
+    const fractionChangeDay = 90
+
+    // дата, до которой нужно оплатить счет
+    const _dueDate = dueDate(init.debt.period, daysToPay)
+
+    // ключевая ставка ЦБ
+    const _keyRate = keyRate(init.calcDate)
+
+    const calcPenalty = (
+        debtPeriod: Dayjs,
+        debtAmount: number,
+        date: Dayjs
+    ) => {
+        const b = deferredCoef(deferredDaysCount, _dueDate, date)
+        const k = keyRateFraction(
+            fractionChangeDay,
+            daysOverdue(dueDate(debtPeriod, daysToPay), date)
+        ).value
+        const r = _keyRate
+        const m = doesMoratoriumActs(date) ? 0 : 1
+        const s = debtAmount
+
+        return Math.round(b * k * r * s * m * 100) / 100
+    }
+
+    const makeDayRow = (debtAmount: number, date: Dayjs): PenaltyRow => {
+        return {
+            id: date.unix(),
+            date,
+            debtAmount,
+            keyRateFraction: keyRateFraction(
+                fractionChangeDay,
+                daysOverdue(_dueDate, date)
+            ),
+            moratorium: doesMoratoriumActs(date),
+            keyRate: _keyRate,
+            deferredCoef: deferredCoef(deferredDaysCount, _dueDate, date),
+            penaltyAmount: calcPenalty(init.debt.period, debtAmount, date),
+        }
+    }
+
+    const dayStep = (row: PenaltyRow): PenaltyRow => {
+        const day = row.date
+        const dayPayment = init.paymentsPerPeriod
+            .filter((payment) => payment.date.isSame(day, "day"))
+            .reduce((acc, value) => acc + value.sum, 0)
+
+        const newDebtAmount = row.debtAmount - dayPayment
+        const newDay = day.add(1, "day")
+
+        return makeDayRow(newDebtAmount, newDay)
+    }
+
+    const run = () => {
+        let acc: PenaltiesTable = []
+        let dayRow = makeDayRow(init.debt.sum, _dueDate)
+
+        while (dayRow.date.isBefore(init.calcDate)) {
+            ;[acc, dayRow] = [[...acc, dayRow], dayStep(dayRow)]
         }
 
-        res.push(value)
+        return acc
     }
 
-    return res
+    return { run }
 }
 
-function penaltiesToResultTable(
-    penalty: Penalty,
-    table: PenaltiesTable
-): ResultTable {
-    function addResultRow(row: PenaltiesTable[number]): ResultRow {
+function penaltiesToResultTable(table: PenaltiesTable): ResultTable {
+    function addResultRow(row: PenaltyRow): ResultRow {
         return {
             ...row,
             dateFrom: row.date,
             dateTo: row.date,
             daysCount: 1,
-            fraction: penalty.getKeyRateFraction(row.date).repr,
+            keyRateFraction: row.keyRateFraction,
         }
     }
 
-    function joinResultRow(
-        resultRow: ResultRow,
-        row: PenaltiesTable[number]
-    ): ResultRow {
+    function joinResultRow(resultRow: ResultRow, row: PenaltyRow): ResultRow {
         return {
             ...resultRow,
             dateTo: row.date,
             daysCount: resultRow.daysCount + 1,
-            penalty: resultRow.penalty + row.penalty,
+            penaltyAmount: resultRow.penaltyAmount + row.penaltyAmount,
         }
     }
 
     function resultRowEqual(
         row1: Pick<
             ResultRow,
-            "debt" | "rate" | "fraction" | "moratorium" | "deferredCoef"
+            "debtAmount" | "keyRate" | "keyRateFraction" | "moratorium" | "deferredCoef"
         >,
         row2: Pick<
             PenaltiesTable[number],
-            "debt" | "rate" | "fraction" | "moratorium" | "deferredCoef"
+            "debtAmount" | "keyRate" | "keyRateFraction" | "moratorium" | "deferredCoef"
         >
     ) {
         return (
-            row1.debt === row2.debt &&
-            row1.rate === row2.rate &&
-            row1.fraction === row2.fraction &&
+            row1.debtAmount === row2.debtAmount &&
+            row1.keyRate === row2.keyRate &&
+            row1.keyRateFraction.value === row2.keyRateFraction.value &&
             row1.moratorium === row2.moratorium &&
             row1.deferredCoef === row2.deferredCoef
         )
@@ -214,11 +225,17 @@ function penaltiesToResultTable(
 
 export function penaltiesFoldedForPeriod(
     calcDate: Dayjs,
-    debts: Debt[]
+    debts: Debt[],
+    payments: Payment[]
 ): ResultTable[] {
     return debts.map((debt) => {
-        const penalty = new Penalty(debt)
-        const penalties = calculatePenalties(calcDate, penalty)
-        return penaltiesToResultTable(penalty, penalties)
+        const penalties = createCalculator({
+            debt,
+            calcDate,
+            paymentsPerPeriod: payments.filter((payment) =>
+                payment.period.isSame(debt.period)
+            ),
+        }).run()
+        return penaltiesToResultTable(penalties)
     })
 }

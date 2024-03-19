@@ -11,7 +11,7 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
     const columns: GridColDef[] = [
         { field: "id" },
         {
-            field: "debt",
+            field: "debtAmount",
             headerName: "Сумма долга",
             valueFormatter: (x) => {
                 return new Intl.NumberFormat("ru-RU", {
@@ -42,10 +42,15 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
 
             align: "right",
         },
-        { field: "fraction", headerName: "Доля ставки", align: "right" },
+        {
+            field: "keyRateFraction",
+            headerName: "Доля ставки",
+            align: "right",
+            valueGetter: (x) => x.value.repr,
+        },
         { field: "moratorium", headerName: "Действует мораторий" },
         {
-            field: "rate",
+            field: "keyRate",
             headerName: "Ставка",
             align: "right",
             valueFormatter: (x) => {
@@ -56,7 +61,7 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
             },
         },
         {
-            field: "penalty",
+            field: "penaltyAmount",
             headerName: "Сумма пени",
             valueFormatter: (x) => {
                 return new Intl.NumberFormat("ru-RU", {
