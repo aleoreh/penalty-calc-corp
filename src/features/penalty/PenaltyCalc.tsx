@@ -2,6 +2,7 @@ import {
     Box,
     Button,
     Container,
+    IconButton,
     Stack,
     TextField,
     Typography,
@@ -14,6 +15,7 @@ import { NumericFormat, NumericFormatProps } from "react-number-format"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
+import { Add } from "@mui/icons-material"
 
 interface CustomProps {
     onChange: (event: { target: { name: string; value: string } }) => void
@@ -51,6 +53,7 @@ export function PenaltyCalc() {
     const [debtSum, setDebtSum] = useState<number | null>(null)
     const [paymentDate, setPaymentDate] = useState<Dayjs | null>(null)
     const [paymentSum, setPaymentSum] = useState<number | null>(null)
+    const [payments, setPayments] = useState<[Dayjs, number][]>([])
     const [results, setResults] = useState<ResultTable[]>([])
 
     function debtsFromInput(): Debt[] {
@@ -172,6 +175,9 @@ export function PenaltyCalc() {
                                 }}
                             />
                         </Stack>
+                        <IconButton sx={{ alignSelf: "flex-start" }}>
+                            <Add />
+                        </IconButton>
                         <Stack display="none">
                             <Typography>
                                 или импортируйте платежи из таблицы:

@@ -93,11 +93,11 @@ function doesMoratoriumActs(date: Dayjs): boolean {
     })
 }
 
-function createCalculator(
-    init: { debt: Debt } & { calcDate: Dayjs } & {
-        paymentsPerPeriod: Payment[]
-    }
-) {
+function calculatePenalties(init: {
+    debt: Debt
+    calcDate: Dayjs
+    paymentsPerPeriod: Payment[]
+}) {
     // отсрочка платежа по пене
     const deferredDaysCount = 30
 
@@ -146,7 +146,7 @@ function createCalculator(
         }
     }
 
-    const dayStep = (row: PenaltyRow): PenaltyRow => {
+    const nextDayRow = (row: PenaltyRow): PenaltyRow => {
         const day = row.date
         const dayPayment = init.paymentsPerPeriod
             .filter((payment) => payment.date.isSame(day, "day"))
@@ -158,21 +158,18 @@ function createCalculator(
         return makeDayRow(newDebtAmount, newDay)
     }
 
-    const run = () => {
-        let acc: PenaltiesTable = []
-        let dayRow = makeDayRow(init.debt.sum, _dueDate)
+    let acc: PenaltiesTable = []
+    let dayRow = makeDayRow(init.debt.sum, _dueDate)
 
-        while (dayRow.date.isBefore(init.calcDate)) {
-            ;[acc, dayRow] = [[...acc, dayRow], dayStep(dayRow)]
-        }
-
-        return acc
+    while (dayRow.date.isBefore(init.calcDate)) {
+        acc.push(dayRow)
+        dayRow = nextDayRow(dayRow)
     }
 
-    return { run }
+    return acc
 }
 
-function penaltiesToResultTable(table: PenaltiesTable): ResultTable {
+function foldPenalties(table: PenaltiesTable): ResultTable {
     function addResultRow(row: PenaltyRow): ResultRow {
         return {
             ...row,
@@ -193,21 +190,30 @@ function penaltiesToResultTable(table: PenaltiesTable): ResultTable {
     }
 
     function resultRowEqual(
-        row1: Pick<
+        resultRow: Pick<
             ResultRow,
-            "debtAmount" | "keyRate" | "keyRateFraction" | "moratorium" | "deferredCoef"
+            | "debtAmount"
+            | "keyRate"
+            | "keyRateFraction"
+            | "moratorium"
+            | "deferredCoef"
         >,
-        row2: Pick<
-            PenaltiesTable[number],
-            "debtAmount" | "keyRate" | "keyRateFraction" | "moratorium" | "deferredCoef"
+        penaltyRow: Pick<
+            PenaltyRow,
+            | "debtAmount"
+            | "keyRate"
+            | "keyRateFraction"
+            | "moratorium"
+            | "deferredCoef"
         >
     ) {
         return (
-            row1.debtAmount === row2.debtAmount &&
-            row1.keyRate === row2.keyRate &&
-            row1.keyRateFraction.value === row2.keyRateFraction.value &&
-            row1.moratorium === row2.moratorium &&
-            row1.deferredCoef === row2.deferredCoef
+            resultRow.debtAmount === penaltyRow.debtAmount &&
+            resultRow.keyRate === penaltyRow.keyRate &&
+            resultRow.keyRateFraction.value ===
+                penaltyRow.keyRateFraction.value &&
+            resultRow.moratorium === penaltyRow.moratorium &&
+            resultRow.deferredCoef === penaltyRow.deferredCoef
         )
     }
 
@@ -229,13 +235,13 @@ export function penaltiesFoldedForPeriod(
     payments: Payment[]
 ): ResultTable[] {
     return debts.map((debt) => {
-        const penalties = createCalculator({
+        const penalties = calculatePenalties({
             debt,
             calcDate,
             paymentsPerPeriod: payments.filter((payment) =>
-                payment.period.isSame(debt.period)
+                payment.period.isSame(debt.period, "month")
             ),
-        }).run()
-        return penaltiesToResultTable(penalties)
+        })
+        return foldPenalties(penalties)
     })
 }
