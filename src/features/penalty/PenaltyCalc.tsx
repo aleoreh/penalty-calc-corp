@@ -36,7 +36,53 @@ function CalcPeriodsTable(props: { debts: Debt[] }) {
             },
         },
     ]
-    return <DataGrid columns={columns} rows={props.debts} hideFooter={true}></DataGrid>
+    return (
+        <DataGrid
+            columns={columns}
+            rows={props.debts}
+            hideFooter={true}
+        ></DataGrid>
+    )
+}
+
+function DebtInput(props: {
+    debtPeriodInput: Dayjs | null
+    setDebtPeriodInput: (value: Dayjs | null) => void
+    debtAmountInput: string
+    setDebtAmountInput: (value: string) => void
+    addDebt: () => void
+}) {
+    return (
+        <Stack direction="row">
+            <DatePicker
+                label="Расчетный период, месяц/год"
+                views={["year", "month"]}
+                value={props.debtPeriodInput}
+                onChange={props.setDebtPeriodInput}
+                sx={{
+                    flexGrow: 1,
+                }}
+            />
+            <TextField
+                label="Сумма долга, р."
+                required
+                InputProps={{
+                    inputComponent: NumericFormatCustom as any,
+                }}
+                value={props.debtAmountInput}
+                onChange={(evt) => {
+                    props.setDebtAmountInput(evt.target.value)
+                }}
+            />
+            <IconButton
+                sx={{ alignSelf: "center" }}
+                onClick={props.addDebt}
+                disabled={!props.debtPeriodInput || !props.debtAmountInput}
+            >
+                <Add />
+            </IconButton>
+        </Stack>
+    )
 }
 
 export function PenaltyCalc() {
@@ -54,7 +100,7 @@ export function PenaltyCalc() {
 
     function startCalculation(): void {
         if (!!calcDate) {
-            setResults(penaltiesFoldedForPeriod(calcDate, debts, []))
+            setResults(penaltiesFoldedForPeriod(calcDate, debts, payments))
         }
     }
 
@@ -121,35 +167,13 @@ export function PenaltyCalc() {
                         <Typography align="left" variant="h5">
                             Заполните список долгов:
                         </Typography>
-                        <Stack direction="row">
-                            <DatePicker
-                                label="Расчетный период, месяц/год"
-                                views={["year", "month"]}
-                                value={debtPeriodInput}
-                                onChange={setDebtPeriodInput}
-                                sx={{
-                                    flexGrow: 1,
-                                }}
-                            />
-                            <TextField
-                                label="Сумма долга, р."
-                                required
-                                InputProps={{
-                                    inputComponent: NumericFormatCustom as any,
-                                }}
-                                value={debtAmountInput}
-                                onChange={(evt) => {
-                                    setDebtAmountInput(evt.target.value)
-                                }}
-                            />
-                            <IconButton
-                                sx={{ alignSelf: "center" }}
-                                onClick={addDebt}
-                                disabled={!debtPeriodInput || !debtAmountInput}
-                            >
-                                <Add />
-                            </IconButton>
-                        </Stack>
+                        <DebtInput
+                            addDebt={addDebt}
+                            debtPeriodInput={debtPeriodInput}
+                            setDebtPeriodInput={setDebtPeriodInput}
+                            debtAmountInput={debtAmountInput}
+                            setDebtAmountInput={setDebtAmountInput}
+                        />
                         <Stack>{showDebts()}</Stack>
                         <Stack display="none">
                             <Typography>
