@@ -9,7 +9,6 @@ type PenaltyGridProps = {
 
 export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
     const columns: GridColDef[] = [
-        { field: "id" },
         {
             field: "debtAmount",
             headerName: "Сумма долга",
