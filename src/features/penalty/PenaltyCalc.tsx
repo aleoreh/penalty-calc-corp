@@ -1,94 +1,100 @@
-import {
-    Box,
-    Button,
-    Container,
-    IconButton,
-    Stack,
-    TextField,
-    Typography,
-} from "@mui/material"
+import { Add } from "@mui/icons-material"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Container from "@mui/material/Container"
+import IconButton from "@mui/material/IconButton"
+import Stack from "@mui/material/Stack"
+import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
-import React, { useState } from "react"
-import { NumericFormat, NumericFormatProps } from "react-number-format"
+import { useState } from "react"
 
+import { GridColDef } from "@mui/x-data-grid"
+import { DataGrid } from "@mui/x-data-grid/DataGrid"
+import { NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
-import { Add } from "@mui/icons-material"
 
-interface CustomProps {
-    onChange: (event: { target: { name: string; value: string } }) => void
-    name: string
+function CalcPeriodsTable(props: { debts: Debt[] }) {
+    const columns: GridColDef<Debt>[] = [
+        {
+            field: "period",
+            headerName: "Период",
+            valueFormatter: (x) => x.value.format("MMM YYYY"),
+        },
+        {
+            field: "sum",
+            headerName: "Сумма",
+            valueFormatter: (x) => {
+                return new Intl.NumberFormat("ru-RU", {
+                    style: "currency",
+                    currency: "RUR",
+                    maximumFractionDigits: 2,
+                }).format(x.value)
+            },
+        },
+    ]
+    return <DataGrid columns={columns} rows={props.debts} hideFooter={true}></DataGrid>
 }
-
-const NumericFormatCustom = React.forwardRef<NumericFormatProps, CustomProps>(
-    function NumericFormatCustom(props, ref) {
-        const { onChange, ...other } = props
-
-        return (
-            <NumericFormat
-                {...other}
-                getInputRef={ref}
-                onValueChange={(values) => {
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value,
-                        },
-                    })
-                }}
-                thousandSeparator=" "
-                decimalSeparator=","
-                decimalScale={2}
-                valueIsNumericString
-            />
-        )
-    }
-)
 
 export function PenaltyCalc() {
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
-    const [debtPeriod, setDebtPeriod] = useState<Dayjs | null>(null)
-    const [debtSum, setDebtSum] = useState<number | null>(null)
-    const [paymentDate, setPaymentDate] = useState<Dayjs | null>(null)
-    const [paymentSum, setPaymentSum] = useState<number | null>(null)
-    const [payments, setPayments] = useState<[Dayjs, number][]>([])
+
+    const [debtPeriodInput, setDebtPeriodInput] = useState<Dayjs | null>(null)
+    const [debtAmountInput, setDebtAmountInput] = useState<string>("")
+    const [debts, setDebts] = useState<Debt[]>([])
+
+    const [paymentDateInput, setPaymentDateInput] = useState<Dayjs | null>(null)
+    const [paymentSumInput, setPaymentSumInput] = useState<string>("")
+    const [payments, setPayments] = useState<Payment[]>([])
+
     const [results, setResults] = useState<ResultTable[]>([])
-
-    function debtsFromInput(): Debt[] {
-        return !!debtPeriod && !!debtSum
-            ? [
-                  {
-                      period: debtPeriod,
-                      sum: debtSum,
-                  },
-              ]
-            : []
-    }
-
-    function paymentsFromInput(): Payment[] {
-        return !!debtPeriod && !!paymentDate && !!paymentSum
-            ? [
-                  {
-                      period: debtPeriod,
-                      date: paymentDate,
-                      sum: paymentSum,
-                  },
-              ]
-            : []
-    }
 
     function startCalculation(): void {
         if (!!calcDate) {
-            setResults(
-                penaltiesFoldedForPeriod(
-                    calcDate,
-                    debtsFromInput(),
-                    paymentsFromInput()
-                )
-            )
+            setResults(penaltiesFoldedForPeriod(calcDate, debts, []))
         }
+    }
+
+    function addDebt() {
+        const debtAmount = parseFloat(debtAmountInput)
+        const alreadyExists =
+            debts.filter((debt) => debt.period.isSame(debtPeriodInput, "month"))
+                .length > 0
+        if (!!debtPeriodInput && !!debtAmount && !alreadyExists) {
+            setDebts([...debts, { period: debtPeriodInput, sum: debtAmount }])
+            setDebtAmountInput("")
+            setDebtPeriodInput(null)
+        }
+    }
+
+    function deleteDebt(debtPeriod: Dayjs) {
+        setDebts(
+            debts.filter((debt) => !debt.period.isSame(debtPeriod, "month"))
+        )
+    }
+
+    function showDebts() {
+        const sortedDebts = [...debts]
+            .sort((debt1, debt2) => debt1.period.diff(debt2.period))
+            .map((row) => ({ ...row, id: row.period.unix() }))
+        return (
+            sortedDebts.length > 0 && <CalcPeriodsTable debts={sortedDebts} />
+        )
+    }
+
+    function addPayment() {
+        const paymentSum = parseFloat(paymentSumInput)
+        if (!!paymentDateInput && !!paymentSum) {
+            setPayments([...payments])
+        }
+    }
+
+    function clear() {
+        setResults([])
+        setDebts([])
     }
 
     return (
@@ -112,15 +118,15 @@ export function PenaltyCalc() {
                         />
                     </Stack>
                     <Stack>
-                        <Typography>
-                            Введите сумму долга за расчетный период:
+                        <Typography align="left" variant="h5">
+                            Заполните список долгов:
                         </Typography>
                         <Stack direction="row">
                             <DatePicker
                                 label="Расчетный период, месяц/год"
                                 views={["year", "month"]}
-                                value={debtPeriod}
-                                onChange={setDebtPeriod}
+                                value={debtPeriodInput}
+                                onChange={setDebtPeriodInput}
                                 sx={{
                                     flexGrow: 1,
                                 }}
@@ -131,14 +137,20 @@ export function PenaltyCalc() {
                                 InputProps={{
                                     inputComponent: NumericFormatCustom as any,
                                 }}
-                                value={debtSum}
-                                onChange={(
-                                    event: React.ChangeEvent<HTMLInputElement>
-                                ) => {
-                                    setDebtSum(parseFloat(event.target.value))
+                                value={debtAmountInput}
+                                onChange={(evt) => {
+                                    setDebtAmountInput(evt.target.value)
                                 }}
                             />
+                            <IconButton
+                                sx={{ alignSelf: "center" }}
+                                onClick={addDebt}
+                                disabled={!debtPeriodInput || !debtAmountInput}
+                            >
+                                <Add />
+                            </IconButton>
                         </Stack>
+                        <Stack>{showDebts()}</Stack>
                         <Stack display="none">
                             <Typography>
                                 или импортируйте долги из таблицы:
@@ -148,14 +160,13 @@ export function PenaltyCalc() {
                     </Stack>
                     <Stack>
                         <Typography>
-                            Если долг частично оплачен, введите сумму и дату
-                            оплаты:
+                            Заполните список платежей при наличии:
                         </Typography>
                         <Stack direction="row">
                             <DatePicker
                                 label="Дата оплаты"
-                                value={paymentDate}
-                                onChange={setPaymentDate}
+                                value={paymentDateInput}
+                                onChange={setPaymentDateInput}
                                 sx={{
                                     flexGrow: 1,
                                 }}
@@ -165,15 +176,18 @@ export function PenaltyCalc() {
                                 InputProps={{
                                     inputComponent: NumericFormatCustom as any,
                                 }}
-                                value={paymentSum}
-                                onChange={(
-                                    event: React.ChangeEvent<HTMLInputElement>
-                                ) => {
-                                    setPaymentSum(
-                                        parseFloat(event.target.value)
-                                    )
+                                value={paymentSumInput}
+                                onChange={(evt) => {
+                                    setPaymentSumInput(evt.target.value)
                                 }}
                             />
+                            <IconButton
+                                sx={{ alignSelf: "center" }}
+                                onClick={addPayment}
+                                disabled={!paymentDateInput || !paymentSumInput}
+                            >
+                                <Add />
+                            </IconButton>
                         </Stack>
                         <IconButton sx={{ alignSelf: "flex-start" }}>
                             <Add />
@@ -189,12 +203,12 @@ export function PenaltyCalc() {
                         <Button
                             variant="contained"
                             fullWidth
-                            disabled={debtsFromInput().length === 0}
+                            disabled={debts.length === 0}
                             onClick={startCalculation}
                         >
                             Рассчитать
                         </Button>
-                        <Button onClick={() => setResults([])}>Очистить</Button>
+                        <Button onClick={clear}>Очистить</Button>
                     </Stack>
                 </Stack>
             </Container>
