@@ -4,6 +4,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import "dayjs/locale/ru"
 import React from "react"
 import ReactDOM from "react-dom/client"
+import { ruRU } from "@mui/x-data-grid"
+import { ruRU as pickersRuRU } from "@mui/x-date-pickers"
+import { ruRU as coreRuRU } from "@mui/material/locale"
 
 import App from "./App"
 import "./index.css"
@@ -14,26 +17,31 @@ import "@fontsource/roboto/400.css"
 import "@fontsource/roboto/500.css"
 import "@fontsource/roboto/700.css"
 
-const theme = createTheme({
-    components: {
-        MuiContainer: {
-            defaultProps: {
-                maxWidth: "md",
+const theme = createTheme(
+    {
+        components: {
+            MuiContainer: {
+                defaultProps: {
+                    maxWidth: "md",
+                },
             },
-        },
-        MuiStack: {
-            defaultProps: {
-                spacing: 2,
+            MuiStack: {
+                defaultProps: {
+                    spacing: 2,
+                },
             },
-        },
-        MuiButton: {
-            defaultProps: {
-                variant: "outlined",
-                size: "large",
+            MuiButton: {
+                defaultProps: {
+                    variant: "outlined",
+                    size: "large",
+                },
             },
         },
     },
-})
+    ruRU,
+    pickersRuRU,
+    coreRuRU
+)
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
