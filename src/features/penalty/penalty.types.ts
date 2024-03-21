@@ -6,7 +6,7 @@ export type Debt = {
 }
 
 export type Payment = {
-    date: Dayjs
     period: Dayjs
+    date: Dayjs
     sum: number
 }

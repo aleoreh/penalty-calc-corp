@@ -26,7 +26,7 @@ function DebtInput(props: {
     return (
         <Stack direction="row">
             <DatePicker
-                label="Расчетный период, месяц/год"
+                label="Расчетный период"
                 views={["year", "month"]}
                 value={props.period}
                 onChange={props.setPeriod}
@@ -49,7 +49,7 @@ function DebtInput(props: {
                 startIcon={<Add />}
                 onClick={props.addDebt}
                 disabled={!props.period || !props.amount}
-                sx={{ alignSelf: "center" }}
+                sx={{ flexShrink: 0 }}
             >
                 В список
             </Button>
@@ -58,6 +58,8 @@ function DebtInput(props: {
 }
 
 function PaymentInput(props: {
+    period: Dayjs | null
+    setPeriod: (x: Dayjs | null) => void
     date: Dayjs | null
     setDate: (x: Dayjs | null) => void
     sum: string
@@ -66,6 +68,15 @@ function PaymentInput(props: {
 }) {
     return (
         <Stack direction="row">
+            <DatePicker
+                label="Расчетный период"
+                views={["year", "month"]}
+                value={props.period}
+                onChange={props.setPeriod}
+                sx={{
+                    flexGrow: 1,
+                }}
+            />
             <DatePicker
                 label="Дата оплаты"
                 value={props.date}
@@ -88,7 +99,7 @@ function PaymentInput(props: {
                 startIcon={<Add />}
                 onClick={props.addPayment}
                 disabled={!props.date || !props.sum}
-                sx={{ alignSelf: "center" }}
+                sx={{ flexShrink: 0 }}
             >
                 В список
             </Button>
@@ -127,17 +138,17 @@ function DebtsList(props: { debts: Debt[] }) {
 function PaymentsList(props: { payments: Payment[] }) {
     const columns: GridColDef<Payment>[] = [
         {
-            field: "calcPeriod",
+            field: "period",
             headerName: "Расчетный период",
             valueFormatter: (x) => x.value.format("MMM YYYY"),
         },
         {
-            field: "paymentDate",
+            field: "date",
             headerName: "Дата оплаты",
             valueFormatter: (x) => x.value.format("L"),
         },
         {
-            field: "paymentSum",
+            field: "sum",
             headerName: "Сумма оплаты",
             valueFormatter: (x) => {
                 return new Intl.NumberFormat("ru-RU", {
@@ -164,6 +175,9 @@ export function PenaltyCalc() {
     const [debtAmountInput, setDebtAmountInput] = useState<string>("")
     const [debts, setDebts] = useState<Debt[]>([])
 
+    const [paymentPeriodInput, setPaymentPeriodInput] = useState<Dayjs | null>(
+        null
+    )
     const [paymentDateInput, setPaymentDateInput] = useState<Dayjs | null>(null)
     const [paymentSumInput, setPaymentSumInput] = useState<string>("")
     const [payments, setPayments] = useState<Payment[]>([])
@@ -207,9 +221,19 @@ export function PenaltyCalc() {
 
     function addPayment() {
         const paymentSum = parseFloat(paymentSumInput)
-        console.log(paymentSum)
-        if (!!paymentDateInput && !!paymentSum) {
-            setPayments([...payments])
+
+        if (!!paymentPeriodInput && !!paymentDateInput && !!paymentSum) {
+            setPayments([
+                ...payments,
+                {
+                    period: paymentPeriodInput,
+                    date: paymentDateInput,
+                    sum: paymentSum,
+                },
+            ])
+            setPaymentPeriodInput(null)
+            setPaymentDateInput(null)
+            setPaymentSumInput("")
         }
     }
 
@@ -228,6 +252,7 @@ export function PenaltyCalc() {
     function clear() {
         setResults([])
         setDebts([])
+        setPayments([])
     }
 
     return (
@@ -274,6 +299,8 @@ export function PenaltyCalc() {
                             Заполните список платежей при наличии:
                         </Typography>
                         <PaymentInput
+                            period={paymentPeriodInput}
+                            setPeriod={setPaymentPeriodInput}
                             date={paymentDateInput}
                             setDate={setPaymentDateInput}
                             sum={paymentSumInput}
