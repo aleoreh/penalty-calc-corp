@@ -2,7 +2,6 @@ import { Add } from "@mui/icons-material"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
-import IconButton from "@mui/material/IconButton"
 import Stack from "@mui/material/Stack"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
@@ -16,7 +15,6 @@ import { NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
-import Tooltip from "@mui/material/Tooltip"
 
 function DebtInput(props: {
     period: Dayjs | null
@@ -47,15 +45,14 @@ function DebtInput(props: {
                     props.setAmount(evt.target.value)
                 }}
             />
-            <Tooltip title="Добавить в список">
-                <IconButton
-                    sx={{ alignSelf: "center" }}
-                    onClick={props.addDebt}
-                    disabled={!props.period || !props.amount}
-                >
-                    <Add />
-                </IconButton>
-            </Tooltip>
+            <Button
+                startIcon={<Add />}
+                onClick={props.addDebt}
+                disabled={!props.period || !props.amount}
+                sx={{ alignSelf: "center" }}
+            >
+                В список
+            </Button>
         </Stack>
     )
 }
@@ -87,15 +84,14 @@ function PaymentInput(props: {
                     props.setSum(evt.target.value)
                 }}
             />
-            <Tooltip title="Добавить в список оплаты">
-                <IconButton
-                    sx={{ alignSelf: "center" }}
-                    onClick={props.addPayment}
-                    disabled={!props.date || !props.sum}
-                >
-                    <Add />
-                </IconButton>
-            </Tooltip>
+            <Button
+                startIcon={<Add />}
+                onClick={props.addPayment}
+                disabled={!props.date || !props.sum}
+                sx={{ alignSelf: "center" }}
+            >
+                В список
+            </Button>
         </Stack>
     )
 }
@@ -211,6 +207,7 @@ export function PenaltyCalc() {
 
     function addPayment() {
         const paymentSum = parseFloat(paymentSumInput)
+        console.log(paymentSum)
         if (!!paymentDateInput && !!paymentSum) {
             setPayments([...payments])
         }
