@@ -11,7 +11,7 @@ import { useState } from "react"
 
 import { GridColDef } from "@mui/x-data-grid"
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
-import { NumericFormatCustom } from "../../shared/helpers"
+import { CustomGridColDef, NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
@@ -108,11 +108,11 @@ function PaymentInput(props: {
 }
 
 function DebtsList(props: { debts: Debt[] }) {
-    const columns: GridColDef<Debt>[] = [
+    const columns: GridColDef[] = [
         {
             field: "period",
             headerName: "Период",
-            valueFormatter: (x) => x.value.format("MMM YYYY"),
+            valueFormatter: (x) => x && x.value.format("MMMM YYYY"),
         },
         {
             field: "sum",
@@ -128,7 +128,9 @@ function DebtsList(props: { debts: Debt[] }) {
     ]
     return (
         <DataGrid
-            columns={columns}
+            columns={columns
+                .map(CustomGridColDef.staticCol)
+                .map(CustomGridColDef.stretch)}
             rows={props.debts}
             hideFooter={true}
         ></DataGrid>
@@ -140,7 +142,7 @@ function PaymentsList(props: { payments: Payment[] }) {
         {
             field: "period",
             headerName: "Расчетный период",
-            valueFormatter: (x) => x.value.format("MMM YYYY"),
+            valueFormatter: (x) => x.value.format("MMMM YYYY"),
         },
         {
             field: "date",
@@ -161,7 +163,9 @@ function PaymentsList(props: { payments: Payment[] }) {
     ]
     return (
         <DataGrid
-            columns={columns}
+            columns={columns
+                .map(CustomGridColDef.staticCol)
+                .map(CustomGridColDef.stretch)}
             rows={props.payments}
             hideFooter={true}
         ></DataGrid>

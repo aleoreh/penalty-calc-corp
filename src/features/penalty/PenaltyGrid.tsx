@@ -2,6 +2,8 @@ import { GridColDef } from "@mui/x-data-grid"
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
 
 import { ResultTable } from "./penalty"
+import { CustomGridColDef } from "../../shared/helpers"
+import { Done, Remove } from "@mui/icons-material"
 
 type PenaltyGridProps = {
     resultTable: ResultTable
@@ -37,7 +39,7 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
         },
         {
             field: "daysCount",
-            headerName: "Дней",
+            headerName: "Всего дней",
 
             align: "right",
         },
@@ -47,7 +49,6 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
             align: "right",
             valueGetter: (x) => x.value.repr,
         },
-        { field: "moratorium", headerName: "Действует мораторий" },
         {
             field: "keyRate",
             headerName: "Ставка",
@@ -58,6 +59,17 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
                     maximumFractionDigits: 3,
                 }).format(x.value)
             },
+        },
+        {
+            field: "moratorium",
+            headerName: "Мораторий",
+            renderCell: (params) => (params.value ? <Done /> : <Remove />),
+        },
+        {
+            field: "deferredCoef",
+            headerName: "Отсрочка",
+            valueGetter: (x) => !x.value,
+            renderCell: (params) => (params.value ? <Done /> : <Remove />),
         },
         {
             field: "penaltyAmount",
@@ -71,14 +83,14 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
             },
             align: "right",
         },
-        {
-            field: "deferredCoef",
-            headerName: "Отсрочка",
-            valueGetter: (x) => !x.value,
-        },
     ]
 
     return (
-        <DataGrid columns={columns} rows={resultTable} />
+        <DataGrid
+            columns={columns
+                .map(CustomGridColDef.staticCol)
+                .map(CustomGridColDef.stretch)}
+            rows={resultTable}
+        />
     )
 }
