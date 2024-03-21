@@ -1,4 +1,4 @@
-import { ArrowDownward, Done } from "@mui/icons-material"
+import { Done } from "@mui/icons-material"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
@@ -9,14 +9,14 @@ import { GridColDef } from "@mui/x-data-grid"
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 // ====
+import { List, ListItem } from "@mui/material"
+import Tooltip from "@mui/material/Tooltip"
 import { CustomGridColDef, NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
-import Tooltip from "@mui/material/Tooltip"
-import { List, ListItem } from "@mui/material"
 
 function DebtInput(props: {
     period: Dayjs | null
@@ -177,6 +177,8 @@ function PaymentsList(props: { payments: Payment[] }) {
 }
 
 export function PenaltyCalc() {
+    const [isCalculated, setIsCalculated] = useState<boolean>(false)
+
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
 
     const [debtPeriodInput, setDebtPeriodInput] = useState<Dayjs | null>(null)
@@ -188,13 +190,22 @@ export function PenaltyCalc() {
     )
     const [paymentDateInput, setPaymentDateInput] = useState<Dayjs | null>(null)
     const [paymentSumInput, setPaymentSumInput] = useState<string>("")
-    const [payments, setPayments] = useState<Payment[]>([])
+    const [payments, setPayments] = useState<(Payment & { id: number })[]>([])
 
     const [results, setResults] = useState<ResultTable[]>([])
+
+    useEffect(() => {
+        !isCalculated && setResults([])
+    }, [isCalculated])
+
+    useEffect(() => {
+        setIsCalculated(false)
+    }, [calcDate])
 
     function startCalculation(): void {
         if (!!calcDate) {
             setResults(penaltiesFoldedForPeriod(calcDate, debts, payments))
+            setIsCalculated(true)
         }
     }
 
@@ -207,6 +218,7 @@ export function PenaltyCalc() {
             setDebts([...debts, { period: debtPeriodInput, sum: debtAmount }])
             setDebtAmountInput("")
             setDebtPeriodInput(null)
+            setIsCalculated(false)
         }
     }
 
@@ -214,6 +226,7 @@ export function PenaltyCalc() {
         setDebts(
             debts.filter((debt) => !debt.period.isSame(debtPeriod, "month"))
         )
+        setIsCalculated(false)
     }
 
     function showDebts() {
@@ -231,9 +244,14 @@ export function PenaltyCalc() {
         const paymentSum = parseFloat(paymentSumInput)
 
         if (!!paymentPeriodInput && !!paymentDateInput && !!paymentSum) {
+            const paymentId = payments.length
+                ? 0
+                : [...payments].sort((x, y) => x.id - y.id).slice(-1)[0].id + 1
+
             setPayments([
                 ...payments,
                 {
+                    id: paymentId,
                     period: paymentPeriodInput,
                     date: paymentDateInput,
                     sum: paymentSum,
@@ -242,7 +260,13 @@ export function PenaltyCalc() {
             setPaymentPeriodInput(null)
             setPaymentDateInput(null)
             setPaymentSumInput("")
+            setIsCalculated(false)
         }
+    }
+
+    function deletePayment(paymentId: number) {
+        setPayments(payments.filter((payment) => payment.id !== paymentId))
+        setIsCalculated(false)
     }
 
     function showPayments() {
@@ -309,6 +333,7 @@ export function PenaltyCalc() {
                         <Typography align="left" variant="h5">
                             Заполните список долгов:
                         </Typography>
+                        <Stack>{showDebts()}</Stack>
                         <DebtInput
                             period={debtPeriodInput}
                             setPeriod={setDebtPeriodInput}
@@ -316,7 +341,6 @@ export function PenaltyCalc() {
                             setAmount={setDebtAmountInput}
                             addDebt={addDebt}
                         />
-                        <Stack>{showDebts()}</Stack>
                         <Stack display="none">
                             <Typography>
                                 или импортируйте долги из таблицы:
@@ -328,6 +352,7 @@ export function PenaltyCalc() {
                         <Typography align="left" variant="h5">
                             Заполните список платежей при наличии:
                         </Typography>
+                        <Stack>{showPayments()}</Stack>
                         <PaymentInput
                             period={paymentPeriodInput}
                             setPeriod={setPaymentPeriodInput}
@@ -337,7 +362,6 @@ export function PenaltyCalc() {
                             setSum={setPaymentSumInput}
                             addPayment={addPayment}
                         />
-                        <Stack>{showPayments()}</Stack>
                         <Stack display="none">
                             <Typography>
                                 или импортируйте платежи из таблицы:
