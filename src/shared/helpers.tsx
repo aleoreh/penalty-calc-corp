@@ -1,4 +1,5 @@
-import React from "react";
+import { GridColDef } from "@mui/x-data-grid"
+import React from "react"
 import { NumericFormat, NumericFormatProps } from "react-number-format"
 
 export interface CustomProps {
@@ -31,3 +32,21 @@ export const NumericFormatCustom = React.forwardRef<
         />
     )
 })
+
+export const CustomGridColDef = {
+    staticCol(gridColDef: GridColDef) {
+        return {
+            ...gridColDef,
+            filterable: false,
+            sortable: false,
+            hideable: false,
+            disableColumnMenu: true,
+        }
+    },
+    stretch(gridColDef: GridColDef) {
+        return {
+            ...gridColDef,
+            flex: 1,
+        }
+    },
+}
