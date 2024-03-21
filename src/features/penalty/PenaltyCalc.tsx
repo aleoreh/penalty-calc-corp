@@ -1,4 +1,4 @@
-import { ArrowDownward } from "@mui/icons-material"
+import { ArrowDownward, Done } from "@mui/icons-material"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
@@ -16,6 +16,7 @@ import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
 import Tooltip from "@mui/material/Tooltip"
+import { List, ListItem } from "@mui/material"
 
 function DebtInput(props: {
     period: Dayjs | null
@@ -259,13 +260,21 @@ export function PenaltyCalc() {
     function showResult() {
         return results.map((result, i) => {
             return (
-                <>
+                <ListItem
+                    key={i}
+                    sx={{
+                        display: "flex",
+                        alignItems: "stretch",
+                        flexDirection: "column",
+                        gap: 2,
+                    }}
+                >
                     <Typography variant="h5" align="left">
                         {result.length > 0 &&
                             result[0].period.format("MMMM YYYY")}
                     </Typography>
-                    <PenaltyGrid resultTable={result} key={i} />
-                </>
+                    <PenaltyGrid resultTable={result} />
+                </ListItem>
             )
         })
     }
@@ -349,7 +358,9 @@ export function PenaltyCalc() {
                     </Stack>
                 </Stack>
             </Container>
-            <Container maxWidth="lg">{showResult()}</Container>
+            <Container maxWidth="lg">
+                <List>{showResult()}</List>
+            </Container>
         </Box>
     )
 }
