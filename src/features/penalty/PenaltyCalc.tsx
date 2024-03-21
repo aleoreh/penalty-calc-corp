@@ -1,11 +1,11 @@
-import { Done } from "@mui/icons-material"
+import { Delete, Done } from "@mui/icons-material"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
 import Stack from "@mui/material/Stack"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
-import { GridColDef } from "@mui/x-data-grid"
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
@@ -111,7 +111,10 @@ function PaymentInput(props: {
     )
 }
 
-function DebtsList(props: { debts: Debt[] }) {
+function DebtsList(props: {
+    debts: Debt[]
+    deleteRow: (id: number) => () => void
+}) {
     const columns: GridColDef[] = [
         {
             field: "period",
@@ -129,6 +132,24 @@ function DebtsList(props: { debts: Debt[] }) {
                 }).format(x.value)
             },
         },
+        {
+            field: "delete",
+            headerName: "Удалить",
+            flex: 0,
+            align: "right",
+            renderCell: (params) => {
+                return (
+                    <Button
+                        variant="text"
+                        onClick={
+                            params.row.id && props.deleteRow(params.row.id)
+                        }
+                    >
+                        <Delete />
+                    </Button>
+                )
+            },
+        },
     ]
     return (
         <DataGrid
@@ -137,7 +158,7 @@ function DebtsList(props: { debts: Debt[] }) {
                 .map(CustomGridColDef.stretch)}
             rows={props.debts}
             hideFooter={true}
-        ></DataGrid>
+        />
     )
 }
 
@@ -172,7 +193,8 @@ function PaymentsList(props: { payments: Payment[] }) {
                 .map(CustomGridColDef.stretch)}
             rows={props.payments}
             hideFooter={true}
-        ></DataGrid>
+            editMode="row"
+        />
     )
 }
 
@@ -183,7 +205,7 @@ export function PenaltyCalc() {
 
     const [debtPeriodInput, setDebtPeriodInput] = useState<Dayjs | null>(null)
     const [debtAmountInput, setDebtAmountInput] = useState<string>("")
-    const [debts, setDebts] = useState<Debt[]>([])
+    const [debts, setDebts] = useState<(Debt & { id: number })[]>([])
 
     const [paymentPeriodInput, setPaymentPeriodInput] = useState<Dayjs | null>(
         null
@@ -215,26 +237,35 @@ export function PenaltyCalc() {
             debts.filter((debt) => debt.period.isSame(debtPeriodInput, "month"))
                 .length > 0
         if (!!debtPeriodInput && !!debtAmount && !alreadyExists) {
-            setDebts([...debts, { period: debtPeriodInput, sum: debtAmount }])
+            setDebts([
+                ...debts,
+                {
+                    id: debtPeriodInput.unix(),
+                    period: debtPeriodInput,
+                    sum: debtAmount,
+                },
+            ])
             setDebtAmountInput("")
             setDebtPeriodInput(null)
             setIsCalculated(false)
         }
     }
 
-    function deleteDebt(debtPeriod: Dayjs) {
-        setDebts(
-            debts.filter((debt) => !debt.period.isSame(debtPeriod, "month"))
-        )
+    function deleteDebt(id: number) {
+        setDebts(debts.filter((debt) => debt.id !== id))
         setIsCalculated(false)
     }
 
     function showDebts() {
-        const sortedDebts = [...debts]
-            .sort((debt1, debt2) => debt1.period.diff(debt2.period))
-            .map((row) => ({ ...row, id: row.period.unix() }))
+        const sortedDebts = [...debts].sort((debt1, debt2) =>
+            debt1.period.diff(debt2.period)
+        )
+
         return sortedDebts.length > 0 ? (
-            <DebtsList debts={sortedDebts} />
+            <DebtsList
+                debts={sortedDebts}
+                deleteRow={(id: number) => () => deleteDebt(id)}
+            />
         ) : (
             <></>
         )
