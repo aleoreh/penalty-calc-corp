@@ -1,5 +1,6 @@
 import dayjs, { Dayjs } from "dayjs"
 import isBetween from "dayjs/plugin/isBetween"
+
 import { keyRates, moratoriums } from "./penalty.data"
 import { Debt, Payment } from "./penalty.types"
 
@@ -7,6 +8,7 @@ dayjs.extend(isBetween)
 
 type PenaltyRow = {
     id: number
+    period: Dayjs
     date: Dayjs
     debtAmount: number
     keyRateFraction: { value: number; repr: string }
@@ -20,6 +22,7 @@ type PenaltiesTable = PenaltyRow[]
 
 type ResultRow = {
     id: number
+    period: Dayjs
     debtAmount: number
     dateFrom: Dayjs
     dateTo: Dayjs
@@ -133,6 +136,7 @@ function calculatePenalties(init: {
     const makeDayRow = (debtAmount: number, date: Dayjs): PenaltyRow => {
         return {
             id: date.unix(),
+            period: init.debt.period,
             date,
             debtAmount,
             keyRateFraction: keyRateFraction(

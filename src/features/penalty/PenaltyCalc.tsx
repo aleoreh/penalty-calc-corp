@@ -5,12 +5,12 @@ import Container from "@mui/material/Container"
 import Stack from "@mui/material/Stack"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
+import { GridColDef } from "@mui/x-data-grid"
+import { DataGrid } from "@mui/x-data-grid/DataGrid"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
-
-import { GridColDef } from "@mui/x-data-grid"
-import { DataGrid } from "@mui/x-data-grid/DataGrid"
+// ====
 import { CustomGridColDef, NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
@@ -253,6 +253,20 @@ export function PenaltyCalc() {
         )
     }
 
+    function showResult() {
+        return results.map((result, i) => {
+            return (
+                <>
+                    <Typography variant="h5" align="left">
+                        {result.length > 0 &&
+                            result[0].period.format("MMMM YYYY")}
+                    </Typography>
+                    <PenaltyGrid resultTable={result} key={i} />
+                </>
+            )
+        })
+    }
+
     function clear() {
         setResults([])
         setDebts([])
@@ -332,14 +346,7 @@ export function PenaltyCalc() {
                     </Stack>
                 </Stack>
             </Container>
-            <Container maxWidth="lg">
-                <Typography variant="h5" align="left">
-                    Результат:
-                </Typography>
-                {results.map((result, i) => (
-                    <PenaltyGrid resultTable={result} key={i} />
-                ))}
-            </Container>
+            <Container maxWidth="lg">{showResult()}</Container>
         </Box>
     )
 }

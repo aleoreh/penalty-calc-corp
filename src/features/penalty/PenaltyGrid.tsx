@@ -1,9 +1,9 @@
+import { Done } from "@mui/icons-material"
 import { GridColDef } from "@mui/x-data-grid"
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
 
-import { ResultTable } from "./penalty"
 import { CustomGridColDef } from "../../shared/helpers"
-import { Done, Remove } from "@mui/icons-material"
+import { ResultTable } from "./penalty"
 
 type PenaltyGridProps = {
     resultTable: ResultTable
@@ -62,14 +62,16 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
         },
         {
             field: "moratorium",
+            align: "center",
             headerName: "Мораторий",
-            renderCell: (params) => (params.value ? <Done /> : <Remove />),
+            renderCell: (params) => (params.value ? <Done /> : <></>),
         },
         {
             field: "deferredCoef",
+            align: "center",
             headerName: "Отсрочка",
             valueGetter: (x) => !x.value,
-            renderCell: (params) => (params.value ? <Done /> : <Remove />),
+            renderCell: (params) => (params.value ? <Done /> : <></>),
         },
         {
             field: "penaltyAmount",
