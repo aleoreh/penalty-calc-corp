@@ -45,84 +45,6 @@ function CalcPeriodsTable(props: { debts: Debt[] }) {
     )
 }
 
-function DebtInput(props: {
-    debtPeriodInput: Dayjs | null
-    setDebtPeriodInput: (value: Dayjs | null) => void
-    debtAmountInput: string
-    setDebtAmountInput: (value: string) => void
-    addDebt: () => void
-}) {
-    return (
-        <Stack direction="row">
-            <DatePicker
-                label="Расчетный период, месяц/год"
-                views={["year", "month"]}
-                value={props.debtPeriodInput}
-                onChange={props.setDebtPeriodInput}
-                sx={{
-                    flexGrow: 1,
-                }}
-            />
-            <TextField
-                label="Сумма долга, р."
-                required
-                InputProps={{
-                    inputComponent: NumericFormatCustom as any,
-                }}
-                value={props.debtAmountInput}
-                onChange={(evt) => {
-                    props.setDebtAmountInput(evt.target.value)
-                }}
-            />
-            <IconButton
-                sx={{ alignSelf: "center" }}
-                onClick={props.addDebt}
-                disabled={!props.debtPeriodInput || !props.debtAmountInput}
-            >
-                <Add />
-            </IconButton>
-        </Stack>
-    )
-}
-
-function PaymentInput(props: {
-    paymentDateInput: Dayjs | null
-    setPaymentDateInput: (value: Dayjs | null) => void
-    paymentSumInput: string
-    setPaymentSumInput: (value: string) => void
-    addPayment: () => void
-}) {
-    return (
-        <Stack direction="row">
-            <DatePicker
-                label="Дата оплаты"
-                value={props.paymentDateInput}
-                onChange={props.setPaymentDateInput}
-                sx={{
-                    flexGrow: 1,
-                }}
-            />
-            <TextField
-                label="Сумма оплаты, р."
-                InputProps={{
-                    inputComponent: NumericFormatCustom as any,
-                }}
-                value={props.paymentSumInput}
-                onChange={(evt) => {
-                    props.setPaymentSumInput(evt.target.value)
-                }}
-            />
-            <IconButton
-                sx={{ alignSelf: "center" }}
-                onClick={props.addPayment}
-                disabled={!props.paymentDateInput || !props.paymentSumInput}
-            >
-                <Add />
-            </IconButton>
-        </Stack>
-    )
-}
-
 export function PenaltyCalc() {
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
 
@@ -135,6 +57,68 @@ export function PenaltyCalc() {
     const [payments, setPayments] = useState<Payment[]>([])
 
     const [results, setResults] = useState<ResultTable[]>([])
+
+    const DebtInput = () => (
+        <Stack direction="row">
+            <DatePicker
+                label="Расчетный период, месяц/год"
+                views={["year", "month"]}
+                value={debtPeriodInput}
+                onChange={setDebtPeriodInput}
+                sx={{
+                    flexGrow: 1,
+                }}
+            />
+            <TextField
+                label="Сумма долга, р."
+                required
+                InputProps={{
+                    inputComponent: NumericFormatCustom as any,
+                }}
+                value={debtAmountInput}
+                onChange={(evt) => {
+                    setDebtAmountInput(evt.target.value)
+                }}
+            />
+            <IconButton
+                sx={{ alignSelf: "center" }}
+                onClick={addDebt}
+                disabled={!debtPeriodInput || !debtAmountInput}
+            >
+                <Add />
+            </IconButton>
+        </Stack>
+    )
+
+    const PaymentInput = () => (
+        <Stack direction="row">
+            <DatePicker
+                label="Дата оплаты"
+                value={paymentDateInput}
+                onChange={setPaymentDateInput}
+                sx={{
+                    flexGrow: 1,
+                }}
+            />
+            <TextField
+                label="Сумма оплаты, р."
+                InputProps={{
+                    inputComponent: NumericFormatCustom as any,
+                }}
+                value={paymentSumInput}
+                onChange={(evt) => {
+                    setPaymentSumInput(evt.target.value)
+                }}
+            />
+            <IconButton
+                sx={{ alignSelf: "center" }}
+                onClick={addPayment}
+                disabled={!paymentDateInput || !paymentSumInput}
+            >
+                <Add />
+            </IconButton>
+        </Stack>
+    )
 
     function startCalculation(): void {
         if (!!calcDate) {
@@ -205,13 +189,7 @@ export function PenaltyCalc() {
                         <Typography align="left" variant="h5">
                             Заполните список долгов:
                         </Typography>
-                        <DebtInput
-                            addDebt={addDebt}
-                            debtPeriodInput={debtPeriodInput}
-                            setDebtPeriodInput={setDebtPeriodInput}
-                            debtAmountInput={debtAmountInput}
-                            setDebtAmountInput={setDebtAmountInput}
-                        />
+                        <DebtInput />
                         <Stack>{showDebts()}</Stack>
                         <Stack display="none">
                             <Typography>
@@ -224,13 +202,7 @@ export function PenaltyCalc() {
                         <Typography align="left" variant="h5">
                             Заполните список платежей при наличии:
                         </Typography>
-                        <PaymentInput
-                            addPayment={addPayment}
-                            paymentDateInput={paymentDateInput}
-                            setPaymentDateInput={setPaymentDateInput}
-                            paymentSumInput={paymentSumInput}
-                            setPaymentSumInput={setPaymentSumInput}
-                        />
+                        <PaymentInput />
                         <IconButton sx={{ alignSelf: "flex-start" }}>
                             <Add />
                         </IconButton>
