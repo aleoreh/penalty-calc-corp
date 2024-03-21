@@ -286,7 +286,7 @@ export function PenaltyCalc() {
                 }}
             >
                 <Typography variant="h4" component="h1">
-                    Калькулятор пеней за ЖКУ
+                    Калькулятор пеней ЖКУ (в разработке)
                 </Typography>
                 <Stack component="form" gap={2}>
                     <Stack>
