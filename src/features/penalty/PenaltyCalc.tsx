@@ -15,6 +15,7 @@ import { CustomGridColDef, NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
+import Tooltip from "@mui/material/Tooltip"
 
 function DebtInput(props: {
     period: Dayjs | null
@@ -46,12 +47,13 @@ function DebtInput(props: {
                 }}
             />
             <Button
-                startIcon={<ArrowDownward />}
                 onClick={props.addDebt}
                 disabled={!props.period || !props.amount}
                 sx={{ flexShrink: 0 }}
             >
-                В список
+                <Tooltip title="Добавить долг в список">
+                    <Done />
+                </Tooltip>
             </Button>
         </Stack>
     )
@@ -96,12 +98,13 @@ function PaymentInput(props: {
                 }}
             />
             <Button
-                startIcon={<ArrowDownward />}
                 onClick={props.addPayment}
                 disabled={!props.date || !props.sum}
                 sx={{ flexShrink: 0 }}
             >
-                В список
+                <Tooltip title="Добавить оплату в список">
+                    <Done />
+                </Tooltip>
             </Button>
         </Stack>
     )
