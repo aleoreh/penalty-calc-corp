@@ -127,7 +127,7 @@ function calculatePenalties(init: {
         const m = doesMoratoriumActs(date) ? 0 : 1
         const s = debtAmount
 
-        return Math.round(b * k * r * s * m * 100) / 100
+        return b * k * r * s * m
     }
 
     const makeDayRow = (debtAmount: number, date: Dayjs): PenaltyRow => {
