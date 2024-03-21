@@ -16,6 +16,7 @@ import { NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
+import Tooltip from "@mui/material/Tooltip"
 
 function DebtInput(props: {
     period: Dayjs | null
@@ -46,13 +47,15 @@ function DebtInput(props: {
                     props.setAmount(evt.target.value)
                 }}
             />
-            <IconButton
-                sx={{ alignSelf: "center" }}
-                onClick={props.addDebt}
-                disabled={!props.period || !props.amount}
-            >
-                <Add />
-            </IconButton>
+            <Tooltip title="Добавить в список">
+                <IconButton
+                    sx={{ alignSelf: "center" }}
+                    onClick={props.addDebt}
+                    disabled={!props.period || !props.amount}
+                >
+                    <Add />
+                </IconButton>
+            </Tooltip>
         </Stack>
     )
 }
@@ -84,13 +87,15 @@ function PaymentInput(props: {
                     props.setSum(evt.target.value)
                 }}
             />
-            <IconButton
-                sx={{ alignSelf: "center" }}
-                onClick={props.addPayment}
-                disabled={!props.date || !props.sum}
-            >
-                <Add />
-            </IconButton>
+            <Tooltip title="Добавить в список оплаты">
+                <IconButton
+                    sx={{ alignSelf: "center" }}
+                    onClick={props.addPayment}
+                    disabled={!props.date || !props.sum}
+                >
+                    <Add />
+                </IconButton>
+            </Tooltip>
         </Stack>
     )
 }
