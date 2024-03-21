@@ -78,5 +78,7 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
         },
     ]
 
-    return <DataGrid columns={columns} rows={resultTable} />
+    return (
+        <DataGrid columns={columns} rows={resultTable} />
+    )
 }

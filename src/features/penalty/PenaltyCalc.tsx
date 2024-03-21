@@ -1,4 +1,4 @@
-import { Add } from "@mui/icons-material"
+import { ArrowDownward } from "@mui/icons-material"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
@@ -46,7 +46,7 @@ function DebtInput(props: {
                 }}
             />
             <Button
-                startIcon={<Add />}
+                startIcon={<ArrowDownward />}
                 onClick={props.addDebt}
                 disabled={!props.period || !props.amount}
                 sx={{ flexShrink: 0 }}
@@ -96,7 +96,7 @@ function PaymentInput(props: {
                 }}
             />
             <Button
-                startIcon={<Add />}
+                startIcon={<ArrowDownward />}
                 onClick={props.addPayment}
                 disabled={!props.date || !props.sum}
                 sx={{ flexShrink: 0 }}
@@ -256,7 +256,7 @@ export function PenaltyCalc() {
     }
 
     return (
-        <Box paddingBlock={2}>
+        <Box paddingBlock={2} gap={2} display="flex" flexDirection="column">
             <Container
                 sx={{
                     display: "flex",
@@ -328,9 +328,14 @@ export function PenaltyCalc() {
                     </Stack>
                 </Stack>
             </Container>
-            {results.map((result, i) => (
-                <PenaltyGrid resultTable={result} key={i} />
-            ))}
+            <Container maxWidth="lg">
+                <Typography variant="h5" align="left">
+                    Результат:
+                </Typography>
+                {results.map((result, i) => (
+                    <PenaltyGrid resultTable={result} key={i} />
+                ))}
+            </Container>
         </Box>
     )
 }
