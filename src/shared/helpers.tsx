@@ -44,9 +44,11 @@ export const CustomGridColDef = {
         }
     },
     stretch(gridColDef: GridColDef) {
-        return {
-            ...gridColDef,
-            flex: 1,
-        }
+        return gridColDef.flex === undefined
+            ? {
+                  ...gridColDef,
+                  flex: 1,
+              }
+            : gridColDef
     },
 }
