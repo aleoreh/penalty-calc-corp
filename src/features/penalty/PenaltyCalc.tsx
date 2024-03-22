@@ -5,7 +5,7 @@ import Container from "@mui/material/Container"
 import Stack from "@mui/material/Stack"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid"
+import { GridColDef } from "@mui/x-data-grid"
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
@@ -17,6 +17,8 @@ import { CustomGridColDef, NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
+
+type DebtWithId = Debt & { id: number }
 
 function DebtInput(props: {
     period: Dayjs | null
@@ -112,10 +114,10 @@ function PaymentInput(props: {
 }
 
 function DebtsList(props: {
-    debts: Debt[]
+    debts: DebtWithId[]
     deleteRow: (id: number) => () => void
 }) {
-    const columns: GridColDef[] = [
+    const columns: GridColDef<(typeof props.debts)[number]>[] = [
         {
             field: "period",
             headerName: "Период",
@@ -142,7 +144,9 @@ function DebtsList(props: {
                     <Button
                         variant="text"
                         onClick={
-                            params.row.id && props.deleteRow(params.row.id)
+                            !!params.row.id
+                                ? props.deleteRow(params.row.id)
+                                : undefined
                         }
                     >
                         <Delete />
@@ -205,7 +209,7 @@ export function PenaltyCalc() {
 
     const [debtPeriodInput, setDebtPeriodInput] = useState<Dayjs | null>(null)
     const [debtAmountInput, setDebtAmountInput] = useState<string>("")
-    const [debts, setDebts] = useState<(Debt & { id: number })[]>([])
+    const [debts, setDebts] = useState<(DebtWithId)[]>([])
 
     const [paymentPeriodInput, setPaymentPeriodInput] = useState<Dayjs | null>(
         null
