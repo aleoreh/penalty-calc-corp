@@ -23,20 +23,26 @@ import { Debt, Payment } from "./penalty.types"
 type DebtWithId = Debt & { id: number }
 type PaymentWithId = Payment & { id: number }
 
-function DebtInput(props: {
-    period: Dayjs | null
-    setPeriod: (x: Dayjs | null) => void
-    amount: string
-    setAmount: (x: string) => void
-    addDebt: () => void
-}) {
+function DebtInput(props: { submit: (period: Dayjs, amount: number) => void }) {
+    const [periodInput, setPeriodInput] = useState<Dayjs | null>(null)
+    const [amountInput, setAmountInput] = useState<string>("")
+
+    function submit() {
+        const amount = parseFloat(amountInput)
+        if (periodInput && !isNaN(amount)) {
+            props.submit(periodInput, amount)
+            setAmountInput("")
+            setPeriodInput(null)
+        }
+    }
+
     return (
         <Stack direction="row">
             <DatePicker
                 label="Расчетный период"
                 views={["year", "month"]}
-                value={props.period}
-                onChange={props.setPeriod}
+                value={periodInput}
+                onChange={setPeriodInput}
                 sx={{
                     flexGrow: 1,
                 }}
@@ -47,14 +53,14 @@ function DebtInput(props: {
                 InputProps={{
                     inputComponent: NumericFormatCustom as any,
                 }}
-                value={props.amount}
+                value={amountInput}
                 onChange={(evt) => {
-                    props.setAmount(evt.target.value)
+                    setAmountInput(evt.target.value)
                 }}
             />
             <Button
-                onClick={props.addDebt}
-                disabled={!props.period || !props.amount}
+                onClick={submit}
+                disabled={!periodInput || !amountInput}
                 sx={{ flexShrink: 0 }}
             >
                 <Tooltip title="Добавить долг в список">
@@ -66,29 +72,39 @@ function DebtInput(props: {
 }
 
 function PaymentInput(props: {
-    period: Dayjs | null
-    setPeriod: (x: Dayjs | null) => void
-    date: Dayjs | null
-    setDate: (x: Dayjs | null) => void
-    sum: string
-    setSum: (x: string) => void
-    addPayment: () => void
+    addPayment: (period: Dayjs, date: Dayjs, sum: number) => void
 }) {
+    const [periodInput, setPeriodInput] = useState<Dayjs | null>(null)
+    const [dateInput, setDateInput] = useState<Dayjs | null>(null)
+    const [sumInput, setSumInput] = useState<string>("")
+
+    function submit() {
+        if (periodInput && dateInput && sumInput !== undefined) {
+            const sum = parseFloat(sumInput)
+            if (!!periodInput && !!dateInput && !isNaN(sum)) {
+                props.addPayment(periodInput, dateInput, sum)
+                setPeriodInput(null)
+                setDateInput(null)
+                setSumInput("")
+            }
+        }
+    }
+
     return (
         <Stack direction="row">
             <DatePicker
                 label="Расчетный период"
                 views={["year", "month"]}
-                value={props.period}
-                onChange={props.setPeriod}
+                value={periodInput}
+                onChange={setPeriodInput}
                 sx={{
                     flexGrow: 1,
                 }}
             />
             <DatePicker
                 label="Дата оплаты"
-                value={props.date}
-                onChange={props.setDate}
+                value={dateInput}
+                onChange={setDateInput}
                 sx={{
                     flexGrow: 1,
                 }}
@@ -98,14 +114,14 @@ function PaymentInput(props: {
                 InputProps={{
                     inputComponent: NumericFormatCustom as any,
                 }}
-                value={props.sum}
+                value={sumInput}
                 onChange={(evt) => {
-                    props.setSum(evt.target.value)
+                    setSumInput(evt.target.value)
                 }}
             />
             <Button
-                onClick={props.addPayment}
-                disabled={!props.date || !props.sum}
+                onClick={submit}
+                disabled={!periodInput || !sumInput}
                 sx={{ flexShrink: 0 }}
             >
                 <Tooltip title="Добавить оплату в список">
@@ -230,20 +246,9 @@ function PaymentsList(props: {
 
 export function PenaltyCalc() {
     const [isCalculated, setIsCalculated] = useState<boolean>(false)
-
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
-
-    const [debtPeriodInput, setDebtPeriodInput] = useState<Dayjs | null>(null)
-    const [debtAmountInput, setDebtAmountInput] = useState<string>("")
     const [debts, setDebts] = useState<DebtWithId[]>([])
-
-    const [paymentPeriodInput, setPaymentPeriodInput] = useState<Dayjs | null>(
-        null
-    )
-    const [paymentDateInput, setPaymentDateInput] = useState<Dayjs | null>(null)
-    const [paymentSumInput, setPaymentSumInput] = useState<string>("")
     const [payments, setPayments] = useState<PaymentWithId[]>([])
-
     const [results, setResults] = useState<ResultTable[]>([])
 
     useEffect(() => {
@@ -261,22 +266,12 @@ export function PenaltyCalc() {
         }
     }
 
-    function addDebt() {
-        const debtAmount = parseFloat(debtAmountInput)
+    function addDebt(period: dayjs.Dayjs, amount: number) {
         const alreadyExists =
-            debts.filter((debt) => debt.period.isSame(debtPeriodInput, "month"))
-                .length > 0
-        if (!!debtPeriodInput && !!debtAmount && !alreadyExists) {
-            setDebts([
-                ...debts,
-                {
-                    id: debtPeriodInput.unix(),
-                    period: debtPeriodInput,
-                    sum: debtAmount,
-                },
-            ])
-            setDebtAmountInput("")
-            setDebtPeriodInput(null)
+            debts.filter((debt) => debt.period.isSame(period, "month")).length >
+            0
+        if (!alreadyExists) {
+            setDebts([...debts, { id: period.unix(), period, sum: amount }])
             setIsCalculated(false)
         }
     }
@@ -301,31 +296,15 @@ export function PenaltyCalc() {
         )
     }
 
-    function addPayment() {
-        const paymentSum = parseFloat(paymentSumInput)
+    function addPayment(period: Dayjs, date: Dayjs, sum: number) {
+        const paymentId =
+            payments.length === 0
+                ? 0
+                : [...payments].sort((x, y) => x.id - y.id)[payments.length - 1]
+                      .id + 1
 
-        if (!!paymentPeriodInput && !!paymentDateInput && !!paymentSum) {
-            const paymentId =
-                payments.length === 0
-                    ? 0
-                    : [...payments].sort((x, y) => x.id - y.id)[
-                          payments.length - 1
-                      ].id + 1
-
-            setPayments([
-                ...payments,
-                {
-                    id: paymentId,
-                    period: paymentPeriodInput,
-                    date: paymentDateInput,
-                    sum: paymentSum,
-                },
-            ])
-            setPaymentPeriodInput(null)
-            setPaymentDateInput(null)
-            setPaymentSumInput("")
-            setIsCalculated(false)
-        }
+        setPayments([...payments, { id: paymentId, period, date, sum }])
+        setIsCalculated(false)
     }
 
     function deletePayment(paymentId: number) {
@@ -365,7 +344,10 @@ export function PenaltyCalc() {
                         {result.length > 0 &&
                             result[0].period.format("MMMM YYYY")}
                     </Typography>
-                    <PenaltyGrid calcDate={calcDate || dayjs()} table={result} />
+                    <PenaltyGrid
+                        calcDate={calcDate || dayjs()}
+                        table={result}
+                    />
                 </ListItem>
             )
         })
@@ -402,13 +384,7 @@ export function PenaltyCalc() {
                             Заполните список долгов:
                         </Typography>
                         <Stack>{showDebts()}</Stack>
-                        <DebtInput
-                            period={debtPeriodInput}
-                            setPeriod={setDebtPeriodInput}
-                            amount={debtAmountInput}
-                            setAmount={setDebtAmountInput}
-                            addDebt={addDebt}
-                        />
+                        <DebtInput submit={addDebt} />
                         <Stack display="none">
                             <Typography>
                                 или импортируйте долги из таблицы:
@@ -421,15 +397,7 @@ export function PenaltyCalc() {
                             Заполните список платежей при наличии:
                         </Typography>
                         <Stack>{showPayments()}</Stack>
-                        <PaymentInput
-                            period={paymentPeriodInput}
-                            setPeriod={setPaymentPeriodInput}
-                            date={paymentDateInput}
-                            setDate={setPaymentDateInput}
-                            sum={paymentSumInput}
-                            setSum={setPaymentSumInput}
-                            addPayment={addPayment}
-                        />
+                        <PaymentInput addPayment={addPayment} />
                         <Stack display="none">
                             <Typography>
                                 или импортируйте платежи из таблицы:
