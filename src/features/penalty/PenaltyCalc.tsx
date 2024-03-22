@@ -19,6 +19,7 @@ import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
 
 type DebtWithId = Debt & { id: number }
+type PaymentWithId = Payment & { id: number }
 
 function DebtInput(props: {
     period: Dayjs | null
@@ -166,8 +167,11 @@ function DebtsList(props: {
     )
 }
 
-function PaymentsList(props: { payments: Payment[] }) {
-    const columns: GridColDef<Payment>[] = [
+function PaymentsList(props: {
+    payments: PaymentWithId[]
+    deleteRow: (id: number) => () => void
+}) {
+    const columns: GridColDef<(typeof props.payments)[number]>[] = [
         {
             field: "period",
             headerName: "Расчетный период",
@@ -187,6 +191,26 @@ function PaymentsList(props: { payments: Payment[] }) {
                     currency: "RUR",
                     maximumFractionDigits: 2,
                 }).format(x.value)
+            },
+        },
+        {
+            field: "delete",
+            headerName: "Удалить",
+            flex: 0,
+            align: "right",
+            renderCell: (params) => {
+                return (
+                    <Button
+                        variant="text"
+                        onClick={
+                            params.row.id !== undefined
+                                ? props.deleteRow(params.row.id)
+                                : undefined
+                        }
+                    >
+                        <Delete />
+                    </Button>
+                )
             },
         },
     ]
@@ -209,14 +233,14 @@ export function PenaltyCalc() {
 
     const [debtPeriodInput, setDebtPeriodInput] = useState<Dayjs | null>(null)
     const [debtAmountInput, setDebtAmountInput] = useState<string>("")
-    const [debts, setDebts] = useState<(DebtWithId)[]>([])
+    const [debts, setDebts] = useState<DebtWithId[]>([])
 
     const [paymentPeriodInput, setPaymentPeriodInput] = useState<Dayjs | null>(
         null
     )
     const [paymentDateInput, setPaymentDateInput] = useState<Dayjs | null>(null)
     const [paymentSumInput, setPaymentSumInput] = useState<string>("")
-    const [payments, setPayments] = useState<(Payment & { id: number })[]>([])
+    const [payments, setPayments] = useState<PaymentWithId[]>([])
 
     const [results, setResults] = useState<ResultTable[]>([])
 
@@ -279,9 +303,12 @@ export function PenaltyCalc() {
         const paymentSum = parseFloat(paymentSumInput)
 
         if (!!paymentPeriodInput && !!paymentDateInput && !!paymentSum) {
-            const paymentId = payments.length
-                ? 0
-                : [...payments].sort((x, y) => x.id - y.id).slice(-1)[0].id + 1
+            const paymentId =
+                payments.length === 0
+                    ? 0
+                    : [...payments].sort((x, y) => x.id - y.id)[
+                          payments.length - 1
+                      ].id + 1
 
             setPayments([
                 ...payments,
@@ -300,17 +327,21 @@ export function PenaltyCalc() {
     }
 
     function deletePayment(paymentId: number) {
+        console.log("deleting ", paymentId)
         setPayments(payments.filter((payment) => payment.id !== paymentId))
         setIsCalculated(false)
     }
 
     function showPayments() {
-        const sortedPayments = [...payments]
-            .sort((payment1, payment2) => payment1.date.diff(payment2.date))
-            .map((row) => ({ ...row, id: row.date.unix() }))
+        const sortedPayments = [...payments].sort((payment1, payment2) =>
+            payment1.date.diff(payment2.date)
+        )
 
         return sortedPayments.length > 0 ? (
-            <PaymentsList payments={sortedPayments} />
+            <PaymentsList
+                payments={sortedPayments}
+                deleteRow={(id: number) => () => deletePayment(id)}
+            />
         ) : (
             <></>
         )
