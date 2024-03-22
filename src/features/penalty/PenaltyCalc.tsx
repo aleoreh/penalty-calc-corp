@@ -365,7 +365,7 @@ export function PenaltyCalc() {
                         {result.length > 0 &&
                             result[0].period.format("MMMM YYYY")}
                     </Typography>
-                    <PenaltyGrid resultTable={result} />
+                    <PenaltyGrid calcDate={calcDate || dayjs()} table={result} />
                 </ListItem>
             )
         })

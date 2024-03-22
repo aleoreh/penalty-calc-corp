@@ -1,23 +1,52 @@
 import { Done } from "@mui/icons-material"
-import { GridColDef } from "@mui/x-data-grid"
+import {
+    GridColDef,
+    GridToolbarContainer,
+    GridToolbarExport,
+} from "@mui/x-data-grid"
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
+import { Dayjs } from "dayjs"
 
 import { CustomGridColDef } from "../../shared/helpers"
 import { ResultTable } from "./penalty"
 
 type PenaltyGridProps = {
-    resultTable: ResultTable
+    calcDate: Dayjs
+    table: ResultTable
 }
 
-export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
+function CustomToolbar(fileName: string) {
+    return () => (
+        <GridToolbarContainer>
+            <GridToolbarExport csvOptions={{ fileName }} />
+        </GridToolbarContainer>
+    )
+}
+
+export function PenaltyGrid({ calcDate, table }: PenaltyGridProps) {
+    const fileName = () => {
+        const [periodRepr, debtAmountRepr] =
+            table.length > 0
+                ? [
+                      table[0].period.format("YYYY-MMM"),
+                      `${table[0].debtAmount}`
+                          .replace(/[^a-z0-9]/gi, "-")
+                          .toLowerCase(),
+                  ]
+                : ["", ""]
+        return `Пеня_${calcDate.format(
+            "YYYY-MM-DD"
+        )}_${periodRepr}_${debtAmountRepr}`
+    }
+
     const columns: GridColDef[] = [
         {
             field: "debtAmount",
             headerName: "Сумма долга",
             valueFormatter: (x) => {
                 return new Intl.NumberFormat("ru-RU", {
-                    style: "currency",
-                    currency: "RUR",
+                    style: "decimal",
+                    minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 }).format(x.value)
             },
@@ -78,8 +107,8 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
             headerName: "Сумма пени",
             valueFormatter: (x) => {
                 return new Intl.NumberFormat("ru-RU", {
-                    style: "currency",
-                    currency: "RUR",
+                    style: "decimal",
+                    minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 }).format(x.value)
             },
@@ -92,7 +121,8 @@ export function PenaltyGrid({ resultTable }: PenaltyGridProps) {
             columns={columns
                 .map(CustomGridColDef.staticCol)
                 .map(CustomGridColDef.stretch)}
-            rows={resultTable}
+            rows={table}
+            slots={{ toolbar: CustomToolbar(fileName()) }}
         />
     )
 }
