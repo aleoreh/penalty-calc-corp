@@ -210,6 +210,7 @@ function DebtsList(props: {
                     </Button>
                 )
             },
+            cellClassName: "custom--delete",
         },
     ]
     return (
@@ -219,6 +220,11 @@ function DebtsList(props: {
                 .map(CustomGridColDef.stretch)}
             rows={props.debts}
             hideFooter={true}
+            sx={{
+                "& .custom--delete:focus, & .custom--delete:focus-within": {
+                    outline: "none",
+                },
+            }}
         />
     )
 }
@@ -268,6 +274,7 @@ function PaymentsList(props: {
                     </Button>
                 )
             },
+            cellClassName: "custom--delete",
         },
     ]
     return (
@@ -278,6 +285,11 @@ function PaymentsList(props: {
             rows={props.payments}
             hideFooter={true}
             editMode="row"
+            sx={{
+                "& .custom--delete:focus, & .custom--delete:focus-within": {
+                    outline: "none",
+                },
+            }}
         />
     )
 }
