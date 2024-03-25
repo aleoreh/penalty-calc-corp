@@ -316,10 +316,7 @@ export function PenaltyCalc() {
             ])
             setIsCalculated(false)
         } else {
-            setSnackbar([
-                true,
-                `Долг за ${period.format("MMMM YYYY")} уже добавлен`,
-            ])
+            openSnackbar(`Долг за ${period.format("MMMM YYYY")} уже добавлен`)
         }
     }
 
@@ -406,6 +403,14 @@ export function PenaltyCalc() {
         setPayments([])
     }
 
+    function openSnackbar(message: string) {
+        setSnackbar([true, message])
+    }
+
+    function closeSnackbar() {
+        setSnackbar([false, ""])
+    }
+
     return (
         <Box paddingBlock={2} gap={2} display="flex" flexDirection="column">
             <Container
@@ -471,7 +476,7 @@ export function PenaltyCalc() {
             <CustomSnackbar
                 open={snackbar[0]}
                 message={snackbar[1]}
-                onClose={() => setSnackbar([false, ""])}
+                onClose={closeSnackbar}
             />
         </Box>
     )
