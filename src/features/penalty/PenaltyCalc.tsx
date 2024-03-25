@@ -1,5 +1,5 @@
 import { Delete, Done } from "@mui/icons-material"
-import { List, ListItem } from "@mui/material"
+import { List, ListItem, Snackbar } from "@mui/material"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
@@ -279,6 +279,7 @@ function PaymentsList(props: {
 }
 
 export function PenaltyCalc() {
+    const [snackbar, setSnackbar] = useState<[boolean, string]>([false, ""])
     const [isCalculated, setIsCalculated] = useState<boolean>(false)
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
     const [debts, setDebts] = useState<DebtWithId[]>([])
@@ -310,6 +311,8 @@ export function PenaltyCalc() {
                 { id: period.unix(), period, dueDate, sum: amount },
             ])
             setIsCalculated(false)
+        } else {
+            setSnackbar([true, `Долг за ${period.format("MMMM YYYY")} уже добавлен`])
         }
     }
 
@@ -458,6 +461,12 @@ export function PenaltyCalc() {
             <Container maxWidth="lg">
                 <List>{showResult()}</List>
             </Container>
+            <Snackbar
+                open={snackbar[0]}
+                message={snackbar[1]}
+                autoHideDuration={6000}
+                onClose={() => setSnackbar([false, ""])}
+            />
         </Box>
     )
 }
