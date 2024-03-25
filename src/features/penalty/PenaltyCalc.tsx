@@ -51,50 +51,53 @@ function DebtInput(props: {
     }
 
     return (
-        <Stack direction="row">
-            <DatePicker
-                label="Расчетный период"
-                views={["year", "month"]}
-                value={periodInput}
-                onChange={setPeriodInput}
-                sx={{
-                    flexGrow: 1,
-                }}
-            />
-            <DatePicker
-                label="Начало просрочки"
-                // views={["year", "month"]}
-                value={dueDateInput}
-                onChange={setDueDateInput}
-                sx={{
-                    flexGrow: 1,
-                }}
-            />
-            {dueDateInput && (
-                <Typography sx={{ flexGrow: 1, alignSelf: "center" }}>
-                    ({dueDateInput.format("dd")})
-                </Typography>
-            )}
-            <TextField
-                label="Сумма долга, р."
-                required
-                InputProps={{
-                    inputComponent: NumericFormatCustom as any,
-                }}
-                value={amountInput}
-                onChange={(evt) => {
-                    setAmountInput(evt.target.value)
-                }}
-            />
-            <Button
-                onClick={submit}
-                disabled={!periodInput || !amountInput}
-                sx={{ flexShrink: 0 }}
-            >
-                <Tooltip title="Добавить долг в список">
-                    <Done />
-                </Tooltip>
-            </Button>
+        <Stack direction="row" alignItems="start">
+            <Stack direction="row">
+                <DatePicker
+                    label="Расчетный период"
+                    views={["year", "month"]}
+                    value={periodInput}
+                    onChange={setPeriodInput}
+                    sx={{
+                        flexGrow: 1,
+                    }}
+                />
+                <DatePicker
+                    label="Начало просрочки"
+                    value={dueDateInput}
+                    slotProps={{
+                        textField: {
+                            helperText: <>{dueDateInput?.format("dddd")}</>,
+                        },
+                    }}
+                    onChange={setDueDateInput}
+                    sx={{
+                        flexGrow: 1,
+                    }}
+                />
+            </Stack>
+            <Stack direction="row">
+                <TextField
+                    label="Сумма долга, р."
+                    required
+                    InputProps={{
+                        inputComponent: NumericFormatCustom as any,
+                    }}
+                    value={amountInput}
+                    onChange={(evt) => {
+                        setAmountInput(evt.target.value)
+                    }}
+                />
+                <Button
+                    onClick={submit}
+                    disabled={!periodInput || !amountInput}
+                    sx={{ flexShrink: 0 }}
+                >
+                    <Tooltip title="Добавить долг в список">
+                        <Done />
+                    </Tooltip>
+                </Button>
+            </Stack>
         </Stack>
     )
 }
@@ -312,7 +315,10 @@ export function PenaltyCalc() {
             ])
             setIsCalculated(false)
         } else {
-            setSnackbar([true, `Долг за ${period.format("MMMM YYYY")} уже добавлен`])
+            setSnackbar([
+                true,
+                `Долг за ${period.format("MMMM YYYY")} уже добавлен`,
+            ])
         }
     }
 
