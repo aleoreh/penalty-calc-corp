@@ -21,6 +21,7 @@ import {
     penaltiesFoldedForPeriod,
 } from "./penalty"
 import { Debt, Payment } from "./penalty.types"
+import { CustomSnackbar } from "../../components/CustomSnackbar"
 
 type DebtWithId = Debt & { id: number }
 type PaymentWithId = Payment & { id: number }
@@ -467,10 +468,9 @@ export function PenaltyCalc() {
             <Container maxWidth="lg">
                 <List>{showResult()}</List>
             </Container>
-            <Snackbar
+            <CustomSnackbar
                 open={snackbar[0]}
                 message={snackbar[1]}
-                autoHideDuration={6000}
                 onClose={() => setSnackbar([false, ""])}
             />
         </Box>
