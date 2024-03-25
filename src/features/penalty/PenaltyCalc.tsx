@@ -13,26 +13,40 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useEffect, useState } from "react"
 
-// ====
-
 import { CustomGridColDef, NumericFormatCustom } from "../../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
-import { ResultTable, penaltiesFoldedForPeriod } from "./penalty"
+import {
+    ResultTable,
+    defaultDueDate,
+    penaltiesFoldedForPeriod,
+} from "./penalty"
 import { Debt, Payment } from "./penalty.types"
 
 type DebtWithId = Debt & { id: number }
 type PaymentWithId = Payment & { id: number }
 
-function DebtInput(props: { submit: (period: Dayjs, amount: number) => void }) {
+function DebtInput(props: {
+    submit: (period: Dayjs, dueDate: Dayjs, amount: number) => void
+}) {
     const [periodInput, setPeriodInput] = useState<Dayjs | null>(null)
+    const [dueDateInput, setDueDateInput] = useState<Dayjs | null>(null)
     const [amountInput, setAmountInput] = useState<string>("")
+
+    useEffect(() => {
+        periodInput && setDueDateInput(defaultDueDate(periodInput))
+    }, [periodInput])
+
+    function clearInputs() {
+        setPeriodInput(null)
+        setDueDateInput(null)
+        setAmountInput("")
+    }
 
     function submit() {
         const amount = parseFloat(amountInput)
-        if (periodInput && !isNaN(amount)) {
-            props.submit(periodInput, amount)
-            setAmountInput("")
-            setPeriodInput(null)
+        if (periodInput && dueDateInput && !isNaN(amount)) {
+            props.submit(periodInput, dueDateInput, amount)
+            clearInputs()
         }
     }
 
@@ -47,6 +61,20 @@ function DebtInput(props: { submit: (period: Dayjs, amount: number) => void }) {
                     flexGrow: 1,
                 }}
             />
+            <DatePicker
+                label="Начало просрочки"
+                // views={["year", "month"]}
+                value={dueDateInput}
+                onChange={setDueDateInput}
+                sx={{
+                    flexGrow: 1,
+                }}
+            />
+            {dueDateInput && (
+                <Typography sx={{ flexGrow: 1, alignSelf: "center" }}>
+                    ({dueDateInput.format("dd")})
+                </Typography>
+            )}
             <TextField
                 label="Сумма долга, р."
                 required
@@ -103,6 +131,7 @@ function PaymentInput(props: {
             />
             <DatePicker
                 label="Дата оплаты"
+                views={["year", "month", "day"]}
                 value={dateInput}
                 onChange={setDateInput}
                 sx={{
@@ -141,6 +170,11 @@ function DebtsList(props: {
             field: "period",
             headerName: "Период",
             valueFormatter: (x) => x && x.value.format("MMMM YYYY"),
+        },
+        {
+            field: "dueDate",
+            headerName: "Дата начала просрочки",
+            valueFormatter: (x) => x && x.value.format("dd, ll"),
         },
         {
             field: "sum",
@@ -266,12 +300,15 @@ export function PenaltyCalc() {
         }
     }
 
-    function addDebt(period: dayjs.Dayjs, amount: number) {
+    function addDebt(period: Dayjs, dueDate: Dayjs, amount: number) {
         const alreadyExists =
             debts.filter((debt) => debt.period.isSame(period, "month")).length >
             0
         if (!alreadyExists) {
-            setDebts([...debts, { id: period.unix(), period, sum: amount }])
+            setDebts([
+                ...debts,
+                { id: period.unix(), period, dueDate, sum: amount },
+            ])
             setIsCalculated(false)
         }
     }

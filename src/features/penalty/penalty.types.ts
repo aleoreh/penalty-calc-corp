@@ -2,6 +2,7 @@ import { Dayjs } from "dayjs"
 
 export type Debt = {
     period: Dayjs
+    dueDate: Dayjs
     sum: number
 }
 

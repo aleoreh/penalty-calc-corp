@@ -6,6 +6,9 @@ import { Debt, Payment } from "./penalty.types"
 
 dayjs.extend(isBetween)
 
+// количество дней, отведенное на оплату
+const daysToPay = 10
+
 type PenaltyRow = {
     id: number
     period: Dayjs
@@ -39,7 +42,7 @@ export type ResultTable = ResultRow[]
 /**
  * Дата начала просрочки
  */
-function dueDate(debtPeriod: Dayjs, daysToPay: number): Dayjs {
+export function defaultDueDate(debtPeriod: Dayjs): Dayjs {
     return debtPeriod.endOf("month").add(daysToPay + 1, "day")
 }
 
@@ -104,14 +107,8 @@ function calculatePenalties(init: {
     // отсрочка платежа по пене
     const deferredDaysCount = 30
 
-    // количество дней, отведенное на оплату
-    const daysToPay = 10
-
     // день, после которого наступает изменение доли ставки расчета пени
     const fractionChangeDay = 90
-
-    // дата, до которой нужно оплатить счет
-    const _dueDate = dueDate(init.debt.period, daysToPay)
 
     // ключевая ставка ЦБ
     const _keyRate = keyRate(init.calcDate)
@@ -121,10 +118,10 @@ function calculatePenalties(init: {
         debtAmount: number,
         date: Dayjs
     ) => {
-        const b = deferredCoef(deferredDaysCount, _dueDate, date)
+        const b = deferredCoef(deferredDaysCount, init.debt.dueDate, date)
         const k = keyRateFraction(
             fractionChangeDay,
-            daysOverdue(dueDate(debtPeriod, daysToPay), date)
+            daysOverdue(defaultDueDate(debtPeriod), date)
         ).value
         const r = _keyRate
         const m = doesMoratoriumActs(date) ? 0 : 1
@@ -141,11 +138,15 @@ function calculatePenalties(init: {
             debtAmount,
             keyRateFraction: keyRateFraction(
                 fractionChangeDay,
-                daysOverdue(_dueDate, date)
+                daysOverdue(init.debt.dueDate, date)
             ),
             moratorium: doesMoratoriumActs(date),
             keyRate: _keyRate,
-            deferredCoef: deferredCoef(deferredDaysCount, _dueDate, date),
+            deferredCoef: deferredCoef(
+                deferredDaysCount,
+                init.debt.dueDate,
+                date
+            ),
             penaltyAmount: calcPenalty(init.debt.period, debtAmount, date),
         }
     }
@@ -163,7 +164,7 @@ function calculatePenalties(init: {
     }
 
     let acc: PenaltiesTable = []
-    let dayRow = makeDayRow(init.debt.sum, _dueDate)
+    let dayRow = makeDayRow(init.debt.sum, init.debt.dueDate)
 
     while (dayRow.date.isBefore(init.calcDate)) {
         acc.push(dayRow)
