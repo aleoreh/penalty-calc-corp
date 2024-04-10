@@ -8,7 +8,7 @@ import { ruRU } from "@mui/x-data-grid"
 import { ruRU as pickersRuRU } from "@mui/x-date-pickers"
 import { ruRU as coreRuRU } from "@mui/material/locale"
 
-import App from "./App"
+import App from "./components/App"
 import "./index.css"
 import reportWebVitals from "./reportWebVitals"
 

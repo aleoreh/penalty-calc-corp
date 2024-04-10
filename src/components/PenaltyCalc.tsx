@@ -13,15 +13,15 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useEffect, useState } from "react"
 
-import { CustomGridColDef, NumericFormatCustom } from "../../shared/helpers"
+import { CustomGridColDef, NumericFormatCustom } from "../shared/helpers"
 import { PenaltyGrid } from "./PenaltyGrid"
 import {
     ResultTable,
     defaultDueDate,
     penaltiesFoldedForPeriod,
-} from "./penalty"
-import { Debt, Payment } from "./penalty.types"
-import { CustomSnackbar } from "../../components/CustomSnackbar"
+} from "../model/penalty"
+import { Debt, Payment } from "../model/types"
+import { CustomSnackbar } from "./CustomSnackbar"
 
 type DebtWithId = Debt & { id: number }
 type PaymentWithId = Payment & { id: number }

@@ -1,8 +1,8 @@
 import dayjs, { Dayjs } from "dayjs"
 import isBetween from "dayjs/plugin/isBetween"
 
-import { keyRates, moratoriums } from "./penalty.data"
-import { Debt, Payment } from "./penalty.types"
+import { keyRates, moratoriums } from "../data"
+import { Debt, Payment } from "./types"
 
 dayjs.extend(isBetween)
 

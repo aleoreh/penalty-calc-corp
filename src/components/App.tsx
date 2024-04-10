@@ -1,5 +1,5 @@
 import "./App.css"
-import { PenaltyCalc } from "./features/penalty/PenaltyCalc"
+import { PenaltyCalc } from "./PenaltyCalc"
 
 function App() {
     return (
