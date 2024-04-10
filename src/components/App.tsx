@@ -4,10 +4,9 @@ import { PenaltyCalc } from "./PenaltyCalc"
 function App({ config }: { config: AppConfig }) {
     return (
         <div className="App">
-            <PenaltyCalc />
+            <PenaltyCalc config={config} />
         </div>
     )
 }
 
 export default App
-

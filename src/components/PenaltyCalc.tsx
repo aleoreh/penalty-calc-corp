@@ -1,5 +1,5 @@
 import { Delete, Done } from "@mui/icons-material"
-import { List, ListItem, Snackbar } from "@mui/material"
+import { List, ListItem } from "@mui/material"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
@@ -13,29 +13,27 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useEffect, useState } from "react"
 
-import { CustomGridColDef, NumericFormatCustom } from "../shared/helpers"
-import { PenaltyGrid } from "./PenaltyGrid"
-import {
-    ResultTable,
-    defaultDueDate,
-    penaltiesFoldedForPeriod,
-} from "../model/penalty"
 import { Debt, Payment } from "../model/types"
+import { CustomGridColDef, NumericFormatCustom } from "../shared/helpers"
 import { CustomSnackbar } from "./CustomSnackbar"
+import { PenaltyGrid } from "./PenaltyGrid"
+import { PenaltyCalculator, ResultTable } from "../model/penalty"
 
 type DebtWithId = Debt & { id: number }
 type PaymentWithId = Payment & { id: number }
 
 function DebtInput(props: {
     submit: (period: Dayjs, dueDate: Dayjs, amount: number) => void
+    getDefaultDueDate: (period: Dayjs) => Dayjs
 }) {
     const [periodInput, setPeriodInput] = useState<Dayjs | null>(null)
     const [dueDateInput, setDueDateInput] = useState<Dayjs | null>(null)
     const [amountInput, setAmountInput] = useState<string>("")
 
     useEffect(() => {
+        const defaultDueDate = (x: Dayjs) => props.getDefaultDueDate(x)
         periodInput && setDueDateInput(defaultDueDate(periodInput))
-    }, [periodInput])
+    }, [periodInput, props])
 
     function clearInputs() {
         setPeriodInput(null)
@@ -294,7 +292,13 @@ function PaymentsList(props: {
     )
 }
 
-export function PenaltyCalc() {
+type PenaltyCalcProps = {
+    config: AppConfig
+}
+
+export function PenaltyCalc({ config }: PenaltyCalcProps) {
+    const calculator = new PenaltyCalculator(config)
+
     const [snackbar, setSnackbar] = useState<[boolean, string]>([false, ""])
     const [isCalculated, setIsCalculated] = useState<boolean>(false)
     const [calcDate, setCalcDate] = useState<Dayjs | null>(dayjs())
@@ -312,7 +316,9 @@ export function PenaltyCalc() {
 
     function startCalculation(): void {
         if (!!calcDate) {
-            setResults(penaltiesFoldedForPeriod(calcDate, debts, payments))
+            setResults(
+                calculator.penaltiesFoldedForPeriod(calcDate, debts, payments)
+            )
             setIsCalculated(true)
         }
     }
@@ -448,7 +454,12 @@ export function PenaltyCalc() {
                             Заполните список долгов:
                         </Typography>
                         <Stack>{showDebts()}</Stack>
-                        <DebtInput submit={addDebt} />
+                        <DebtInput
+                            submit={addDebt}
+                            getDefaultDueDate={(x: Dayjs) =>
+                                calculator.defaultDueDate(x)
+                            }
+                        />
                         <Stack display="none">
                             <Typography>
                                 или импортируйте долги из таблицы:
