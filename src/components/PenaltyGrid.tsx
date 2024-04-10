@@ -7,8 +7,8 @@ import {
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
 import { Dayjs } from "dayjs"
 
-import { CustomGridColDef } from "../shared/helpers"
 import { ResultTable } from "../model/penalty"
+import { CustomGridColDef } from "../shared/helpers"
 
 type PenaltyGridProps = {
     calcDate: Dayjs
