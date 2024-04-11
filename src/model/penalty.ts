@@ -19,7 +19,7 @@ type PenaltyRow = {
 
 type PenaltiesTable = PenaltyRow[]
 
-type ResultRow = {
+export type ResultRow = {
     id: number
     period: Dayjs
     debtAmount: number
@@ -249,4 +249,17 @@ export class PenaltyCalculator {
             return foldPenalties(penalties)
         })
     }
+}
+
+export function calculationFormula(row: ResultRow) {
+    const debtAmountFormatted = new Intl.NumberFormat("ru-RU", {
+        style: "decimal",
+        minimumFractionDigits: 2,
+    }).format(row.debtAmount)
+    const keyRateFormatted = `${row.keyRate * 100}%`
+    return row.deferredCoef === 0
+        ? "Отсрочка"
+        : row.moratorium
+        ? "Мораторий"
+        : `${row.daysCount} ∙ ${row.keyRateFraction.repr} ∙ ${keyRateFormatted} ∙ ${debtAmountFormatted}`
 }

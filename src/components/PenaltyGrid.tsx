@@ -7,8 +7,9 @@ import {
 import { DataGrid } from "@mui/x-data-grid/DataGrid"
 import { Dayjs } from "dayjs"
 
-import { ResultTable } from "../model/penalty"
+import { ResultRow, ResultTable } from "../model/penalty"
 import { CustomGridColDef } from "../shared/helpers"
+import { Typography } from "@mui/material"
 
 type PenaltyGridProps = {
     calcDate: Dayjs
@@ -20,6 +21,19 @@ function CustomToolbar(fileName: string) {
         <GridToolbarContainer>
             <GridToolbarExport csvOptions={{ fileName }} />
         </GridToolbarContainer>
+    )
+}
+
+function FormulaCell(props: { value: string }) {
+    return (
+        <Typography
+            fontSize={11}
+            sx={{
+                textWrap: "wrap",
+            }}
+        >
+            {props.value}
+        </Typography>
     )
 }
 
@@ -39,7 +53,7 @@ export function PenaltyGrid({ calcDate, table }: PenaltyGridProps) {
         )}_${periodRepr}_${debtAmountRepr}`
     }
 
-    const columns: GridColDef[] = [
+    const columns: GridColDef<ResultRow & { formula: string }>[] = [
         {
             field: "debtAmount",
             headerName: "Сумма долга",
@@ -55,14 +69,12 @@ export function PenaltyGrid({ calcDate, table }: PenaltyGridProps) {
         {
             field: "dateFrom",
             headerName: "Период с",
-            width: 200,
             valueFormatter: (x) => x.value.format("L"),
             align: "right",
         },
         {
             field: "dateTo",
             headerName: "Период по",
-            width: 200,
             valueFormatter: (x) => x.value.format("L"),
             align: "right",
         },
@@ -90,17 +102,15 @@ export function PenaltyGrid({ calcDate, table }: PenaltyGridProps) {
             },
         },
         {
-            field: "moratorium",
-            align: "center",
-            headerName: "Мораторий",
-            renderCell: (params) => (params.value ? <Done /> : <></>),
-        },
-        {
-            field: "deferredCoef",
-            align: "center",
-            headerName: "Отсрочка",
-            valueGetter: (x) => !x.value,
-            renderCell: (params) => (params.value ? <Done /> : <></>),
+            field: "formula",
+            headerName: "Расчёт",
+            renderCell: (params) => {
+                return params.value ? (
+                    <FormulaCell value={params.value} />
+                ) : (
+                    <></>
+                )
+            },
         },
         {
             field: "penaltyAmount",

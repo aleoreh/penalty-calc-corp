@@ -13,7 +13,11 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useEffect, useState } from "react"
 
-import { PenaltyCalculator, ResultTable } from "../model/penalty"
+import {
+    PenaltyCalculator,
+    ResultTable,
+    calculationFormula,
+} from "../model/penalty"
 import { Debt, Payment } from "../model/types"
 import { CustomGridColDef, NumericFormatCustom } from "../shared/helpers"
 import { CustomSnackbar } from "./CustomSnackbar"
@@ -408,7 +412,10 @@ export function PenaltyCalc({ config }: PenaltyCalcProps) {
                     </Typography>
                     <PenaltyGrid
                         calcDate={calcDate || dayjs()}
-                        table={result}
+                        table={result.map((row) => ({
+                            ...row,
+                            formula: calculationFormula(row),
+                        }))}
                     />
                 </ListItem>
             )
