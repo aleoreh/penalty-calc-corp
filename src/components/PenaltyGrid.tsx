@@ -19,7 +19,9 @@ type PenaltyGridProps = {
 function CustomToolbar(fileName: string) {
     return () => (
         <GridToolbarContainer>
-            <GridToolbarExport csvOptions={{ fileName }} />
+            <GridToolbarExport
+                csvOptions={{ fileName, delimiter: ";", utf8WithBom: true }}
+            />
         </GridToolbarContainer>
     )
 }
