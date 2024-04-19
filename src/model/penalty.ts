@@ -263,3 +263,9 @@ export function calculationFormula(row: ResultRow) {
         ? "Мораторий"
         : `${row.daysCount} ∙ ${row.keyRateFraction.repr} ∙ ${keyRateFormatted} ∙ ${debtAmountFormatted}`
 }
+
+export function resultTableTotal(resultTable: ResultTable): number {
+    return resultTable.reduce((acc, cur) => {
+        return acc + cur.penaltyAmount
+    }, 0)
+}

@@ -17,6 +17,7 @@ import {
     PenaltyCalculator,
     ResultTable,
     calculationFormula,
+    resultTableTotal,
 } from "../model/penalty"
 import { Debt, Payment } from "../model/types"
 import { CustomGridColDef, NumericFormatCustom } from "../shared/helpers"
@@ -417,6 +418,21 @@ export function PenaltyCalc({ config }: PenaltyCalcProps) {
                             formula: calculationFormula(row),
                         }))}
                     />
+                    <Stack
+                        justifyContent={"flex-end"}
+                        alignItems={"baseline"}
+                        flexDirection={"row"}
+                        gap={2}
+                    >
+                        <Typography fontWeight={700}>Итого:</Typography>
+                        <Typography fontWeight={700}>
+                            {new Intl.NumberFormat("ru-RU", {
+                                style: "decimal",
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }).format(resultTableTotal(result))}
+                        </Typography>
+                    </Stack>
                 </ListItem>
             )
         })
