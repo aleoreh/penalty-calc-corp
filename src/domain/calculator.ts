@@ -1,4 +1,4 @@
-import { dayjs } from "../lib/dayjs"
+import { dayjs } from "./dayjs"
 import { CalculationResult, CalculationResultRow } from "./calculation-result"
 import { Debt } from "./debt"
 import formulas from "./formula"

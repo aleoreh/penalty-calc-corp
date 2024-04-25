@@ -1,4 +1,4 @@
-import { dayjs } from "../../lib/dayjs"
+import { dayjs } from "../dayjs"
 import calculationResults from "../calculation-result"
 import {
     CalculatorConfig,
