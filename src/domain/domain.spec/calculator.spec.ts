@@ -1,12 +1,6 @@
 import { dayjs } from "../dayjs"
 import calculationResults from "../calculation-result"
-import {
-    CalculatorConfig,
-    CalculatorContext,
-    calculatePenalty,
-    getDefaultDueDate,
-    penaltyToResult,
-} from "../calculator"
+import calculator, { CalculatorConfig, CalculatorContext } from "../calculator"
 import { Payment } from "../payment"
 import penalties from "../penalty"
 
@@ -34,9 +28,9 @@ function createCalculation() {
             payments,
             period,
         },
-        dueDate: getDefaultDueDate(period, config.daysToPay),
+        dueDate: calculator.getDefaultDueDate(period, config.daysToPay),
     }
-    const result = calculatePenalty(context)
+    const result = calculator.calculatePenalty(context)
 
     return {
         context,
@@ -153,7 +147,7 @@ describe("Калькулятор - расчет ежедневной пени", 
 describe("Калькулятор - расчет результата", () => {
     const { context, result: penalty, startDebtAmount } = createCalculation()
 
-    const result = penaltyToResult(penalty)
+    const result = calculator.penaltyToResult(penalty)
 
     const expected = {
         resultLength: 8,

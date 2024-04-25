@@ -52,7 +52,7 @@ const calculateDailyAmount = (
 }
 
 export type CalculatePenalty = (context: CalculatorContext) => Penalty
-export const calculatePenalty: CalculatePenalty = (context) => {
+const calculatePenalty: CalculatePenalty = (context) => {
     // -------- helpers ------- //
 
     const makeRow = (debtAmount: number, date: Date): PenaltyRow => ({
@@ -112,7 +112,7 @@ export const calculatePenalty: CalculatePenalty = (context) => {
 }
 
 export type PenaltyToResult = (penalty: Penalty) => CalculationResult
-export const penaltyToResult: PenaltyToResult = (penalty) => {
+const penaltyToResult: PenaltyToResult = (penalty) => {
     const addResultRow = (row: PenaltyRow): CalculationResultRow => {
         return {
             ...row,
@@ -179,8 +179,16 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
     }
 }
 
-export const getDefaultDueDate = (debtPeriod: Date, daysToPay: number): Date =>
+const getDefaultDueDate = (debtPeriod: Date, daysToPay: number): Date =>
     dayjs(debtPeriod)
         .endOf("month")
         .add(daysToPay + 1, "day")
         .toDate()
+
+const calculator = {
+    calculatePenalty,
+    penaltyToResult,
+    getDefaultDueDate,
+}
+
+export default calculator
