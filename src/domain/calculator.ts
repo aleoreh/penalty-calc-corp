@@ -179,7 +179,7 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
     }
 }
 
-export const defaultDueDate = (debtPeriod: Date, daysToPay: number): Date =>
+export const getDefaultDueDate = (debtPeriod: Date, daysToPay: number): Date =>
     dayjs(debtPeriod)
         .endOf("month")
         .add(daysToPay + 1, "day")

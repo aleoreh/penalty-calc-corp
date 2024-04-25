@@ -4,7 +4,7 @@ import {
     CalculatorConfig,
     CalculatorContext,
     calculatePenalty,
-    defaultDueDate,
+    getDefaultDueDate,
     penaltyToResult,
 } from "../calculator"
 import { Payment } from "../payment"
@@ -34,7 +34,7 @@ function createCalculation() {
             payments,
             period,
         },
-        dueDate: defaultDueDate(period, config.daysToPay),
+        dueDate: getDefaultDueDate(period, config.daysToPay),
     }
     const result = calculatePenalty(context)
 
