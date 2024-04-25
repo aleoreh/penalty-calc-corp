@@ -4,7 +4,7 @@ import { Debt } from "./debt"
 import keyRatePart, { KeyRatePart } from "./key-rate-part"
 import { Penalty, PenaltyRow } from "./penalty"
 
-type CalculatorConfig = {
+export type CalculatorConfig = {
     daysToPay: number
     deferredDaysCount: number
     getKeyRate: (date: Date) => number
