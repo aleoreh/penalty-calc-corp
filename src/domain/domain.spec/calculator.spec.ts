@@ -7,7 +7,7 @@ import {
 } from "../calculator"
 import { Payment } from "../payment"
 
-describe("calculator", () => {
+describe("Калькулятор - расчет ежедневной пени", () => {
     const period = new Date("2019-05-01")
     const startDebtAmount = 1000
     const config: CalculatorConfig = {
@@ -125,7 +125,7 @@ describe("calculator", () => {
         ).toStrictEqual(dayjs(expected.lastDate).startOf("day").toDate())
     })
 
-    it(`Сумма пени = ${expected.penaltyAmount}`, () => {
+    it(`Сумма пеней = ${expected.penaltyAmount}`, () => {
         expect(
             result.rows.reduce((acc, x) => acc + x.penaltyAmount, 0)
         ).toBeCloseTo(expected.penaltyAmount, 2)
