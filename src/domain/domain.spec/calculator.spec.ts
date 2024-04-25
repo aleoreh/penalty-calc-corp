@@ -1,13 +1,16 @@
 import { dayjs } from "../../lib/dayjs"
+import calculationResults from "../calculation-result"
 import {
     CalculatorConfig,
     CalculatorContext,
     calculatePenalty,
     defaultDueDate,
+    penaltyToResult,
 } from "../calculator"
 import { Payment } from "../payment"
+import penalties from "../penalty"
 
-describe("Калькулятор - расчет ежедневной пени", () => {
+function createCalculation() {
     const period = new Date("2019-05-01")
     const startDebtAmount = 1000
     const config: CalculatorConfig = {
@@ -34,6 +37,16 @@ describe("Калькулятор - расчет ежедневной пени", 
         dueDate: defaultDueDate(period, config.daysToPay),
     }
     const result = calculatePenalty(context)
+
+    return {
+        context,
+        result,
+        startDebtAmount,
+    }
+}
+
+describe("Калькулятор - расчет ежедневной пени", () => {
+    const { context, result, startDebtAmount } = createCalculation()
 
     const expected = {
         length: dayjs(context.calculationDate).diff(context.dueDate, "day") + 1,
@@ -74,7 +87,7 @@ describe("Калькулятор - расчет ежедневной пени", 
     })
 
     it(`Количество дней моратория = ${expected.moratoriumDaysCount}`, () => {
-        expect(result.rows.filter((x) => x.doesMoratiriumActs).length).toBe(
+        expect(result.rows.filter((x) => x.doesMoratoriumActs).length).toBe(
             expected.moratoriumDaysCount
         )
     })
@@ -99,9 +112,11 @@ describe("Калькулятор - расчет ежедневной пени", 
 
     it(`Сумма пеней по задолженности ${startDebtAmount} = ${expected.startDebtAmountPenalty}`, () => {
         expect(
-            result.rows
-                .filter((x) => x.debtAmount === startDebtAmount)
-                .reduce((acc, x) => acc + x.penaltyAmount, 0)
+            penalties.getTotalPenaltyAmount(
+                penalties.filter((x) => x.debtAmount === startDebtAmount)(
+                    result
+                )
+            )
         ).toBeCloseTo(expected.startDebtAmountPenalty, 2)
     })
 
@@ -113,9 +128,11 @@ describe("Калькулятор - расчет ежедневной пени", 
 
     it(`Сумма пеней по задолженности ${expected.finalDebtAmount} = ${expected.finalDebtAmountPenalty}`, () => {
         expect(
-            result.rows
-                .filter((x) => x.debtAmount === expected.finalDebtAmount)
-                .reduce((acc, x) => acc + x.penaltyAmount, 0)
+            penalties.getTotalPenaltyAmount(
+                penalties.filter(
+                    (x) => x.debtAmount === expected.finalDebtAmount
+                )(result)
+            )
         ).toBeCloseTo(expected.finalDebtAmountPenalty, 2)
     })
 
@@ -126,8 +143,9 @@ describe("Калькулятор - расчет ежедневной пени", 
     })
 
     it(`Сумма пеней = ${expected.penaltyAmount}`, () => {
-        expect(
-            result.rows.reduce((acc, x) => acc + x.penaltyAmount, 0)
-        ).toBeCloseTo(expected.penaltyAmount, 2)
+        expect(penalties.getTotalPenaltyAmount(result)).toBeCloseTo(
+            expected.penaltyAmount,
+            2
+        )
     })
 })
