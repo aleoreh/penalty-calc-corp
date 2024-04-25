@@ -9,7 +9,6 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 
 import App from "./components/App"
-import { appConfig } from "./data"
 import reportWebVitals from "./reportWebVitals"
 
 import "@fontsource/roboto/300.css"
@@ -17,6 +16,7 @@ import "@fontsource/roboto/400.css"
 import "@fontsource/roboto/500.css"
 import "@fontsource/roboto/700.css"
 import "./index.css"
+import calculatorConfigService from "./services/calculator-config-service"
 
 const theme = createTheme(
     {
@@ -49,7 +49,7 @@ root.render(
     <React.StrictMode>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
             <ThemeProvider theme={theme}>
-                <App config={appConfig} />
+                <App getConfig={calculatorConfigService.getConfig} />
             </ThemeProvider>
         </LocalizationProvider>
     </React.StrictMode>
