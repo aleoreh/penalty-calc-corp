@@ -19,7 +19,7 @@ function createCalculation() {
         doesMoratoriumActs: (date) =>
             dayjs(date).isBetween("2020-04-06", "2021-01-01", "day", "[]") ||
             dayjs(date).isBetween("2022-03-31", "2022-10-01", "day", "[]"),
-        getKeyRate: (date) => 0.095,
+        getKeyRate: () => 0.095,
         getKeyRatePart: (daysOverdue) =>
             daysOverdue < 90
                 ? { numerator: 1, denominator: 300 }
@@ -147,5 +147,53 @@ describe("Калькулятор - расчет ежедневной пени", 
             expected.penaltyAmount,
             2
         )
+    })
+})
+
+describe("Калькулятор - расчет результата", () => {
+    const { context, result: penalty, startDebtAmount } = createCalculation()
+
+    const result = penaltyToResult(penalty)
+
+    const expected = {
+        resultLength: 8,
+        penaltyAmount: penalties.getTotalPenaltyAmount(penalty),
+        penaltyAmountOfStartDebt: penalties.getTotalPenaltyAmount(
+            penalties.filter((x) => x.debtAmount === startDebtAmount)(penalty)
+        ),
+        penaltyAmountOfOne130: penalties.getTotalPenaltyAmount(
+            penalties.filter((x) => x.ratePart.denominator === 130)(penalty)
+        ),
+    }
+
+    it(`Количество строк расчета = ${expected.resultLength}`, () => {
+        expect(result.rows.length).toEqual(expected.resultLength)
+    })
+
+    it(`Сумма пеней = ${expected.penaltyAmount}`, () => {
+        expect(calculationResults.getTotalPenaltyAmount(result)).toBeCloseTo(
+            expected.penaltyAmount,
+            2
+        )
+    })
+
+    it(`Сумма пеней по долгу ${startDebtAmount} = ${expected.penaltyAmountOfStartDebt}`, () => {
+        expect(
+            calculationResults.getTotalPenaltyAmount(
+                calculationResults.filter(
+                    (x) => x.debtAmount === startDebtAmount
+                )(result)
+            )
+        ).toBeCloseTo(expected.penaltyAmountOfStartDebt)
+    })
+
+    it(`Сумма пеней по доле 1/130 = ${expected.penaltyAmountOfOne130}`, () => {
+        expect(
+            calculationResults.getTotalPenaltyAmount(
+                calculationResults.filter(
+                    (x) => x.ratePart.denominator === 130
+                )(result)
+            )
+        ).toBeCloseTo(expected.penaltyAmountOfOne130)
     })
 })
