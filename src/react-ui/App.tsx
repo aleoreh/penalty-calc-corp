@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import { CalculatorConfig } from "../domain/calculator"
 import { RD, remoteData } from "../lib/remote-data"
-import Calculator from "./calculator/Calculator"
+import Calculator from "../components/calculator/Calculator"
 
 import "./App.css"
 
