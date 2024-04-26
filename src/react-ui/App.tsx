@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
+import { RD, SRD, loading, notAsked, success } from "srd"
 
-import { CalculatorConfig } from "../domain/calculator"
-import { RD, remoteData } from "../lib/remote-data"
-import Calculator from "../components/calculator/Calculator"
+import { type CalculatorConfig } from "../domain/calculator"
+import Calculator from "./calculator/Calculator"
 
 import "./App.css"
 
@@ -12,20 +12,19 @@ type AppType = (props: {
 
 const App: AppType = ({ getConfig }) => {
     const [config, setConfig] = useState<RD<string, CalculatorConfig>>(
-        remoteData.notAsked()
+        notAsked()
     )
 
     useEffect(() => {
-        setConfig(remoteData.loading())
+        setConfig(loading())
         getConfig().then((result) => {
-            setConfig(remoteData.success(result))
+            setConfig(success(result))
         })
     }, [getConfig])
 
     return (
         <div className="App">
-            {/* <PenaltyCalc config={config} /> */}
-            {remoteData.SRD.match(
+            {SRD.match(
                 {
                     notAsked: () => "Приложение загружено",
                     loading: () => "Идёт загрузка...",
