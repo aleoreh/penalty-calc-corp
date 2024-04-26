@@ -1,4 +1,3 @@
-import { Box, Button, Typography } from "@mui/material"
 import { useState } from "react"
 
 import { calculate } from "../../app/calculate"
@@ -28,10 +27,10 @@ const Calculator: CalculatorType = ({ config }) => {
     }
 
     return (
-        <Box>
-            <Button onClick={handleClick}>Нажми меня</Button>
-            <Typography>
-                {remoteData.SRD.match(
+        <div>
+            <button onClick={handleClick}>Нажми меня</button>
+            <p>
+                {SRD.match(
                     {
                         notAsked: () => "Нажмите кнопку",
                         loading: () => "Вычисляю...",
@@ -40,8 +39,8 @@ const Calculator: CalculatorType = ({ config }) => {
                     },
                     calculation
                 )}
-            </Typography>
-        </Box>
+            </p>
+        </div>
     )
 }
 
