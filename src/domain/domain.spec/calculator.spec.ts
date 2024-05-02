@@ -28,8 +28,8 @@ function createCalculation() {
             amount: startDebtAmount,
             payments,
             period,
+            dueDate: calculator.getDefaultDueDate(period, config.daysToPay),
         },
-        dueDate: calculator.getDefaultDueDate(period, config.daysToPay),
     }
     const result = calculator.calculatePenalty(context)
 
@@ -44,7 +44,7 @@ describe("Калькулятор - расчет ежедневной пени", 
     const { context, result, startDebtAmount } = createCalculation()
 
     const expected = {
-        length: dayjs(context.calculationDate).diff(context.dueDate, "day") + 1,
+        length: dayjs(context.calculationDate).diff(context.debt.dueDate, "day") + 1,
         dueDate: new Date("2019-06-11"),
         finalDebtAmount: 900,
         deferredDaysCount: 30,

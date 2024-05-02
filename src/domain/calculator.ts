@@ -9,7 +9,6 @@ import { Penalty, PenaltyRow } from "./penalty"
 export type CalculatorContext = {
     config: CalculatorConfig
     calculationDate: Date
-    dueDate: Date
     debt: Debt
 }
 
@@ -53,7 +52,7 @@ const calculatePenalty: CalculatePenalty = (context) => {
         date: date,
         debtAmount: debtAmount,
         doesDefermentActs: doesDefermentActs(
-            context.dueDate,
+            context.debt.dueDate,
             context.config.deferredDaysCount,
             date
         ),
@@ -62,10 +61,10 @@ const calculatePenalty: CalculatePenalty = (context) => {
             {
                 deferredDaysCount: context.config.deferredDaysCount,
                 doesMoratoriumActs: context.config.doesMoratoriumActs(date),
-                dueDate: context.dueDate,
+                dueDate: context.debt.dueDate,
                 keyRate: context.config.getKeyRate(date),
                 keyRatePart: context.config.getKeyRatePart(
-                    daysOverdue(context.dueDate, date)
+                    daysOverdue(context.debt.dueDate, date)
                 ),
             },
             debtAmount,
@@ -73,7 +72,7 @@ const calculatePenalty: CalculatePenalty = (context) => {
         ),
         rate: context.config.getKeyRate(date),
         ratePart: context.config.getKeyRatePart(
-            daysOverdue(context.dueDate, date)
+            daysOverdue(context.debt.dueDate, date)
         ),
     })
     const nextRow = (row: PenaltyRow): PenaltyRow => {
@@ -91,7 +90,7 @@ const calculatePenalty: CalculatePenalty = (context) => {
 
     const rows: PenaltyRow[] = []
 
-    let curRow: PenaltyRow = makeRow(context.debt.amount, context.dueDate)
+    let curRow: PenaltyRow = makeRow(context.debt.amount, context.debt.dueDate)
 
     while (dayjs(curRow.date).isBefore(context.calculationDate)) {
         rows.push(curRow)
