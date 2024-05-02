@@ -1,7 +1,8 @@
-import { dayjs } from "../dayjs"
 import calculationResults from "../calculation-result"
-import calculator, { CalculatorContext } from "../calculator"
+import calculator, { Calculator } from "../calculator"
 import { CalculatorConfig } from "../calculator-config"
+import { dayjs } from "../dayjs"
+import { Debt } from "../debt"
 import { Payment } from "../payment"
 import penalties from "../penalty"
 
@@ -21,30 +22,31 @@ function createCalculation() {
                 : { numerator: 1, denominator: 130 },
     }
     const payments: Payment[] = [{ date: new Date("2020-01-01"), amount: 100 }]
-    const context: CalculatorContext = {
-        config,
+    const calc: Calculator = {
         calculationDate: new Date("2024-04-19"),
-        debt: {
-            amount: startDebtAmount,
-            payments,
-            period,
-            dueDate: calculator.getDefaultDueDate(period, config.daysToPay),
-        },
+        config,
     }
-    const result = calculator.calculatePenalty(context)
+    const debt: Debt = {
+        amount: startDebtAmount,
+        payments,
+        period,
+        dueDate: calculator.getDefaultDueDate(period, config.daysToPay),
+    }
+    const result = calculator.calculatePenalty(calc, debt)
 
     return {
-        context,
+        calc,
+        debt,
         result,
         startDebtAmount,
     }
 }
 
 describe("Калькулятор - расчет ежедневной пени", () => {
-    const { context, result, startDebtAmount } = createCalculation()
+    const { calc, debt, result, startDebtAmount } = createCalculation()
 
     const expected = {
-        length: dayjs(context.calculationDate).diff(context.debt.dueDate, "day") + 1,
+        length: dayjs(calc.calculationDate).diff(debt.dueDate, "day") + 1,
         dueDate: new Date("2019-06-11"),
         finalDebtAmount: 900,
         deferredDaysCount: 30,
@@ -146,7 +148,7 @@ describe("Калькулятор - расчет ежедневной пени", 
 })
 
 describe("Калькулятор - расчет результата", () => {
-    const { context, result: penalty, startDebtAmount } = createCalculation()
+    const { result: penalty, startDebtAmount } = createCalculation()
 
     const result = calculator.penaltyToResult(penalty)
 
