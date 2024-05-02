@@ -19,10 +19,10 @@ export type CalculationResult = {
     rows: CalculationResultRow[]
 }
 
-const getTotalPenaltyAmount = (value: CalculationResult): number =>
+export const getTotalAmount = (value: CalculationResult): number =>
     value.rows.reduce((acc, x) => acc + x.penaltyAmount, 0)
 
-const filter =
+export const filterCalculationResult =
     (predicate: (value: CalculationResultRow, index: number) => boolean) =>
     (value: CalculationResult): CalculationResult => ({
         ...value,
@@ -30,8 +30,8 @@ const filter =
     })
 
 const calculationResults = {
-    filter,
-    getTotalPenaltyAmount,
+    filter: filterCalculationResult,
+    getTotalAmount,
 }
 
 export default calculationResults

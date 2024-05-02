@@ -3,22 +3,25 @@ export type KeyRatePart = {
     denominator: number
 }
 
-const getNumericValue = (keyRatePart: KeyRatePart) =>
+export const getNumericValue = (keyRatePart: KeyRatePart) =>
     keyRatePart.numerator / keyRatePart.denominator
 
-const equals = (value1: KeyRatePart, value2: KeyRatePart): boolean => {
+export const keyRatePartEquals = (
+    value1: KeyRatePart,
+    value2: KeyRatePart
+): boolean => {
     return (
         value1.numerator === value2.numerator &&
         value1.denominator === value2.denominator
     )
 }
 
-const format = (value: KeyRatePart): string =>
+export const formatKeyRatePart = (value: KeyRatePart): string =>
     `${value.numerator}/${value.denominator}`
 
 const keyRateParts = {
-    equals,
-    format,
+    equals: keyRatePartEquals,
+    format: formatKeyRatePart,
     getNumericValue,
 }
 

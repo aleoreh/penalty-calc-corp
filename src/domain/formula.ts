@@ -2,7 +2,7 @@ import keyRateParts, { KeyRatePart } from "./keyrate-part"
 
 export type Formula = string
 
-type From = (params: {
+type CreateFormula = (params: {
     debtAmount: number
     rate: number
     doesDefermentActs: boolean
@@ -11,9 +11,9 @@ type From = (params: {
     ratePart: KeyRatePart
 }) => Formula
 
-const empty: Formula = ""
+export const emptyFormula: Formula = ""
 
-const from: From = ({
+export const createFormula: CreateFormula = ({
     debtAmount,
     rate,
     doesDefermentActs,
@@ -36,8 +36,8 @@ const from: From = ({
 }
 
 const formulas = {
-    empty,
-    from,
+    empty: emptyFormula,
+    createFormula,
 }
 
 export default formulas

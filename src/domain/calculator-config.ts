@@ -8,13 +8,13 @@ export type CalculatorConfig = {
     doesMoratoriumActs: (date: Date) => boolean
 }
 
-const setKeyRateGetter = (
+export const setKeyRateGetter = (
     config: CalculatorConfig,
     value: CalculatorConfig["getKeyRate"]
 ): CalculatorConfig => ({ ...config, getKeyRate: value })
 
-const calculatorConfig = {
+const calculatorConfigs = {
     setKeyRateGetter,
 }
 
-export default calculatorConfig
+export default calculatorConfigs

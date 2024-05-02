@@ -1,5 +1,10 @@
 import calculationResults from "../calculation-result"
-import calculator, { Calculator } from "../calculator"
+import {
+    Calculator,
+    calculatePenalty,
+    getDefaultDueDate,
+    penaltyToResult,
+} from "../calculator"
 import { CalculatorConfig } from "../calculator-config"
 import { dayjs } from "../dayjs"
 import { Debt } from "../debt"
@@ -30,9 +35,9 @@ function createCalculation() {
         amount: startDebtAmount,
         payments,
         period,
-        dueDate: calculator.getDefaultDueDate(period, config.daysToPay),
+        dueDate: getDefaultDueDate(period, config.daysToPay),
     }
-    const result = calculator.calculatePenalty(calc, debt)
+    const result = calculatePenalty(calc, debt)
 
     return {
         calc,
@@ -109,7 +114,7 @@ describe("Калькулятор - расчет ежедневной пени", 
 
     it(`Сумма пеней по задолженности ${startDebtAmount} = ${expected.startDebtAmountPenalty}`, () => {
         expect(
-            penalties.getTotalPenaltyAmount(
+            penalties.getTotalAmount(
                 penalties.filter((x) => x.debtAmount === startDebtAmount)(
                     result
                 )
@@ -125,7 +130,7 @@ describe("Калькулятор - расчет ежедневной пени", 
 
     it(`Сумма пеней по задолженности ${expected.finalDebtAmount} = ${expected.finalDebtAmountPenalty}`, () => {
         expect(
-            penalties.getTotalPenaltyAmount(
+            penalties.getTotalAmount(
                 penalties.filter(
                     (x) => x.debtAmount === expected.finalDebtAmount
                 )(result)
@@ -140,7 +145,7 @@ describe("Калькулятор - расчет ежедневной пени", 
     })
 
     it(`Сумма пеней = ${expected.penaltyAmount}`, () => {
-        expect(penalties.getTotalPenaltyAmount(result)).toBeCloseTo(
+        expect(penalties.getTotalAmount(result)).toBeCloseTo(
             expected.penaltyAmount,
             2
         )
@@ -150,15 +155,15 @@ describe("Калькулятор - расчет ежедневной пени", 
 describe("Калькулятор - расчет результата", () => {
     const { result: penalty, startDebtAmount } = createCalculation()
 
-    const result = calculator.penaltyToResult(penalty)
+    const result = penaltyToResult(penalty)
 
     const expected = {
         resultLength: 8,
-        penaltyAmount: penalties.getTotalPenaltyAmount(penalty),
-        penaltyAmountOfStartDebt: penalties.getTotalPenaltyAmount(
+        penaltyAmount: penalties.getTotalAmount(penalty),
+        penaltyAmountOfStartDebt: penalties.getTotalAmount(
             penalties.filter((x) => x.debtAmount === startDebtAmount)(penalty)
         ),
-        penaltyAmountOfOne130: penalties.getTotalPenaltyAmount(
+        penaltyAmountOfOne130: penalties.getTotalAmount(
             penalties.filter((x) => x.ratePart.denominator === 130)(penalty)
         ),
     }
@@ -168,7 +173,7 @@ describe("Калькулятор - расчет результата", () => {
     })
 
     it(`Сумма пеней = ${expected.penaltyAmount}`, () => {
-        expect(calculationResults.getTotalPenaltyAmount(result)).toBeCloseTo(
+        expect(calculationResults.getTotalAmount(result)).toBeCloseTo(
             expected.penaltyAmount,
             2
         )
@@ -176,7 +181,7 @@ describe("Калькулятор - расчет результата", () => {
 
     it(`Сумма пеней по долгу ${startDebtAmount} = ${expected.penaltyAmountOfStartDebt}`, () => {
         expect(
-            calculationResults.getTotalPenaltyAmount(
+            calculationResults.getTotalAmount(
                 calculationResults.filter(
                     (x) => x.debtAmount === startDebtAmount
                 )(result)
@@ -186,7 +191,7 @@ describe("Калькулятор - расчет результата", () => {
 
     it(`Сумма пеней по доле 1/130 = ${expected.penaltyAmountOfOne130}`, () => {
         expect(
-            calculationResults.getTotalPenaltyAmount(
+            calculationResults.getTotalAmount(
                 calculationResults.filter(
                     (x) => x.ratePart.denominator === 130
                 )(result)

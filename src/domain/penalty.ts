@@ -16,10 +16,10 @@ export type Penalty = {
     rows: PenaltyRow[]
 }
 
-const getTotalPenaltyAmount = (value: Penalty): number =>
+export const getTotalPenaltyAmount = (value: Penalty): number =>
     value.rows.reduce((acc, x) => acc + x.penaltyAmount, 0)
 
-const filter =
+export const penaltyFilter =
     (predicate: (value: PenaltyRow, index: number) => boolean) =>
     (value: Penalty): Penalty => ({
         ...value,
@@ -27,8 +27,8 @@ const filter =
     })
 
 const penalties = {
-    filter,
-    getTotalPenaltyAmount,
+    filter: penaltyFilter,
+    getTotalAmount: getTotalPenaltyAmount,
 }
 
 export default penalties
