@@ -1,6 +1,7 @@
 import { dayjs } from "../dayjs"
 import calculationResults from "../calculation-result"
-import calculator, { CalculatorConfig, CalculatorContext } from "../calculator"
+import calculator, { CalculatorContext } from "../calculator"
+import { CalculatorConfig } from "../calculator-config"
 import { Payment } from "../payment"
 import penalties from "../penalty"
 

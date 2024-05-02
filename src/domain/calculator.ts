@@ -1,17 +1,10 @@
-import { dayjs } from "./dayjs"
 import { CalculationResult, CalculationResultRow } from "./calculation-result"
+import { CalculatorConfig } from "./calculator-config"
+import { dayjs } from "./dayjs"
 import { Debt } from "./debt"
 import formulas from "./formula"
 import keyRateParts, { type KeyRatePart } from "./keyrate-part"
 import { Penalty, PenaltyRow } from "./penalty"
-
-export type CalculatorConfig = {
-    daysToPay: number
-    deferredDaysCount: number
-    getKeyRate: (date: Date) => number
-    getKeyRatePart: (daysOverdue: number) => KeyRatePart
-    doesMoratoriumActs: (date: Date) => boolean
-}
 
 export type CalculatorContext = {
     config: CalculatorConfig
