@@ -1,11 +1,16 @@
+import { pipe } from "@mobily/ts-belt"
 import { CalculationResult } from "../domain/calculation-result"
-import Calculator, { CalculatorContext } from "../domain/calculator"
+import {
+    Calculator,
+    calculatePenalty,
+    penaltyToResult,
+} from "../domain/calculator"
+import { Debt } from "../domain/debt"
 
 export type Calculate = (
-    context: CalculatorContext
+    calculator: Calculator,
+    debt: Debt
 ) => Promise<CalculationResult>
 
-export const calculate: Calculate = async (context) => {
-    const penalty = Calculator.calculatePenalty(context)
-    return Calculator.penaltyToResult(penalty)
-}
+export const calculate: Calculate = async (calculator, debt) =>
+    pipe(calculatePenalty(calculator, debt), penaltyToResult)

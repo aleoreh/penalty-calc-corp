@@ -3,8 +3,8 @@ import "./index.css"
 import React from "react"
 import ReactDOM from "react-dom/client"
 
-import { type CalculatorConfig } from "../domain/calculator"
 import App from "./App"
+import { CalculatorConfig } from "../domain/calculator-config"
 
 export const render = (getConfig: () => Promise<CalculatorConfig>) => {
     const root = ReactDOM.createRoot(
@@ -16,3 +16,4 @@ export const render = (getConfig: () => Promise<CalculatorConfig>) => {
         </React.StrictMode>
     )
 }
+

@@ -3,7 +3,7 @@ import keyRateParts, { KeyRatePart } from "./keyrate-part"
 export type Formula = string
 
 type CreateFormula = (params: {
-    debtAmount: number
+    debtAmount: Kopek
     rate: number
     doesDefermentActs: boolean
     doesMoratoriumActs: boolean

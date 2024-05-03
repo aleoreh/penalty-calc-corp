@@ -13,7 +13,7 @@ import penalties from "../penalty"
 
 function createCalculation() {
     const period = new Date("2019-05-01")
-    const startDebtAmount = 1000
+    const startDebtAmount = 100000 as Kopek
     const config: CalculatorConfig = {
         daysToPay: 10,
         deferredDaysCount: 30,
@@ -26,7 +26,9 @@ function createCalculation() {
                 ? { numerator: 1, denominator: 300 }
                 : { numerator: 1, denominator: 130 },
     }
-    const payments: Payment[] = [{ date: new Date("2020-01-01"), amount: 100 }]
+    const payments: Payment[] = [
+        { date: new Date("2020-01-01"), amount: 10000 as Kopek },
+    ]
     const calculator: Calculator = {
         calculationDate: new Date("2024-04-19"),
         config,
@@ -54,17 +56,17 @@ describe("Калькулятор - расчет ежедневной пени", 
     const expected = {
         length: dayjs(calculator.calculationDate).diff(debt.dueDate, "day") + 1,
         dueDate: new Date("2019-06-11"),
-        finalDebtAmount: 900,
+        finalDebtAmount: 90000,
         deferredDaysCount: 30,
         moratoriumDaysCount: 271 + 185,
         one300DaysCount: 90,
         one130DaysCount: 1684,
         startDebtAmountDaysCount: 205,
-        startDebtAmountPenalty: 103.04,
-        finalDebtAmountDaysCount: 1569,
-        finalDebtAmountPenalty: 732.01,
+        startDebtAmountPenalty: 10304,
+        finalDebtAmountDaysCount: 156900,
+        finalDebtAmountPenalty: 73201,
         lastDate: new Date("2024-04-18"),
-        penaltyAmount: 835.05,
+        penaltyAmount: 83505,
     }
 
     it(`Количество дней расчета = ${expected.length}`, () => {
@@ -120,7 +122,7 @@ describe("Калькулятор - расчет ежедневной пени", 
                     result
                 )
             )
-        ).toBeCloseTo(expected.startDebtAmountPenalty, 2)
+        ).toBeCloseTo(expected.startDebtAmountPenalty, 0)
     })
 
     it(`Количество дней с задолженностью ${expected.finalDebtAmount} = ${expected.finalDebtAmountDaysCount}`, () => {
@@ -136,7 +138,7 @@ describe("Калькулятор - расчет ежедневной пени", 
                     (x) => x.debtAmount === expected.finalDebtAmount
                 )(result)
             )
-        ).toBeCloseTo(expected.finalDebtAmountPenalty, 2)
+        ).toBeCloseTo(expected.finalDebtAmountPenalty, 0)
     })
 
     it(`Последняя дата расчета = ${expected.lastDate}`, () => {
@@ -148,7 +150,7 @@ describe("Калькулятор - расчет ежедневной пени", 
     it(`Сумма пеней = ${expected.penaltyAmount}`, () => {
         expect(penalties.getTotalAmount(result)).toBeCloseTo(
             expected.penaltyAmount,
-            2
+            0
         )
     })
 })
@@ -176,7 +178,7 @@ describe("Калькулятор - расчет результата", () => {
     it(`Сумма пеней = ${expected.penaltyAmount}`, () => {
         expect(calculationResults.getTotalAmount(result)).toBeCloseTo(
             expected.penaltyAmount,
-            2
+            0
         )
     })
 
@@ -187,7 +189,7 @@ describe("Калькулятор - расчет результата", () => {
                     (x) => x.debtAmount === startDebtAmount
                 )(result)
             )
-        ).toBeCloseTo(expected.penaltyAmountOfStartDebt)
+        ).toBeCloseTo(expected.penaltyAmountOfStartDebt, 0)
     })
 
     it(`Сумма пеней по доле 1/130 = ${expected.penaltyAmountOfOne130}`, () => {
@@ -197,6 +199,6 @@ describe("Калькулятор - расчет результата", () => {
                     (x) => x.ratePart.denominator === 130
                 )(result)
             )
-        ).toBeCloseTo(expected.penaltyAmountOfOne130)
+        ).toBeCloseTo(expected.penaltyAmountOfOne130, 0)
     })
 })

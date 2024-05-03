@@ -29,24 +29,26 @@ const calculateDailyAmount = (
         keyRate: number
         doesMoratoriumActs: boolean
     },
-    debtAmount: number,
+    debtAmount: Kopek,
     date: Date
-): number => {
+): Kopek => {
     const k = keyRateParts.getNumericValue(params.keyRatePart)
     const r = params.keyRate
     const s = debtAmount
 
-    return doesDefermentActs(params.dueDate, params.deferredDaysCount, date) ||
+    return (
+        doesDefermentActs(params.dueDate, params.deferredDaysCount, date) ||
         params.doesMoratoriumActs
-        ? 0
-        : k * r * s
+            ? 0
+            : k * r * s
+    ) as Kopek
 }
 
 export type CalculatePenalty = (calculator: Calculator, debt: Debt) => Penalty
 export const calculatePenalty: CalculatePenalty = (context, debt) => {
     // -------- helpers ------- //
 
-    const makeRow = (debtAmount: number, date: Date): PenaltyRow => ({
+    const makeRow = (debtAmount: Kopek, date: Date): PenaltyRow => ({
         id: date.valueOf(),
         date: date,
         debtAmount: debtAmount,
@@ -77,9 +79,9 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
     const nextRow = (row: PenaltyRow): PenaltyRow => {
         const dayPayment = debt.payments
             .filter((payment) => dayjs(payment.date).isSame(row.date, "day"))
-            .reduce((acc, value) => acc + value.amount, 0)
+            .reduce((acc, value) => acc + value.amount, 0) as Kopek
 
-        const newDebtAmount = row.debtAmount - dayPayment
+        const newDebtAmount = row.debtAmount - dayPayment as Kopek
         const newDay = dayjs(row.date).add(1, "day").toDate()
 
         return makeRow(newDebtAmount, newDay)
@@ -123,7 +125,7 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
             ...resultRow,
             dateTo: row.date,
             totalDays: resultRow.totalDays + 1,
-            penaltyAmount: resultRow.penaltyAmount + row.penaltyAmount,
+            penaltyAmount: resultRow.penaltyAmount + row.penaltyAmount as Kopek,
             formula: formulas.createFormula(resultRow),
         }
     }

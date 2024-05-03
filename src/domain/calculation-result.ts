@@ -2,7 +2,7 @@ import { Formula } from "./formula"
 import { KeyRatePart } from "./keyrate-part"
 
 export type CalculationResultRow = {
-    debtAmount: number
+    debtAmount: Kopek
     dateFrom: Date
     dateTo: Date
     totalDays: number
@@ -11,7 +11,7 @@ export type CalculationResultRow = {
     doesMoratoriumActs: boolean
     doesDefermentActs: boolean
     formula: Formula
-    penaltyAmount: number
+    penaltyAmount: Kopek
 }
 
 export type CalculationResult = {
@@ -19,8 +19,8 @@ export type CalculationResult = {
     rows: CalculationResultRow[]
 }
 
-export const getTotalAmount = (value: CalculationResult): number =>
-    value.rows.reduce((acc, x) => acc + x.penaltyAmount, 0)
+export const getTotalAmount = (value: CalculationResult): Kopek =>
+    value.rows.reduce((acc, x) => acc + x.penaltyAmount, 0) as Kopek
 
 export const filterCalculationResult =
     (predicate: (value: CalculationResultRow, index: number) => boolean) =>

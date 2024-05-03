@@ -9,9 +9,9 @@ const generatePaymentId = (debt: Debt): PaymentId =>
 
 export type Debt = {
     period: Date
-    amount: number
+    amount: Kopek
     dueDate: Date
-    payments: (Payment & { id: number })[]
+    payments: (Payment & { id: PaymentId })[]
 }
 
 export const updateDebt =
@@ -41,8 +41,8 @@ export const removePayment =
 
 export const paymentsLength = (debt: Debt): number => debt.payments.length
 
-export const paymentsAmount = (debt: Debt): number =>
-    debt.payments.reduce((acc, x) => acc + x.amount, 0)
+export const paymentsAmount = (debt: Debt): Kopek =>
+    debt.payments.reduce((acc, x) => acc + x.amount, 0) as Kopek
 
 const debts = {
     update: updateDebt,

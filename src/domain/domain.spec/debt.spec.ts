@@ -17,17 +17,19 @@ import { Payment } from "../payment"
 
 type DebtInit = {
     period: Date
-    amount: number
+    amount: Kopek
 }
+
+const kopekArb = integer() as Arbitrary<Kopek>
 
 const debtArb: Arbitrary<DebtInit> = record({
     period: date(),
-    amount: integer(),
+    amount: kopekArb,
 })
 
 const paymentArb: Arbitrary<Payment> = record({
     date: date(),
-    amount: integer(),
+    amount: kopekArb,
 })
 
 const paymentsArb = array(paymentArb)
@@ -57,7 +59,7 @@ const createDebt = (debtData: DebtInit, payments: Payment[]): Debt => {
 }
 
 describe("Долг:", () => {
-    it.prop([debtArb, paymentsArb, date(), integer()])(
+    it.prop([debtArb, paymentsArb, date(), kopekArb])(
         "при обновлении долга устанавливаются новые значения",
         (debtData, payments, newDueDate, newAmount) => {
             const initDebt = createDebt(debtData, payments)

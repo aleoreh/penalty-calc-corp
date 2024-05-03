@@ -1,6 +1,6 @@
 export type Payment = {
     date: Date
-    amount: number
+    amount: Kopek
 }
 
 export const updatePayment =
