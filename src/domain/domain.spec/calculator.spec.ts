@@ -7,7 +7,7 @@ import {
 } from "../calculator"
 import { CalculatorConfig } from "../calculator-config"
 import { dayjs } from "../dayjs"
-import { Debt } from "../debt"
+import { Debt, addPayment } from "../debt"
 import { Payment } from "../payment"
 import penalties from "../penalty"
 
@@ -27,20 +27,21 @@ function createCalculation() {
                 : { numerator: 1, denominator: 130 },
     }
     const payments: Payment[] = [{ date: new Date("2020-01-01"), amount: 100 }]
-    const calc: Calculator = {
+    const calculator: Calculator = {
         calculationDate: new Date("2024-04-19"),
         config,
     }
-    const debt: Debt = {
+    const initialDebt: Debt = {
         amount: startDebtAmount,
-        payments,
+        payments: [],
         period,
         dueDate: getDefaultDueDate(period, config.daysToPay),
     }
-    const result = calculatePenalty(calc, debt)
+    const debt = payments.reduce((acc, x) => addPayment(x)(acc), initialDebt)
+    const result = calculatePenalty(calculator, debt)
 
     return {
-        calc,
+        calculator,
         debt,
         result,
         startDebtAmount,
@@ -48,10 +49,10 @@ function createCalculation() {
 }
 
 describe("Калькулятор - расчет ежедневной пени", () => {
-    const { calc, debt, result, startDebtAmount } = createCalculation()
+    const { calculator, debt, result, startDebtAmount } = createCalculation()
 
     const expected = {
-        length: dayjs(calc.calculationDate).diff(debt.dueDate, "day") + 1,
+        length: dayjs(calculator.calculationDate).diff(debt.dueDate, "day") + 1,
         dueDate: new Date("2019-06-11"),
         finalDebtAmount: 900,
         deferredDaysCount: 30,
