@@ -22,6 +22,7 @@ const getConfig: GetConfig = async () => {
 }
 
 const calculatorConfigService = {
+    // TODO: переименовать в getCalculatorConfig
     getConfig,
 }
 

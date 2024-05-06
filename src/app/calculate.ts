@@ -1,3 +1,5 @@
+// TODO: переименовать модуль в calculate.port.ts
+
 import { pipe } from "@mobily/ts-belt"
 import { CalculationResult } from "../domain/calculation-result"
 import {

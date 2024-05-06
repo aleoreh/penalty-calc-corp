@@ -10,6 +10,7 @@ export type CalculatorConfig = {
 
 export const setKeyRateGetter = (
     config: CalculatorConfig,
+    // TODO: изменить имя на keyRateGetter
     value: CalculatorConfig["getKeyRate"]
 ): CalculatorConfig => ({ ...config, getKeyRate: value })
 
