@@ -22,7 +22,7 @@ export const getDefaultCalculatorConfig: GetConfig = async () => {
 }
 
 const calculatorConfigService = {
-    getConfig: getDefaultCalculatorConfig,
+    getDefaultConfig: getDefaultCalculatorConfig,
 }
 
 export default calculatorConfigService

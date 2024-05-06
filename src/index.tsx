@@ -2,7 +2,7 @@ import { render } from "./react-ui"
 import reportWebVitals from "./reportWebVitals"
 import calculatorConfigService from "./services/calculator-config-service"
 
-render(calculatorConfigService.getConfig)
+render(calculatorConfigService.getDefaultConfig)
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
