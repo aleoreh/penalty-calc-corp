@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { RD, SRD, loading, notAsked, success } from "srd"
 
-import Calculator from "./calculator/Calculator"
-import { CalculatorConfig } from "../domain/calculator-config"
+import { type CalculatorConfig } from "../domain/calculator-config"
+import Calculator from "./Calculator/Calculator"
 
 type AppType = (props: {
     getConfig: () => Promise<CalculatorConfig>
