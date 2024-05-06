@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
-import { RD, SRD, loading, notAsked, success } from "srd"
+import { RD, SRD, failure, loading, success } from "srd"
 
 import { type CalculatorConfig } from "../domain/calculator-config"
 import Calculator from "./Calculator/Calculator"
+import { ErrorView } from "./ErrorView"
 
 type AppType = (props: {
     getConfig: () => Promise<CalculatorConfig>
@@ -18,6 +19,13 @@ const App: AppType = ({ getConfig }) => {
             .then((result) => {
                 setConfig(success(result))
             })
+            .catch(() => {
+                setConfig(
+                    failure(
+                        "Во время загрузки произошла ошибка. Попробуйте обновить страницу"
+                    )
+                )
+            })
     }, [getConfig])
 
     return (
@@ -26,7 +34,7 @@ const App: AppType = ({ getConfig }) => {
                 {
                     notAsked: () => <></>,
                     loading: () => "Идёт загрузка...",
-                    failure: () => "Настроки не найдены",
+                    failure: (err) => <ErrorView message={err} />,
                     success: (value) => <Calculator config={value} />,
                 },
                 config
