@@ -10,21 +10,21 @@ type AppType = (props: {
 
 const App: AppType = ({ getConfig }) => {
     const [config, setConfig] = useState<RD<string, CalculatorConfig>>(
-        notAsked()
+        loading()
     )
 
     useEffect(() => {
-        setConfig(loading())
-        getConfig().then((result) => {
-            setConfig(success(result))
-        })
+        getConfig()
+            .then((result) => {
+                setConfig(success(result))
+            })
     }, [getConfig])
 
     return (
         <div className="App">
             {SRD.match(
                 {
-                    notAsked: () => "Приложение загружено",
+                    notAsked: () => <></>,
                     loading: () => "Идёт загрузка...",
                     failure: () => "Настроки не найдены",
                     success: (value) => <Calculator config={value} />,
@@ -36,3 +36,4 @@ const App: AppType = ({ getConfig }) => {
 }
 
 export default App
+
