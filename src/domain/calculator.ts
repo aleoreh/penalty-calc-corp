@@ -81,7 +81,7 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
             .filter((payment) => dayjs(payment.date).isSame(row.date, "day"))
             .reduce((acc, value) => acc + value.amount, 0) as Kopek
 
-        const newDebtAmount = row.debtAmount - dayPayment as Kopek
+        const newDebtAmount = (row.debtAmount - dayPayment) as Kopek
         const newDay = dayjs(row.date).add(1, "day").toDate()
 
         return makeRow(newDebtAmount, newDay)
@@ -125,7 +125,8 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
             ...resultRow,
             dateTo: row.date,
             totalDays: resultRow.totalDays + 1,
-            penaltyAmount: resultRow.penaltyAmount + row.penaltyAmount as Kopek,
+            penaltyAmount: (resultRow.penaltyAmount +
+                row.penaltyAmount) as Kopek,
             formula: formulas.createFormula(resultRow),
         }
     }
