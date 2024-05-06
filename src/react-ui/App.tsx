@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { RD, SRD, failure, loading, success } from "srd"
 
 import { type CalculatorConfig } from "../domain/calculator-config"
-import Calculator from "./Calculator/Calculator"
+import { Calculator } from "./Calculator"
 import { ErrorView } from "./ErrorView"
 
 type AppType = (props: {
