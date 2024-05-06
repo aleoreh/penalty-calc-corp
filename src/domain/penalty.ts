@@ -1,6 +1,6 @@
 import { KeyRatePart } from "./keyrate-part"
 
-export type PenaltyRow = {
+export type PenaltyItem = {
     id: number
     date: Date
     debtAmount: Kopek
@@ -13,14 +13,14 @@ export type PenaltyRow = {
 
 export type Penalty = {
     period: Date
-    rows: PenaltyRow[]
+    rows: PenaltyItem[]
 }
 
 export const getTotalPenaltyAmount = (value: Penalty): Kopek =>
     value.rows.reduce((acc, x) => acc + x.penaltyAmount, 0) as Kopek
 
 export const penaltyFilter =
-    (predicate: (value: PenaltyRow, index: number) => boolean) =>
+    (predicate: (value: PenaltyItem, index: number) => boolean) =>
     (value: Penalty): Penalty => ({
         ...value,
         rows: value.rows.filter(predicate),

@@ -4,7 +4,7 @@ import { dayjs } from "./dayjs"
 import { Debt } from "./debt"
 import formulas from "./formula"
 import keyRateParts, { type KeyRatePart } from "./keyrate-part"
-import { Penalty, PenaltyRow } from "./penalty"
+import { Penalty, PenaltyItem } from "./penalty"
 
 export type Calculator = {
     config: CalculatorConfig
@@ -48,7 +48,7 @@ export type CalculatePenalty = (calculator: Calculator, debt: Debt) => Penalty
 export const calculatePenalty: CalculatePenalty = (context, debt) => {
     // -------- helpers ------- //
 
-    const makeRow = (debtAmount: Kopek, date: Date): PenaltyRow => ({
+    const makeRow = (debtAmount: Kopek, date: Date): PenaltyItem => ({
         id: date.valueOf(),
         date: date,
         debtAmount: debtAmount,
@@ -76,7 +76,7 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
             daysOverdue(debt.dueDate, date)
         ),
     })
-    const nextRow = (row: PenaltyRow): PenaltyRow => {
+    const nextRow = (row: PenaltyItem): PenaltyItem => {
         const dayPayment = debt.payments
             .filter((payment) => dayjs(payment.date).isSame(row.date, "day"))
             .reduce((acc, value) => acc + value.amount, 0) as Kopek
@@ -89,9 +89,9 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
 
     // --------- main --------- //
 
-    const rows: PenaltyRow[] = []
+    const rows: PenaltyItem[] = []
 
-    let curRow: PenaltyRow = makeRow(debt.amount, debt.dueDate)
+    let curRow: PenaltyItem = makeRow(debt.amount, debt.dueDate)
 
     while (dayjs(curRow.date).isBefore(context.calculationDate)) {
         rows.push(curRow)
@@ -106,7 +106,7 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
 
 export type PenaltyToResult = (penalty: Penalty) => CalculationResult
 export const penaltyToResult: PenaltyToResult = (penalty) => {
-    const addResultRow = (row: PenaltyRow): CalculationResultRow => {
+    const addResultRow = (row: PenaltyItem): CalculationResultRow => {
         return {
             ...row,
             dateFrom: row.date,
@@ -119,7 +119,7 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
 
     const joinResultRow = (
         resultRow: CalculationResultRow,
-        row: PenaltyRow
+        row: PenaltyItem
     ): CalculationResultRow => {
         return {
             ...resultRow,
@@ -141,7 +141,7 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
             | "doesDefermentActs"
         >,
         penaltyRow: Pick<
-            PenaltyRow,
+            PenaltyItem,
             | "debtAmount"
             | "rate"
             | "ratePart"
