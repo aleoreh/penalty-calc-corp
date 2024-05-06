@@ -2,7 +2,7 @@ import { GetConfig } from "../app/ports"
 import { appConfig } from "../data"
 import { dayjs } from "../domain/dayjs"
 
-const getConfig: GetConfig = async () => {
+export const getDefaultCalculatorConfig: GetConfig = async () => {
     return {
         daysToPay: appConfig.daysToPay,
         deferredDaysCount: appConfig.deferredDaysCount,
@@ -22,8 +22,7 @@ const getConfig: GetConfig = async () => {
 }
 
 const calculatorConfigService = {
-    // TODO: переименовать в getCalculatorConfig
-    getConfig,
+    getConfig: getDefaultCalculatorConfig,
 }
 
 export default calculatorConfigService
