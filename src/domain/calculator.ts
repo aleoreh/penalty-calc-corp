@@ -1,4 +1,4 @@
-import { CalculationResult, CalculationResultRow } from "./calculation-result"
+import { CalculationResult, CalculationResultItem } from "./calculation-result"
 import { CalculatorConfig } from "./calculator-config"
 import { dayjs } from "./dayjs"
 import { Debt } from "./debt"
@@ -106,7 +106,7 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
 
 export type PenaltyToResult = (penalty: Penalty) => CalculationResult
 export const penaltyToResult: PenaltyToResult = (penalty) => {
-    const addResultRow = (row: PenaltyItem): CalculationResultRow => {
+    const addResultRow = (row: PenaltyItem): CalculationResultItem => {
         return {
             ...row,
             dateFrom: row.date,
@@ -118,9 +118,9 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
     }
 
     const joinResultRow = (
-        resultRow: CalculationResultRow,
+        resultRow: CalculationResultItem,
         row: PenaltyItem
-    ): CalculationResultRow => {
+    ): CalculationResultItem => {
         return {
             ...resultRow,
             dateTo: row.date,
@@ -133,7 +133,7 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
 
     const equals = (
         resultRow: Pick<
-            CalculationResultRow,
+            CalculationResultItem,
             | "debtAmount"
             | "rate"
             | "ratePart"
