@@ -1,4 +1,4 @@
-import { Calculate } from "../app/calculate.port"
+import { Calculate } from "../app/calculate"
 import { CalculatorConfig } from "../domain/calculator-config"
 import { Debt } from "../domain/debt"
 

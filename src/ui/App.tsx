@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import { RD, SRD, failure, loading, success } from "srd"
 
-import { calculate } from "../app/calculate.port"
+import { calculate } from "../app/calculate"
 import { type CalculatorConfig } from "../domain/calculator-config"
-import { AppTitle } from "./widgets/AppTitle"
-import { Calculator } from "./widgets/Calculator"
 import { ErrorView } from "./components/ErrorView"
 import { Loader } from "./components/Loader"
 import { Page } from "./components/Page"
+import { AppTitle } from "./widgets/AppTitle"
+import { Calculator } from "./widgets/Calculator"
 
 type AppProps = {
     getConfig: () => Promise<CalculatorConfig>
