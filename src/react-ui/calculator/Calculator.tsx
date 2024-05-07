@@ -1,8 +1,8 @@
 import { CalculatorConfig } from "../../domain/calculator-config"
 
-type CalculatorType = (props: { config: CalculatorConfig }) => JSX.Element
+type CalculatorProps = { config: CalculatorConfig }
 
-export const Calculator: CalculatorType = ({ config }) => {
+export const Calculator = ({ config }: CalculatorProps) => {
     return <h1>Калькулятор</h1>
 }
 
