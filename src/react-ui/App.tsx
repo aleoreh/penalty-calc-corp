@@ -2,10 +2,10 @@ import { useEffect, useState } from "react"
 import { RD, SRD, failure, loading, success } from "srd"
 
 import { type CalculatorConfig } from "../domain/calculator-config"
+import { ErrorView } from "../ui-components/ErrorView"
+import { Loader } from "../ui-components/Loader"
+import { Page } from "../ui-components/Page"
 import { Calculator } from "./Calculator"
-import { ErrorView } from "./ErrorView"
-import { Loader } from "./Loader"
-import { Page } from "./Page"
 
 type AppType = (props: {
     getConfig: () => Promise<CalculatorConfig>
