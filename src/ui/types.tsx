@@ -5,5 +5,11 @@ export namespace UI {
         config: CalculatorConfig
     }) => JSX.Element
 
+    export type CalculatorSettings = (props: {
+        config: CalculatorConfig
+        setConfig: (config: CalculatorConfig) => void
+    }) => JSX.Element
+
+
     export type AppTitle = () => JSX.Element
 }
