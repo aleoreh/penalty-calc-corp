@@ -16,7 +16,7 @@ const deferredDaysCount = 30
 // день, после которого наступает изменение доли ставки расчета пени
 const fractionChangeDay = 90
 
-export const appConfig: AppConfig = {
+export const appConfig = {
     daysToPay,
     deferredDaysCount,
     fractionChangeDay,
