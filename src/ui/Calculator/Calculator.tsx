@@ -1,8 +1,6 @@
-import { CalculatorConfig } from "../../domain/calculator-config"
+import { UI } from "../types"
 
-type CalculatorProps = { config: CalculatorConfig }
-
-export const Calculator = ({ config }: CalculatorProps) => {
+export const Calculator: UI.Calculator = ({ config }) => {
     return <h1>Калькулятор</h1>
 }
 
