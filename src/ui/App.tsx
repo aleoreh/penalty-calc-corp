@@ -6,6 +6,7 @@ import { ErrorView } from "../ui-kit/ErrorView"
 import { Loader } from "../ui-kit/Loader"
 import { Page } from "../ui-kit/Page"
 import { Calculator } from "./Calculator"
+import { AppTitle } from "./AppTitle"
 
 type AppType = (props: {
     getConfig: () => Promise<CalculatorConfig>
@@ -33,7 +34,7 @@ const App: AppType = ({ getConfig }) => {
     return (
         <Page className="App">
             <Page.Header>
-                <h1>HEADER</h1>
+                <AppTitle />
             </Page.Header>
             <Page.Content>
                 {SRD.match(
