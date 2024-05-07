@@ -1,4 +1,4 @@
-import { UI } from "../../ui-interface"
+import { UI } from "../../types"
 
 export const CalculatorSettings: UI.CalculatorSettings = ({
     config,
