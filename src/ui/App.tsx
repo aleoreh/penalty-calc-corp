@@ -9,11 +9,11 @@ import { ErrorView } from "./components/ErrorView"
 import { Loader } from "./components/Loader"
 import { Page } from "./components/Page"
 
-type AppType = (props: {
+type AppProps = {
     getConfig: () => Promise<CalculatorConfig>
-}) => JSX.Element
+}
 
-const App: AppType = ({ getConfig }) => {
+const App = ({ getConfig }: AppProps) => {
     const [config, setConfig] = useState<RD<string, CalculatorConfig>>(
         loading()
     )
