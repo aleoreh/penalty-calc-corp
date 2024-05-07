@@ -1,6 +1,6 @@
-import { render } from "./react-ui"
 import reportWebVitals from "./reportWebVitals"
 import calculatorConfigService from "./services/calculator-config-service"
+import { render } from "./ui"
 
 render(calculatorConfigService.getDefaultConfig)
 
