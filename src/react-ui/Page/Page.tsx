@@ -12,10 +12,10 @@ const PageFooter = ({ children }: Props) => {
     return <footer>{children}</footer>
 }
 
-export const Layout = ({ className, children }: Props) => {
+export const Page = ({ className, children }: Props) => {
     return <div className={className}>{children}</div>
 }
 
-Layout.Header = PageHeader
-Layout.Content = PageContent
-Layout.Footer = PageFooter
+Page.Header = PageHeader
+Page.Content = PageContent
+Page.Footer = PageFooter

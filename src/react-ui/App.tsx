@@ -4,7 +4,7 @@ import { RD, SRD, failure, loading, success } from "srd"
 import { type CalculatorConfig } from "../domain/calculator-config"
 import { Calculator } from "./Calculator"
 import { ErrorView } from "./ErrorView"
-import { Layout } from "./Layout/Layout"
+import { Page } from "./Page"
 
 type AppType = (props: {
     getConfig: () => Promise<CalculatorConfig>
@@ -30,11 +30,11 @@ const App: AppType = ({ getConfig }) => {
     }, [getConfig])
 
     return (
-        <Layout className="App">
-            <Layout.Header>
+        <Page className="App">
+            <Page.Header>
                 <h1>HEADER</h1>
-            </Layout.Header>
-            <Layout.Content>
+            </Page.Header>
+            <Page.Content>
                 {SRD.match(
                     {
                         notAsked: () => <></>,
@@ -44,8 +44,8 @@ const App: AppType = ({ getConfig }) => {
                     },
                     config
                 )}
-            </Layout.Content>
-        </Layout>
+            </Page.Content>
+        </Page>
     )
 }
 
