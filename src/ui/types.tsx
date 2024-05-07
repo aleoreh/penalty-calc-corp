@@ -1,9 +1,11 @@
+import { Calculate } from "../app/calculate.port"
 import { CalculatorConfig } from "../domain/calculator-config"
 import { Debt } from "../domain/debt"
 
 export namespace UI {
     export type Calculator = (props: {
         config: CalculatorConfig
+        calculate: Calculate
     }) => JSX.Element
 
     export type CalculatorSettings = (props: {

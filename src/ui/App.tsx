@@ -7,6 +7,7 @@ import { Loader } from "../ui-kit/Loader"
 import { Page } from "../ui-kit/Page"
 import { Calculator } from "./Calculator"
 import { AppTitle } from "./AppTitle"
+import { calculate } from "../app/calculate.port"
 
 type AppType = (props: {
     getConfig: () => Promise<CalculatorConfig>
@@ -42,7 +43,9 @@ const App: AppType = ({ getConfig }) => {
                         notAsked: () => <></>,
                         loading: () => <Loader />,
                         failure: (err) => <ErrorView message={err} />,
-                        success: (value) => <Calculator config={value} />,
+                        success: (value) => (
+                            <Calculator config={value} calculate={calculate} />
+                        ),
                     },
                     config
                 )}
