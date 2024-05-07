@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { UI } from "../types"
+import { UI } from "../../ui-interface"
 import { CalculatorSettings } from "./CalculatorSettings"
 import { CalculatorConfig } from "../../domain/calculator-config"
 import { DebtList } from "./DebtList"
