@@ -4,6 +4,7 @@ import { RD, SRD, failure, loading, success } from "srd"
 import { type CalculatorConfig } from "../domain/calculator-config"
 import { Calculator } from "./Calculator"
 import { ErrorView } from "./ErrorView"
+import { Layout } from "./Layout/Layout"
 
 type AppType = (props: {
     getConfig: () => Promise<CalculatorConfig>
@@ -29,17 +30,22 @@ const App: AppType = ({ getConfig }) => {
     }, [getConfig])
 
     return (
-        <div className="App">
-            {SRD.match(
-                {
-                    notAsked: () => <></>,
-                    loading: () => "Идёт загрузка...",
-                    failure: (err) => <ErrorView message={err} />,
-                    success: (value) => <Calculator config={value} />,
-                },
-                config
-            )}
-        </div>
+        <Layout className="App">
+            <Layout.Header>
+                <h1>HEADER</h1>
+            </Layout.Header>
+            <Layout.Content>
+                {SRD.match(
+                    {
+                        notAsked: () => <></>,
+                        loading: () => <>"Идёт загрузка..."</>,
+                        failure: (err) => <ErrorView message={err} />,
+                        success: (value) => <Calculator config={value} />,
+                    },
+                    config
+                )}
+            </Layout.Content>
+        </Layout>
     )
 }
 
