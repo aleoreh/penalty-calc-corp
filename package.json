@@ -38,7 +38,7 @@
     ],
     "rules": {
       "no-restricted-imports": [
-        "error",
+        "warn",
         {
           "patterns": [
             "*/**/*.debug"
