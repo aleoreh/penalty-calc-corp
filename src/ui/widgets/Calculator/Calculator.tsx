@@ -29,7 +29,11 @@ export const Calculator: UI.Calculator = ({
                 Дата расчета
                 <input type="date" onInput={handleCalculationDateInput} />
             </label>
-            <CalculatorSettings config={config} setConfig={setConfig} />
+            <CalculatorSettings
+                calculationDate={calculationDate}
+                config={config}
+                setConfig={setConfig}
+            />
             <DebtList debts={debts} setDebts={setDebts} />
             <button
                 onClick={() => calculate({ calculationDate, config }, debts[0])}

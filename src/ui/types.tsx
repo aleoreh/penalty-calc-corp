@@ -9,6 +9,7 @@ export namespace UI {
     }) => JSX.Element
 
     export type CalculatorSettings = (props: {
+        calculationDate: Date
         config: CalculatorConfig
         setConfig: (config: CalculatorConfig) => void
     }) => JSX.Element
