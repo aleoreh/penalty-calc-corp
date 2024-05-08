@@ -18,6 +18,7 @@ export const Form = ({ reset, close, submit, children }: ModalFormProps) => {
     const handleSubmit = (evt: FormEvent) => {
         evt.preventDefault()
         submit.fn()
+        close()
     }
 
     return (
