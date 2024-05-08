@@ -21,7 +21,6 @@ export const Calculator: UI.Calculator = ({
         setCalculationDate(new Date())
     }
 
-    // FIXME: Калькулятор должен содержать в себе список всех долгов
     return (
         <>
             <label title="Дата расчета">
