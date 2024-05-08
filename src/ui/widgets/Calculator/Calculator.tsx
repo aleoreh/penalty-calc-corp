@@ -1,9 +1,9 @@
 import { useState } from "react"
+import { CalculatorConfig } from "../../../domain/calculator-config"
+import { Debt } from "../../../domain/debt"
 import { UI } from "../../types"
 import { CalculatorSettings } from "./CalculatorSettings"
-import { CalculatorConfig } from "../../../domain/calculator-config"
 import { DebtList } from "./DebtList"
-import { Debt } from "../../../domain/debt"
 
 export const Calculator: UI.Calculator = ({
     config: configProp,
@@ -17,8 +17,10 @@ export const Calculator: UI.Calculator = ({
         setDebts([])
     }
 
-    const handleCalculationDateInput = () => {
-        setCalculationDate(new Date())
+    const handleCalculationDateInput = (
+        evt: React.FormEvent<HTMLInputElement>
+    ) => {
+        setCalculationDate(new Date(evt.currentTarget.value) || new Date())
     }
 
     return (
