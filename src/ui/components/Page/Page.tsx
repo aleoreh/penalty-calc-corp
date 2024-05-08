@@ -1,21 +1,22 @@
 type Props = { children?: JSX.Element | JSX.Element[]; className?: string }
 
-const PageHeader = ({ children }: Props) => {
-    return <header>{children}</header>
+const PageHeader = ({ className, children }: Props) => {
+    return <header className={className}>{children}</header>
 }
 
-const PageContent = ({ children }: Props) => {
-    return <main>{children}</main>
+const PageContent = ({ className, children }: Props) => {
+    return <main className={className}>{children}</main>
 }
 
-const PageFooter = ({ children }: Props) => {
-    return <footer>{children}</footer>
+const PageFooter = ({ className, children }: Props) => {
+    return <footer className={className}>{children}</footer>
 }
 
-export const Page = ({ className, children }: Props) => {
-    return <div className={className}>{children}</div>
+export const Page = ({ children }: Props) => {
+    return <>{children}</>
 }
 
 Page.Header = PageHeader
 Page.Content = PageContent
 Page.Footer = PageFooter
+

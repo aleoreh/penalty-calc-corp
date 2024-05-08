@@ -24,7 +24,7 @@ export const Calculator: UI.Calculator = ({
     return (
         <>
             <label title="Дата расчета">
-                <input type="text" onInput={handleCalculationDateInput} />
+                <input type="date" onInput={handleCalculationDateInput} />
             </label>
             <CalculatorSettings config={config} setConfig={setConfig} />
             <DebtList debts={debts} setDebts={setDebts} />

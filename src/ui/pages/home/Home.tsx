@@ -32,23 +32,29 @@ export const Home = ({ getConfig }: HomeProps) => {
     }, [getConfig])
 
     return (
-        <Page className="App">
-            <Page.Header>
-                <AppTitle />
-            </Page.Header>
-            <Page.Content>
-                {SRD.match(
-                    {
-                        notAsked: () => <></>,
-                        loading: () => <Loader />,
-                        failure: (err) => <ErrorView message={err} />,
-                        success: (value) => (
-                            <Calculator config={value} calculate={calculate} />
-                        ),
-                    },
-                    config
-                )}
-            </Page.Content>
-        </Page>
+        <>
+            <Page>
+                <Page.Header>
+                    <AppTitle />
+                </Page.Header>
+                <Page.Content>
+                    {SRD.match(
+                        {
+                            notAsked: () => <></>,
+                            loading: () => <Loader />,
+                            failure: (err) => <ErrorView message={err} />,
+                            success: (value) => (
+                                <Calculator
+                                    config={value}
+                                    calculate={calculate}
+                                />
+                            ),
+                        },
+                        config
+                    )}
+                </Page.Content>
+            </Page>
+        </>
     )
 }
+
