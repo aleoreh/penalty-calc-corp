@@ -14,6 +14,7 @@ import {
     updateDebt,
 } from "../debt"
 import { Payment } from "../payment"
+import { getDefaultCalculatorConfig } from "../../services/calculator-config-service"
 
 type DebtInit = {
     period: Date
@@ -35,23 +36,12 @@ const paymentArb: Arbitrary<Payment> = record({
 const paymentsArb = array(paymentArb)
 const nonEmptyPaymentsArb = array(paymentArb, { minLength: 1 })
 
-const config: CalculatorConfig = {
-    daysToPay: 10,
-    deferredDaysCount: 30,
-    doesMoratoriumActs: (date) =>
-        dayjs(date).isBetween("2020-04-06", "2021-01-01", "day", "[]") ||
-        dayjs(date).isBetween("2022-03-31", "2022-10-01", "day", "[]"),
-    getKeyRate: () => 0.095,
-    getKeyRatePart: (daysOverdue) =>
-        daysOverdue < 90
-            ? { numerator: 1, denominator: 300 }
-            : { numerator: 1, denominator: 130 },
-}
+const daysToPay = 10
 
 const createDebt = (debtData: DebtInit, payments: Payment[]): Debt => {
     const initialDebt: Debt = {
         ...debtData,
-        dueDate: getDefaultDueDate(debtData.period, config.daysToPay),
+        dueDate: getDefaultDueDate(debtData.period, daysToPay),
         payments: [],
     }
     const debt = payments.reduce((acc, x) => addPayment(x)(acc), initialDebt)
@@ -117,3 +107,4 @@ describe("Долг:", () => {
         }
     )
 })
+

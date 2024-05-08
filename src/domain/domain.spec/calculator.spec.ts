@@ -5,11 +5,22 @@ import {
     getDefaultDueDate,
     penaltyToResult,
 } from "../calculator"
-import { CalculatorConfig } from "../calculator-config"
+import {
+    CalculatorConfig,
+    generateDoesMoratoriumActsFn,
+} from "../calculator-config"
 import { dayjs } from "../dayjs"
 import { Debt, addPayment } from "../debt"
+import { Moratorium } from "../moratorium"
 import { Payment } from "../payment"
 import penalties from "../penalty"
+
+const moratoriums = (
+    [
+        ["2020-04-06", "2021-01-01"],
+        ["2022-03-31", "2022-10-01"],
+    ] as const
+).map(([start, end]) => [new Date(start), new Date(end)] as Moratorium)
 
 function createCalculation() {
     const period = new Date("2019-05-01")
@@ -17,9 +28,8 @@ function createCalculation() {
     const config: CalculatorConfig = {
         daysToPay: 10,
         deferredDaysCount: 30,
-        doesMoratoriumActs: (date) =>
-            dayjs(date).isBetween("2020-04-06", "2021-01-01", "day", "[]") ||
-            dayjs(date).isBetween("2022-03-31", "2022-10-01", "day", "[]"),
+        moratoriums,
+        doesMoratoriumActs: generateDoesMoratoriumActsFn(moratoriums),
         getKeyRate: () => 0.095,
         getKeyRatePart: (daysOverdue) =>
             daysOverdue < 90
@@ -202,3 +212,4 @@ describe("Калькулятор - расчет результата", () => {
         ).toBeCloseTo(expected.penaltyAmountOfOne130, 0)
     })
 })
+

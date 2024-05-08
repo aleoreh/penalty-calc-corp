@@ -1,15 +1,25 @@
 import { GetCalculatorConfig } from "../app/ports"
 import { appConfig } from "../data"
+import { generateDoesMoratoriumActsFn } from "../domain/calculator-config"
 import { dayjs } from "../domain/dayjs"
+import { Moratorium } from "../domain/moratorium"
+
+function getMoratoriums(
+    rawMoratoriums: (typeof appConfig)["moratoriums"]
+) {
+    return rawMoratoriums.map(
+        ([start, end]) => [new Date(start), new Date(end)] as Moratorium
+    )
+}
 
 export const getDefaultCalculatorConfig: GetCalculatorConfig = async () => {
     return {
         daysToPay: appConfig.daysToPay,
         deferredDaysCount: appConfig.deferredDaysCount,
-        doesMoratoriumActs: (date) =>
-            appConfig.moratoriums.some(([start, end]) => {
-                return dayjs(date).isBetween(start, end, "day", "[]")
-            }),
+        moratoriums: getMoratoriums(appConfig.moratoriums),
+        doesMoratoriumActs: generateDoesMoratoriumActsFn(
+            getMoratoriums(appConfig.moratoriums)
+        ),
         getKeyRate: (date) =>
             appConfig.keyRates.filter(([startDate, _]) => {
                 return dayjs(date).isAfter(startDate)
@@ -26,3 +36,4 @@ const calculatorConfigService = {
 }
 
 export default calculatorConfigService
+
