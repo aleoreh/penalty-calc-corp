@@ -23,7 +23,8 @@ export const Calculator: UI.Calculator = ({
 
     return (
         <>
-            <label title="Дата расчета">
+            <label className="calculation-date" title="Дата расчета">
+                Дата расчета
                 <input type="date" onInput={handleCalculationDateInput} />
             </label>
             <CalculatorSettings config={config} setConfig={setConfig} />
