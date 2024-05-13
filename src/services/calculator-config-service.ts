@@ -26,10 +26,7 @@ export const getDefaultCalculatorConfig: GetCalculatorConfig = async (
         deferredDaysCount: appConfig.deferredDaysCount,
         moratoriums: getMoratoriums(appConfig.moratoriums),
         keyRate: getKeyRate(appConfig.keyRates, date),
-        getKeyRatePart: (daysOverdue) =>
-            daysOverdue < appConfig.fractionChangeDay
-                ? { numerator: 1, denominator: 300 }
-                : { numerator: 1, denominator: 130 },
+        fractionChangeDay: appConfig.fractionChangeDay,
     }
 }
 

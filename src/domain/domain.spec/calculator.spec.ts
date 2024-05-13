@@ -27,10 +27,7 @@ function createCalculation() {
         deferredDaysCount: 30,
         moratoriums,
         keyRate: 0.095,
-        getKeyRatePart: (daysOverdue) =>
-            daysOverdue < 90
-                ? { numerator: 1, denominator: 300 }
-                : { numerator: 1, denominator: 130 },
+        fractionChangeDay: 90
     }
     const payments: Payment[] = [
         { date: new Date("2020-01-01"), amount: 10000 as Kopek },
