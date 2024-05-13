@@ -1,5 +1,5 @@
 import { CalculationResult, CalculationResultItem } from "./calculation-result"
-import { CalculatorConfig } from "./calculator-config"
+import { CalculatorConfig, doesMoratoriumActs } from "./calculator-config"
 import { dayjs } from "./dayjs"
 import { Debt } from "./debt"
 import formulas from "./formula"
@@ -57,11 +57,11 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
             context.config.deferredDaysCount,
             date
         ),
-        doesMoratoriumActs: context.config.doesMoratoriumActs(date),
+        doesMoratoriumActs: doesMoratoriumActs(context.config, date),
         penaltyAmount: calculateDailyAmount(
             {
                 deferredDaysCount: context.config.deferredDaysCount,
-                doesMoratoriumActs: context.config.doesMoratoriumActs(date),
+                doesMoratoriumActs: doesMoratoriumActs(context.config, date),
                 dueDate: debt.dueDate,
                 keyRate: context.config.getKeyRate(date),
                 keyRatePart: context.config.getKeyRatePart(
@@ -186,3 +186,4 @@ const calculators = {
 }
 
 export default calculators
+
