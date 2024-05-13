@@ -1,3 +1,4 @@
+import dayjs from "dayjs"
 import { useState } from "react"
 
 import { CalculatorConfig } from "../../../domain/calculator-config"
@@ -24,14 +25,18 @@ export const Calculator: UI.Calculator = ({
     const handleCalculationDateInput = (
         evt: React.FormEvent<HTMLInputElement>
     ) => {
-        setCalculationDate(new Date(evt.currentTarget.value) || new Date())
+        setCalculationDate(new Date(evt.currentTarget.value))
     }
 
     return (
         <>
             <label className="calculation-date" title="Дата расчета">
                 Дата расчета
-                <input type="date" onInput={handleCalculationDateInput} />
+                <input
+                    type="date"
+                    onInput={handleCalculationDateInput}
+                    value={dayjs(calculationDate).format("YYYY-MM-DD")}
+                />
             </label>
             <CalculatorSettings
                 calculationDate={calculationDate}
