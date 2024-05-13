@@ -2,11 +2,11 @@ import { type CalculatorConfig } from "../domain/calculator-config"
 import { Home } from "./pages/home"
 
 type AppProps = {
-    getConfig: () => Promise<CalculatorConfig>
+    getDefaultConfig: () => Promise<CalculatorConfig>
 }
 
-const App = ({ getConfig }: AppProps) => {
-    return <Home getConfig={getConfig} />
+const App = ({ getDefaultConfig }: AppProps) => {
+    return <Home getDefaultConfig={getDefaultConfig} />
 }
 
 export default App

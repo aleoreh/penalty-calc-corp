@@ -1,4 +1,5 @@
 import { useState } from "react"
+
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { Debt } from "../../../domain/debt"
 import { UI } from "../../types"
@@ -6,11 +7,11 @@ import { CalculatorSettings } from "./CalculatorSettings"
 import { DebtList } from "./DebtList"
 
 export const Calculator: UI.Calculator = ({
-    config: configProp,
+    defaultConfig,
     calculate,
 }) => {
     const [calculationDate, setCalculationDate] = useState<Date>(new Date())
-    const [config, setConfig] = useState<CalculatorConfig>(configProp)
+    const [config, setConfig] = useState<CalculatorConfig>(defaultConfig)
     const [debts, setDebts] = useState<Debt[]>([])
 
     const clearDebtList = () => {

@@ -9,27 +9,27 @@ import { CalculatorConfig } from "../../../domain/calculator-config"
 import { useEffect, useState } from "react"
 
 type HomeProps = {
-    getConfig: () => Promise<CalculatorConfig>
+    getDefaultConfig: () => Promise<CalculatorConfig>
 }
 
-export const Home = ({ getConfig }: HomeProps) => {
-    const [config, setConfig] = useState<RD<string, CalculatorConfig>>(
-        loading()
-    )
+export const Home = ({ getDefaultConfig }: HomeProps) => {
+    const [defaultConfig, setDefaultConfig] = useState<
+        RD<string, CalculatorConfig>
+    >(loading())
 
     useEffect(() => {
-        getConfig()
+        getDefaultConfig()
             .then((result) => {
-                setConfig(success(result))
+                setDefaultConfig(success(result))
             })
             .catch(() => {
-                setConfig(
+                setDefaultConfig(
                     failure(
                         "Во время загрузки произошла ошибка. Попробуйте обновить страницу"
                     )
                 )
             })
-    }, [getConfig])
+    }, [getDefaultConfig])
 
     return (
         <>
@@ -43,14 +43,14 @@ export const Home = ({ getConfig }: HomeProps) => {
                             notAsked: () => <></>,
                             loading: () => <Loader />,
                             failure: (err) => <ErrorView message={err} />,
-                            success: (value) => (
+                            success: (defaultConfigValue) => (
                                 <Calculator
-                                    config={value}
+                                    defaultConfig={defaultConfigValue}
                                     calculate={calculate}
                                 />
                             ),
                         },
-                        config
+                        defaultConfig
                     )}
                 </Page.Content>
             </Page>

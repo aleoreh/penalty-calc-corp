@@ -4,7 +4,7 @@ import { Debt } from "../domain/debt"
 
 export namespace UI {
     export type Calculator = (props: {
-        config: CalculatorConfig
+        defaultConfig: CalculatorConfig
         calculate: Calculate
     }) => JSX.Element
 
