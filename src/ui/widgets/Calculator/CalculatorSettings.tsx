@@ -3,7 +3,11 @@ import { FormEvent, useState } from "react"
 
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { dayjs } from "../../../domain/dayjs"
-import { representKeyRateInPercents } from "../../../domain/key-rate"
+import {
+    Percent,
+    numberToPercent,
+    percentToNumber,
+} from "../../../shared/percent"
 import { Form } from "../../components/Form"
 import { Popup } from "../../components/Popup"
 import { UI } from "../../types"
@@ -14,14 +18,14 @@ type SettingsTableProps = {
     config: CalculatorConfig
 }
 
-const SettingsTable = ({ config, calculationDate }: SettingsTableProps) => {
+const SettingsTable = ({ config }: SettingsTableProps) => {
     return (
         <table>
             <caption>Настройки расчета</caption>
             <tbody>
                 <tr>
                     <td>Ключевая ставка на дату расчета</td>
-                    <td>{representKeyRateInPercents(config.keyRate)}</td>
+                    <td>{numberToPercent(config.keyRate)}%</td>
                 </tr>
                 <tr>
                     <td>Дней на оплату</td>
@@ -55,7 +59,11 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
     const [inputConfig, setInputConfig] = useState<typeof config>(config)
 
     const handleKeyRateInput = (evt: FormEvent<HTMLInputElement>) => {
-        const keyRate = parseFloat(evt.currentTarget.value) / 100
+        const input = parseFloat(evt.currentTarget.value)
+        if (isNaN(input)) return
+
+        const keyRate = percentToNumber(input as Percent)
+
         setInputConfig({
             ...inputConfig,
             keyRate,
@@ -88,7 +96,13 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                 >
                     <label>
                         <span>Ключевая ставка, %</span>
-                        <input name="keyRate" onInput={handleKeyRateInput} />
+                        <input
+                            name="keyRate"
+                            onInput={handleKeyRateInput}
+                            defaultValue={numberToPercent(
+                                inputConfig.keyRate
+                            ).toString()}
+                        />
                     </label>
                 </Form>
             </Popup>
