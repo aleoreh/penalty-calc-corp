@@ -1,12 +1,18 @@
-import { type CalculatorConfig } from "../domain/calculator-config"
+import { GetCalculatorConfig } from "../app/ports"
 import { Home } from "./pages/home"
 
 type AppProps = {
-    getDefaultConfig: () => Promise<CalculatorConfig>
+    defaultCalculationDate: Date
+    getDefaultConfig: GetCalculatorConfig
 }
 
-const App = ({ getDefaultConfig }: AppProps) => {
-    return <Home getDefaultConfig={getDefaultConfig} />
+const App = ({ defaultCalculationDate, getDefaultConfig }: AppProps) => {
+    return (
+        <Home
+            defaultCalculationDate={defaultCalculationDate}
+            getDefaultConfig={getDefaultConfig}
+        />
+    )
 }
 
 export default App

@@ -6,7 +6,7 @@ export type CalculatorConfig = {
     daysToPay: number
     deferredDaysCount: number
     moratoriums: Moratorium[]
-    getKeyRate: (date: Date) => number
+    keyRate: number
     getKeyRatePart: (daysOverdue: number) => KeyRatePart
 }
 
@@ -18,14 +18,8 @@ export const doesMoratoriumActs = (
         return dayjs(date).isBetween(start, end, "day", "[]")
     })
 
-export const setKeyRateGetter = (
-    config: CalculatorConfig,
-    keyRateGetter: CalculatorConfig["getKeyRate"]
-): CalculatorConfig => ({ ...config, getKeyRate: keyRateGetter })
-
 const calculatorConfigs = {
     doesMoratoriumActs,
-    setKeyRateGetter,
 }
 
 export default calculatorConfigs

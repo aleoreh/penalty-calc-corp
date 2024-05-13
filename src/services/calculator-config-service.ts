@@ -3,23 +3,29 @@ import { appConfig } from "../data"
 import { dayjs } from "../domain/dayjs"
 import { Moratorium } from "../domain/moratorium"
 
-function getMoratoriums(
-    rawMoratoriums: (typeof appConfig)["moratoriums"]
-) {
+function getMoratoriums(rawMoratoriums: (typeof appConfig)["moratoriums"]) {
     return rawMoratoriums.map(
         ([start, end]) => [new Date(start), new Date(end)] as Moratorium
     )
 }
 
-export const getDefaultCalculatorConfig: GetCalculatorConfig = async () => {
+function getKeyRate(
+    keyRatesData: (typeof appConfig)["keyRates"],
+    date: Date
+): number {
+    return keyRatesData.filter(([startDate, _]) => {
+        return dayjs(date).isAfter(startDate)
+    })[keyRatesData.length - 1][1]
+}
+
+export const getDefaultCalculatorConfig: GetCalculatorConfig = async (
+    date: Date
+) => {
     return {
         daysToPay: appConfig.daysToPay,
         deferredDaysCount: appConfig.deferredDaysCount,
         moratoriums: getMoratoriums(appConfig.moratoriums),
-        getKeyRate: (date) =>
-            appConfig.keyRates.filter(([startDate, _]) => {
-                return dayjs(date).isAfter(startDate)
-            })[appConfig.keyRates.length - 1][1],
+        keyRate: getKeyRate(appConfig.keyRates, date),
         getKeyRatePart: (daysOverdue) =>
             daysOverdue < appConfig.fractionChangeDay
                 ? { numerator: 1, denominator: 300 }

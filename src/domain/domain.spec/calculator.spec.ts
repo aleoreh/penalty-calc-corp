@@ -5,9 +5,7 @@ import {
     getDefaultDueDate,
     penaltyToResult,
 } from "../calculator"
-import {
-    CalculatorConfig
-} from "../calculator-config"
+import { CalculatorConfig } from "../calculator-config"
 import { dayjs } from "../dayjs"
 import { Debt, addPayment } from "../debt"
 import { Moratorium } from "../moratorium"
@@ -28,7 +26,7 @@ function createCalculation() {
         daysToPay: 10,
         deferredDaysCount: 30,
         moratoriums,
-        getKeyRate: () => 0.095,
+        keyRate: 0.095,
         getKeyRatePart: (daysOverdue) =>
             daysOverdue < 90
                 ? { numerator: 1, denominator: 300 }

@@ -63,7 +63,7 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
                 deferredDaysCount: context.config.deferredDaysCount,
                 doesMoratoriumActs: doesMoratoriumActs(context.config, date),
                 dueDate: debt.dueDate,
-                keyRate: context.config.getKeyRate(date),
+                keyRate: context.config.keyRate,
                 keyRatePart: context.config.getKeyRatePart(
                     daysOverdue(debt.dueDate, date)
                 ),
@@ -71,7 +71,7 @@ export const calculatePenalty: CalculatePenalty = (context, debt) => {
             debtAmount,
             date
         ),
-        rate: context.config.getKeyRate(date),
+        rate: context.config.keyRate,
         ratePart: context.config.getKeyRatePart(
             daysOverdue(debt.dueDate, date)
         ),

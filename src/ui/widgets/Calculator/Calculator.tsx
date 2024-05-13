@@ -7,10 +7,13 @@ import { CalculatorSettings } from "./CalculatorSettings"
 import { DebtList } from "./DebtList"
 
 export const Calculator: UI.Calculator = ({
+    defaultCalculationDate,
     defaultConfig,
     calculate,
 }) => {
-    const [calculationDate, setCalculationDate] = useState<Date>(new Date())
+    const [calculationDate, setCalculationDate] = useState<Date>(
+        defaultCalculationDate
+    )
     const [config, setConfig] = useState<CalculatorConfig>(defaultConfig)
     const [debts, setDebts] = useState<Debt[]>([])
 

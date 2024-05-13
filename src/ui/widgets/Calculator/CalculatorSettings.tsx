@@ -8,7 +8,6 @@ import { Form } from "../../components/Form"
 import { Popup } from "../../components/Popup"
 import { UI } from "../../types"
 import style from "./Calculator.module.css"
-import Debug from "../../../debug-log.debug"
 
 type SettingsTableProps = {
     calculationDate: Date
@@ -22,11 +21,7 @@ const SettingsTable = ({ config, calculationDate }: SettingsTableProps) => {
             <tbody>
                 <tr>
                     <td>Ключевая ставка на дату расчета</td>
-                    <td>
-                        {representKeyRateInPercents(
-                            config.getKeyRate(calculationDate)
-                        )}
-                    </td>
+                    <td>{representKeyRateInPercents(config.keyRate)}</td>
                 </tr>
                 <tr>
                     <td>Дней на оплату</td>
@@ -63,7 +58,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         const keyRate = parseFloat(evt.currentTarget.value) / 100
         setInputConfig({
             ...inputConfig,
-            getKeyRate: () => keyRate,
+            keyRate,
         })
     }
 
@@ -88,8 +83,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                     reset={() => {}}
                     submit={{
                         text: "Сохранить",
-                        fn: () =>
-                            setConfig(Debug.log(inputConfig)(inputConfig)),
+                        fn: () => setConfig(inputConfig),
                     }}
                 >
                     <label>

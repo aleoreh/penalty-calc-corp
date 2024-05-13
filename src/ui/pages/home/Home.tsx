@@ -1,24 +1,30 @@
+import { useEffect, useState } from "react"
 import { RD, SRD, failure, loading, success } from "srd"
+
 import { calculate } from "../../../app/calculate"
+import { GetCalculatorConfig } from "../../../app/ports"
+import { CalculatorConfig } from "../../../domain/calculator-config"
 import { ErrorView } from "../../components/ErrorView"
+import { Loader } from "../../components/Loader"
 import { Page } from "../../components/Page"
 import { AppTitle } from "../../widgets/AppTitle"
 import { Calculator } from "../../widgets/Calculator"
-import { Loader } from "../../components/Loader"
-import { CalculatorConfig } from "../../../domain/calculator-config"
-import { useEffect, useState } from "react"
 
 type HomeProps = {
-    getDefaultConfig: () => Promise<CalculatorConfig>
+    defaultCalculationDate: Date
+    getDefaultConfig: GetCalculatorConfig
 }
 
-export const Home = ({ getDefaultConfig }: HomeProps) => {
+export const Home = ({
+    defaultCalculationDate,
+    getDefaultConfig,
+}: HomeProps) => {
     const [defaultConfig, setDefaultConfig] = useState<
         RD<string, CalculatorConfig>
     >(loading())
 
     useEffect(() => {
-        getDefaultConfig()
+        getDefaultConfig(defaultCalculationDate)
             .then((result) => {
                 setDefaultConfig(success(result))
             })
@@ -29,7 +35,7 @@ export const Home = ({ getDefaultConfig }: HomeProps) => {
                     )
                 )
             })
-    }, [getDefaultConfig])
+    }, [defaultCalculationDate, getDefaultConfig])
 
     return (
         <>
@@ -45,6 +51,9 @@ export const Home = ({ getDefaultConfig }: HomeProps) => {
                             failure: (err) => <ErrorView message={err} />,
                             success: (defaultConfigValue) => (
                                 <Calculator
+                                    defaultCalculationDate={
+                                        defaultCalculationDate
+                                    }
                                     defaultConfig={defaultConfigValue}
                                     calculate={calculate}
                                 />
