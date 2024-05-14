@@ -1,7 +1,11 @@
 import { ChangeEvent, useCallback, useState } from "react"
 
-import { DefaultField } from "./types"
-import { ValidationResult, Validator, validate } from "../validation"
+import {
+    DefaultField,
+    ValidationResult,
+    Validator,
+    validate,
+} from "../../lib/validation"
 
 type TextField = DefaultField & {
     handleInput: (

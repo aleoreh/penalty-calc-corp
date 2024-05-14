@@ -1,12 +1,12 @@
-import { GetValidator } from "./validation"
+import { MakeValidator } from "./validation"
 
-export const required: GetValidator<string, string> = (
+export const required: MakeValidator<string, string> = (
     message = "Поле должно быть заполнено"
 ) => {
     return async (value) => (value === null ? null : message)
 }
 
-export const isNumber: GetValidator<string, string> = (
+export const isNumber: MakeValidator<string, string> = (
     message = "Здесь должно быть число"
 ) => {
     return async (value) =>
