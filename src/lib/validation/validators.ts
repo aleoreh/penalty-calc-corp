@@ -1,14 +1,21 @@
-import { MakeValidator } from "./validation"
+import { DescribeValidator } from "./validation"
 
-export const required: MakeValidator<string, string> = (
+const required: DescribeValidator<string, string> = (
     message = "Поле должно быть заполнено"
 ) => {
     return async (value) => (value === null ? null : message)
 }
 
-export const isNumber: MakeValidator<string, string> = (
-    message = "Здесь должно быть число"
+const isNumber: DescribeValidator<string, string> = (
+    message = "В поле должно находиться число"
 ) => {
     return async (value) =>
         value !== undefined && !isNaN(parseFloat(value)) ? null : message
 }
+
+const validators = {
+    required,
+    isNumber,
+}
+
+export default validators

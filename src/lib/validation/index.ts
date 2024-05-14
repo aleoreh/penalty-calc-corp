@@ -1,7 +1,5 @@
-import { required } from "./validators"
-
 export {
-    type MakeValidator as GetValidator,
+    type DescribeValidator as GetValidator,
     type Validator,
     type ValidationResult,
     validate,
@@ -9,6 +7,5 @@ export {
 
 export { type DefaultField } from "./types"
 
-export const validators = {
-    required,
-}
+export * as validators from "./validators"
+

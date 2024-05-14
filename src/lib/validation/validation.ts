@@ -2,7 +2,7 @@ export type ValidationResult = string | null
 
 export type Validator<T> = (value?: T) => Promise<ValidationResult>
 
-export type MakeValidator<O, T> = (options?: O) => Validator<T>
+export type DescribeValidator<O, T> = (options?: O) => Validator<T>
 
 export const validate = async <T>(
     value: T,
