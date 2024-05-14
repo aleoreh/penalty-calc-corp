@@ -12,6 +12,8 @@ import { Form } from "../../components/Form"
 import { Popup } from "../../components/Popup"
 import { UI } from "../../types"
 import style from "./Calculator.module.css"
+import useValidatedInput from "../../hooks/useValidatedInput"
+import { string } from "decoders"
 
 type SettingsTableProps = {
     calculationDate: Date
@@ -70,6 +72,14 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         })
     }
 
+    const keyRateInput = useValidatedInput(
+        "keyRate",
+        string
+            .transform(parseFloat)
+            .refine((value) => !isNaN(value), "Здесь должно быть число"),
+        config.keyRate
+    )
+
     return (
         <>
             <section className={style.calculator_settings}>
@@ -96,16 +106,11 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                 >
                     <label>
                         <span>Ключевая ставка, %</span>
-                        <input
-                            name="keyRate"
-                            onInput={handleKeyRateInput}
-                            defaultValue={numberToPercent(
-                                inputConfig.keyRate
-                            ).toString()}
-                        />
+                        <input {...keyRateInput.attibutes} />
                     </label>
                 </Form>
             </Popup>
         </>
     )
 }
+
