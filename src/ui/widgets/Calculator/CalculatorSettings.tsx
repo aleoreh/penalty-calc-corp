@@ -12,8 +12,7 @@ import {
 import { Form } from "../../components/Form"
 import { Popup } from "../../components/Popup"
 import { UI } from "../../types"
-import useFormValidation from "../../validation/useFormValidation"
-import useValidatedInput from "../../validation/useValidatedInput"
+import { useFormValidation, useValidatedInput } from "../../formValidation"
 
 import styles from "./Calculator.module.css"
 
@@ -75,13 +74,15 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
     }
 
     const keyRateInput = useValidatedInput(
-        "key-rate",
-        "keyRate",
+        numberToPercent(config.keyRate).toString(),
         "Ключевая ставка, %",
         string
             .transform(parseFloat)
-            .refine((value) => !isNaN(value), "Здесь должно быть число"),
-        numberToPercent(config.keyRate)
+            .refine((x) => !isNaN(x), "Здесь должно быть число"),
+        {
+            name: "keyRate",
+            id: "key-rate",
+        }
     )
 
     const validation = useFormValidation([keyRateInput])

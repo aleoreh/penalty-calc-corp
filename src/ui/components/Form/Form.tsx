@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import React, { FormEvent } from "react"
 
-import { FormValidation } from "../../validation/types"
+import { FormValidation } from "../../formValidation"
 import style from "./Form.module.css"
 
 type ModalFormProps = {
