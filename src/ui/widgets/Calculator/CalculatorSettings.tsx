@@ -40,8 +40,8 @@ const SettingsTable = ({ config }: SettingsTableProps) => {
                 <tr>
                     <td>Действующие моратории</td>
                     <td>
-                        {config.moratoriums.map(([start, end]) => (
-                            <p>
+                        {config.moratoriums.map(([start, end], i) => (
+                            <p key={i}>
                                 {`${dayjs(start).format("L")} - ${dayjs(
                                     end
                                 ).format("L")}`}
