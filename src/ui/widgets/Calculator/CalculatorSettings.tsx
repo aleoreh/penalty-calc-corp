@@ -56,7 +56,7 @@ const SettingsTable = ({ config }: SettingsTableProps) => {
 }
 
 export const CalculatorSettings: UI.CalculatorSettings = (props) => {
-    const { config, setConfig, defaultConfig } = props
+    const { config, setConfig } = props
 
     const [editFormOpened, setEditFormOpened] = useState<boolean>(false)
 
@@ -72,7 +72,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         }
     )
 
-    const validation = useFormValidation([keyRateInput])
+    const { validation, reset } = useFormValidation([keyRateInput])
 
     const submit = () => {
         const keyRate = percentToNumber(
@@ -84,17 +84,9 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         })
     }
 
-    const reset = () => {
-        keyRateInput.value = numberToPercent(defaultConfig.keyRate).toString()
-    }
-
-    const close = () => {
-        setEditFormOpened(false)
-    }
-
     const cancel = () => {
         setEditFormOpened(false)
-        keyRateInput.value = numberToPercent(config.keyRate).toString()
+        reset()
     }
 
     return (
@@ -112,7 +104,9 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
             <Popup isOpened={editFormOpened} close={cancel}>
                 <Form
                     validation={validation}
-                    close={close}
+                    close={() => {
+                        setEditFormOpened(false)
+                    }}
                     reset={reset}
                     submit={{
                         text: "Сохранить",

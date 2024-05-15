@@ -17,17 +17,17 @@ type Attributes = {
     ) => void
     onBlur?: () => void
     id?: string
-    "data-error": boolean
 }
 
 type ValidatedInputMeta = {
-    attributes: Attributes
+    attributes: Attributes & { "data-error": boolean }
     label: string
     error: ValidationError
+    value: string
+    reset: () => void
 }
 
 type ValidatedInput<T> = ValidatedInputMeta & {
-    value: string
     validatedValue: DecodeResult<T>
 }
 
@@ -85,16 +85,23 @@ export const useValidatedInput = <T>(
         set value(x) {
             setValue(x)
         },
+        reset: () => {
+            setValue(initValue)
+        },
     }
 }
 
 export const useFormValidation = (
     validatedInputs: ValidatedInputMeta[]
-): FormValidation => {
+): { validation: FormValidation; reset: () => void } => {
     const getResult = useCallback(
         (): FormValidation => toFormValidation(validatedInputs),
         [validatedInputs]
     )
 
-    return getResult()
+    const reset = () => {
+        validatedInputs.forEach((validatedInput) => validatedInput.reset())
+    }
+
+    return { validation: getResult(), reset }
 }
