@@ -13,6 +13,7 @@ export namespace UI {
         calculationDate: Date
         config: CalculatorConfig
         setConfig: (config: CalculatorConfig) => void
+        defaultConfig: CalculatorConfig
     }) => JSX.Element
 
     export type DebtList = (props: {

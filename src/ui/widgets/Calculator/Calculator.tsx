@@ -42,6 +42,7 @@ export const Calculator: UI.Calculator = ({
                 calculationDate={calculationDate}
                 config={config}
                 setConfig={setConfig}
+                defaultConfig={defaultConfig}
             />
             <DebtList debts={debts} setDebts={setDebts} />
             <button

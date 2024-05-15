@@ -1,6 +1,6 @@
 import "css.gg/icons/css/pen.css"
 import { string } from "decoders"
-import { FormEvent, useState } from "react"
+import { useState } from "react"
 
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { dayjs } from "../../../domain/dayjs"
@@ -56,22 +56,9 @@ const SettingsTable = ({ config }: SettingsTableProps) => {
 }
 
 export const CalculatorSettings: UI.CalculatorSettings = (props) => {
-    const { config, setConfig } = props
+    const { config, setConfig, defaultConfig } = props
 
     const [editFormOpened, setEditFormOpened] = useState<boolean>(false)
-    const [inputConfig, setInputConfig] = useState<typeof config>(config)
-
-    const handleKeyRateInput = (evt: FormEvent<HTMLInputElement>) => {
-        const input = parseFloat(evt.currentTarget.value)
-        if (isNaN(input)) return
-
-        const keyRate = percentToNumber(input as Percent)
-
-        setInputConfig({
-            ...inputConfig,
-            keyRate,
-        })
-    }
 
     const keyRateInput = useValidatedInput(
         numberToPercent(config.keyRate).toString(),
@@ -87,6 +74,29 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
 
     const validation = useFormValidation([keyRateInput])
 
+    const submit = () => {
+        const keyRate = percentToNumber(
+            (keyRateInput.validatedValue.value || config.keyRate) as Percent
+        )
+        setConfig({
+            ...config,
+            keyRate,
+        })
+    }
+
+    const reset = () => {
+        keyRateInput.value = numberToPercent(defaultConfig.keyRate).toString()
+    }
+
+    const close = () => {
+        setEditFormOpened(false)
+    }
+
+    const cancel = () => {
+        setEditFormOpened(false)
+        keyRateInput.value = numberToPercent(config.keyRate).toString()
+    }
+
     return (
         <>
             <section className={styles.calculator_settings}>
@@ -99,25 +109,29 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                     <span className="gg-pen"></span>
                 </button>
             </section>
-            <Popup
-                isOpened={editFormOpened}
-                close={() => setEditFormOpened(false)}
-            >
+            <Popup isOpened={editFormOpened} close={cancel}>
                 <Form
                     validation={validation}
-                    close={() => setEditFormOpened(false)}
-                    reset={() => {}}
+                    close={close}
+                    reset={reset}
                     submit={{
                         text: "Сохранить",
-                        fn: () => setConfig(inputConfig),
+                        fn: submit,
                     }}
+                    cancel={cancel}
                 >
                     <div>
                         <label htmlFor={keyRateInput.attributes.id}>
                             {keyRateInput.label}
                         </label>
-                        <input {...keyRateInput.attributes} className="input" />
-                        <small>{keyRateInput.error}</small>
+                        <input
+                            {...keyRateInput.attributes}
+                            value={keyRateInput.value}
+                            className="input"
+                        />
+                        <small>
+                            {keyRateInput.validatedValue.error?.text || ""}
+                        </small>
                     </div>
                 </Form>
             </Popup>

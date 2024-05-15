@@ -13,7 +13,7 @@
     right: 0;
     visibility: hidden;
     opacity: 0;
-    transition: visibility 0s 0.6s, opacity 0.6s;
+    transition: visibility 0s 0.1s, opacity 0.1s;
 }
 
 .is_opened {
@@ -21,7 +21,7 @@
     display: flex;
     visibility: visible;
     opacity: 1;
-    transition: visibility 0s, opacity 0.6s;
+    transition: visibility 0s, opacity 0.1s;
 }
 
 .content {

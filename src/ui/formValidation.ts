@@ -31,7 +31,9 @@ type ValidatedInput<T> = ValidatedInputMeta & {
     validatedValue: DecodeResult<T>
 }
 
-const toFormValidation = (validatedInputs: ValidatedInputMeta[]) => {
+const toFormValidation = (
+    validatedInputs: ValidatedInputMeta[]
+): FormValidation => {
     for (let validatedInput of validatedInputs) {
         if (validatedInput.error !== null)
             return {

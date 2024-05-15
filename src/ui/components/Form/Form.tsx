@@ -9,6 +9,7 @@ type ModalFormProps = {
     reset: () => void
     close: () => void
     submit: { text: string; fn: () => void }
+    cancel: () => void
     children?: JSX.Element | JSX.Element[]
 }
 
@@ -17,6 +18,7 @@ export const Form = ({
     reset,
     close,
     submit,
+    cancel,
     children,
 }: ModalFormProps) => {
     const handleReset = (evt: React.FormEvent) => {
@@ -40,7 +42,7 @@ export const Form = ({
                 <button title="Сброс" type="reset" onClick={reset}>
                     Сброс
                 </button>
-                <button title="Отмена" type="button" onClick={close}>
+                <button title="Отмена" type="button" onClick={cancel}>
                     Отмена
                 </button>
             </div>
