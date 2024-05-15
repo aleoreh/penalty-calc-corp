@@ -1,4 +1,5 @@
 import "css.gg/icons/css/pen.css"
+import { string } from "decoders"
 import { FormEvent, useState } from "react"
 
 import { CalculatorConfig } from "../../../domain/calculator-config"
@@ -11,9 +12,10 @@ import {
 import { Form } from "../../components/Form"
 import { Popup } from "../../components/Popup"
 import { UI } from "../../types"
-import style from "./Calculator.module.css"
-import useValidatedInput from "../../hooks/useValidatedInput"
-import { string } from "decoders"
+import useFormValidation from "../../validation/useFormValidation"
+import useValidatedInput from "../../validation/useValidatedInput"
+
+import styles from "./Calculator.module.css"
 
 type SettingsTableProps = {
     calculationDate: Date
@@ -73,16 +75,20 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
     }
 
     const keyRateInput = useValidatedInput(
+        "key-rate",
         "keyRate",
+        "Ключевая ставка, %",
         string
             .transform(parseFloat)
             .refine((value) => !isNaN(value), "Здесь должно быть число"),
-        config.keyRate
+        numberToPercent(config.keyRate)
     )
+
+    const validation = useFormValidation([keyRateInput])
 
     return (
         <>
-            <section className={style.calculator_settings}>
+            <section className={styles.calculator_settings}>
                 <SettingsTable {...props} />
                 <button
                     title="Редактировать"
@@ -97,6 +103,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                 close={() => setEditFormOpened(false)}
             >
                 <Form
+                    validation={validation}
                     close={() => setEditFormOpened(false)}
                     reset={() => {}}
                     submit={{
@@ -104,10 +111,13 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                         fn: () => setConfig(inputConfig),
                     }}
                 >
-                    <label>
-                        <span>Ключевая ставка, %</span>
-                        <input {...keyRateInput.attibutes} />
-                    </label>
+                    <div>
+                        <label htmlFor={keyRateInput.attributes.id}>
+                            {keyRateInput.label}
+                        </label>
+                        <input {...keyRateInput.attributes} className="input" />
+                        <small>{keyRateInput.error}</small>
+                    </div>
                 </Form>
             </Popup>
         </>

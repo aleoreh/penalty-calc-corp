@@ -1,16 +1,24 @@
 import clsx from "clsx"
 import React, { FormEvent } from "react"
 
+import { FormValidation } from "../../validation/types"
 import style from "./Form.module.css"
 
 type ModalFormProps = {
+    validation: FormValidation
     reset: () => void
     close: () => void
     submit: { text: string; fn: () => void }
     children?: JSX.Element | JSX.Element[]
 }
 
-export const Form = ({ reset, close, submit, children }: ModalFormProps) => {
+export const Form = ({
+    validation,
+    reset,
+    close,
+    submit,
+    children,
+}: ModalFormProps) => {
     const handleReset = (evt: React.FormEvent) => {
         evt.preventDefault()
     }
@@ -37,9 +45,14 @@ export const Form = ({ reset, close, submit, children }: ModalFormProps) => {
                 </button>
             </div>
             {children}
-            <button title={submit.text} type="submit">
+            <button
+                title={submit.text}
+                type="submit"
+                disabled={!validation.isValid}
+            >
                 {submit.text}
             </button>
         </form>
     )
 }
+
