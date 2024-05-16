@@ -61,7 +61,7 @@ const SettingsTable = ({ config }: SettingsTableProps) => {
 export const CalculatorSettings: UI.CalculatorSettings = (props) => {
     const { config, setConfig } = props
 
-    const [editFormOpened, setEditFormOpened] = useState<boolean>(false)
+    const [popupOpened, setPopupOpened] = useState<boolean>(false)
 
     const keyRateInput = useValidatedInput(
         numberToPercent(config.keyRate).toString(),
@@ -84,7 +84,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
     }
 
     const form = useValidatedForm([keyRateInput], submit, () =>
-        setEditFormOpened(false)
+        setPopupOpened(false)
     )
 
     return (
@@ -94,12 +94,12 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                 <button
                     title="Редактировать"
                     type="button"
-                    onClick={() => setEditFormOpened(true)}
+                    onClick={() => setPopupOpened(true)}
                 >
                     <span className="gg-pen"></span>
                 </button>
             </section>
-            <Popup isOpened={editFormOpened} close={form.onClose}>
+            <Popup isOpened={popupOpened} close={form.onClose}>
                 <Form {...form}>
                     <div>
                         <label htmlFor={keyRateInput.attributes.id}>
