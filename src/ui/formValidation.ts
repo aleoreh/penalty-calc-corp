@@ -91,9 +91,18 @@ export const useValidatedInput = <T>(
     }
 }
 
-export const useFormValidation = (
-    validatedInputs: ValidatedInputMeta[]
-): { validation: FormValidation; reset: () => void } => {
+type ValidatedForm = {
+    validation: FormValidation
+    submit: () => void
+    reset: () => void
+    onClose: () => void
+}
+
+export const useValidatedForm = (
+    validatedInputs: ValidatedInputMeta[],
+    submit: () => void,
+    onClose: () => void
+): ValidatedForm => {
     const getResult = useCallback(
         (): FormValidation => toFormValidation(validatedInputs),
         [validatedInputs]
@@ -103,5 +112,10 @@ export const useFormValidation = (
         validatedInputs.forEach((validatedInput) => validatedInput.reset())
     }
 
-    return { validation: getResult(), reset }
+    const resetWithClose = () => {
+        reset()
+        onClose()
+    }
+
+    return { validation: getResult(), submit, reset, onClose: resetWithClose }
 }

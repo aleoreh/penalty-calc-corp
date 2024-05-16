@@ -7,18 +7,16 @@ import style from "./Form.module.css"
 type ModalFormProps = {
     validation: FormValidation
     reset: () => void
-    close: () => void
-    submit: { text: string; fn: () => void }
-    cancel: () => void
+    onClose: () => void
+    submit: () => void
     children?: JSX.Element | JSX.Element[]
 }
 
 export const Form = ({
     validation,
     reset,
-    close,
+    onClose,
     submit,
-    cancel,
     children,
 }: ModalFormProps) => {
     const handleReset = (evt: React.FormEvent) => {
@@ -27,8 +25,8 @@ export const Form = ({
 
     const handleSubmit = (evt: FormEvent) => {
         evt.preventDefault()
-        submit.fn()
-        close()
+        submit()
+        onClose()
     }
 
     return (
@@ -42,17 +40,17 @@ export const Form = ({
                 <button title="Сброс" type="reset" onClick={reset}>
                     Сброс
                 </button>
-                <button title="Отмена" type="button" onClick={cancel}>
+                <button title="Отмена" type="button" onClick={onClose}>
                     Отмена
                 </button>
             </div>
             {children}
             <button
-                title={submit.text}
+                title="Применить"
                 type="submit"
                 disabled={!validation.isValid}
             >
-                {submit.text}
+                Применить
             </button>
         </form>
     )

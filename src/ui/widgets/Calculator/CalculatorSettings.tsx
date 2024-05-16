@@ -11,8 +11,11 @@ import {
 } from "../../../shared/percent"
 import { Form } from "../../components/Form"
 import { Popup } from "../../components/Popup"
+import {
+    useValidatedForm,
+    useValidatedInput
+} from "../../formValidation"
 import { UI } from "../../types"
-import { useFormValidation, useValidatedInput } from "../../formValidation"
 
 import styles from "./Calculator.module.css"
 
@@ -72,8 +75,6 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         }
     )
 
-    const { validation, reset } = useFormValidation([keyRateInput])
-
     const submit = () => {
         const keyRate = percentToNumber(
             (keyRateInput.validatedValue.value || config.keyRate) as Percent
@@ -84,10 +85,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         })
     }
 
-    const cancel = () => {
-        setEditFormOpened(false)
-        reset()
-    }
+    const form = useValidatedForm([keyRateInput], submit, () => setEditFormOpened(false))
 
     return (
         <>
@@ -101,19 +99,8 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                     <span className="gg-pen"></span>
                 </button>
             </section>
-            <Popup isOpened={editFormOpened} close={cancel}>
-                <Form
-                    validation={validation}
-                    close={() => {
-                        setEditFormOpened(false)
-                    }}
-                    reset={reset}
-                    submit={{
-                        text: "Сохранить",
-                        fn: submit,
-                    }}
-                    cancel={cancel}
-                >
+            <Popup isOpened={editFormOpened} close={form.onClose}>
+                <Form {...form}>
                     <div>
                         <label htmlFor={keyRateInput.attributes.id}>
                             {keyRateInput.label}
