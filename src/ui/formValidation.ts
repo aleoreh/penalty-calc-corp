@@ -1,4 +1,4 @@
-import { DecodeResult, Decoder } from "decoders"
+import { DecodeResult, Decoder, regex, string } from "decoders"
 import { ChangeEvent, useCallback, useMemo, useState } from "react"
 
 type ValidationError = string | null
@@ -118,4 +118,8 @@ export const useValidatedForm = (
     }
 
     return { validation: getResult(), submit, reset, onClose: resetWithClose }
+}
+
+export const inputDecoders = {
+    percent: string.pipe(regex(/^\d*\.?\d*$/, "Ожидается число")),
 }

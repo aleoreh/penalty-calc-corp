@@ -1,5 +1,4 @@
 import "css.gg/icons/css/pen.css"
-import { string } from "decoders"
 import { useState } from "react"
 
 import { CalculatorConfig } from "../../../domain/calculator-config"
@@ -12,8 +11,9 @@ import {
 import { Form } from "../../components/Form"
 import { Popup } from "../../components/Popup"
 import {
+    inputDecoders,
     useValidatedForm,
-    useValidatedInput
+    useValidatedInput,
 } from "../../formValidation"
 import { UI } from "../../types"
 
@@ -66,9 +66,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
     const keyRateInput = useValidatedInput(
         numberToPercent(config.keyRate).toString(),
         "Ключевая ставка, %",
-        string
-            .transform(parseFloat)
-            .refine((x) => !isNaN(x), "Здесь должно быть число"),
+        inputDecoders.percent,
         {
             name: "keyRate",
             id: "key-rate",
@@ -85,7 +83,9 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         })
     }
 
-    const form = useValidatedForm([keyRateInput], submit, () => setEditFormOpened(false))
+    const form = useValidatedForm([keyRateInput], submit, () =>
+        setEditFormOpened(false)
+    )
 
     return (
         <>
