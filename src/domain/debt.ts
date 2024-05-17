@@ -58,6 +58,10 @@ export const getDefaultDueDate = (debtPeriod: Date, daysToPay: number): Date =>
         .add(daysToPay + 1, "day")
         .toDate()
 
+export const getRemainingBalance = (debt: Debt) =>
+    debt.amount -
+    debt.payments.reduce((acc, payment) => acc + payment.amount, 0)
+
 const debts = {
     update: updateDebt,
     addPayment,
@@ -65,7 +69,8 @@ const debts = {
     paymentsLength,
     paymentsAmount,
     getDefaultDueDate,
-    createEmptyDebt
+    createEmptyDebt,
+    getRemainingBalance,
 }
 
 export default debts
