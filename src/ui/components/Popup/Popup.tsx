@@ -31,3 +31,15 @@ export const Popup = ({ isOpened, close, children }: PopupProps) => {
         popupElement!
     )
 }
+
+type PopupHookResult = {
+    isOpened: boolean
+    close: () => void
+}
+
+export const usePopup = (isOpened: boolean, close: () => void): PopupHookResult => {
+    return {
+        isOpened,
+        close,
+    }
+}
