@@ -15,6 +15,13 @@ export type Debt = {
     payments: (Payment & { id: PaymentId })[]
 }
 
+export const createEmptyDebt = (period: Date, daysToPay: number): Debt => ({
+    period,
+    amount: 0 as Kopek,
+    dueDate: getDefaultDueDate(period, daysToPay),
+    payments: [],
+})
+
 export const updateDebt =
     ({ amount, dueDate }: Pick<Debt, "amount" | "dueDate">) =>
     (debt: Debt): Debt => ({
@@ -58,6 +65,7 @@ const debts = {
     paymentsLength,
     paymentsAmount,
     getDefaultDueDate,
+    createEmptyDebt
 }
 
 export default debts
