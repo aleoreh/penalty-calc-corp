@@ -1,7 +1,7 @@
-import Backdrop from "@mui/material/Backdrop"
 import Box from "@mui/material/Box"
+import Dialog from "@mui/material/Dialog"
 import { useRef } from "react"
-import { useModalClose } from "../../hooks/useModalClose"
+
 import style from "./Popup.module.css"
 
 type PopupProps = {
@@ -13,18 +13,12 @@ type PopupProps = {
 export const Popup = ({ isOpened, close, children }: PopupProps) => {
     const contentRef = useRef<HTMLDivElement | null>(null)
 
-    useModalClose({
-        isOpened,
-        setClosed: close,
-        containerRef: contentRef,
-    })
-
     return (
-        <Backdrop open={isOpened}>
+        <Dialog open={isOpened} onClose={close}>
             <Box ref={contentRef} className={style.content}>
                 {children}
             </Box>
-        </Backdrop>
+        </Dialog>
     )
 }
 
