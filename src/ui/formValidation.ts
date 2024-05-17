@@ -92,6 +92,7 @@ export const useValidatedInput = <T>(
 }
 
 type ValidatedForm = {
+    validatedInputs: ValidatedInputMeta[]
     validation: FormValidation
     submit: () => void
     reset: () => void
@@ -117,7 +118,13 @@ export const useValidatedForm = (
         onClose()
     }
 
-    return { validation: getResult(), submit, reset, onClose: resetWithClose }
+    return {
+        validatedInputs,
+        validation: getResult(),
+        submit,
+        reset,
+        onClose: resetWithClose,
+    }
 }
 
 export const inputDecoders = {
