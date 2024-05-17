@@ -18,7 +18,7 @@ export type FormValidation = {
 }
 
 type Attributes = {
-    type: Extract<HTMLInputTypeAttribute, "text" | "date">
+    type: Extract<HTMLInputTypeAttribute, "text" | "date" | "month">
     name: string
     onChange?: (
         evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -139,6 +139,9 @@ export const inputDecoders = {
     decimal: string
         .pipe(regex(/^\d*\.?\d*$/, "Ожидается число"))
         .transform(parseFloat),
-    date: string.transform(dayjs).describe("Ожидается дата").pipe(datelike),
+    date: string
+        .transform((x) => dayjs(x).toDate())
+        .pipe(date)
+        .describe("Ожидается дата"),
 }
 
