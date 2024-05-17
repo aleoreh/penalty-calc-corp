@@ -1,4 +1,5 @@
-import { Backdrop } from "@mui/material"
+import Backdrop from "@mui/material/Backdrop"
+import Box from "@mui/material/Box"
 import { useRef } from "react"
 import { useModalClose } from "../../hooks/useModalClose"
 import style from "./Popup.module.css"
@@ -20,9 +21,9 @@ export const Popup = ({ isOpened, close, children }: PopupProps) => {
 
     return (
         <Backdrop open={isOpened}>
-            <div ref={contentRef} className={style.content}>
+            <Box ref={contentRef} className={style.content}>
                 {children}
-            </div>
+            </Box>
         </Backdrop>
     )
 }
