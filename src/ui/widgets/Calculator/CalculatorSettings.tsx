@@ -94,15 +94,16 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         setPopupOpened(false)
     })
 
+    const open = () => {
+        form.reset()
+        setPopupOpened(true)
+    }
+
     return (
         <>
             <section className={styles.calculator_settings}>
                 <SettingsTable {...props} />
-                <button
-                    title="Редактировать"
-                    type="button"
-                    onClick={() => setPopupOpened(true)}
-                >
+                <button title="Редактировать" type="button" onClick={open}>
                     <span className="gg-pen"></span>
                 </button>
             </section>
