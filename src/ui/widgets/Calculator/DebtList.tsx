@@ -18,6 +18,8 @@ import {
     useValidatedInput,
 } from "../../formValidation"
 import { UI } from "../../types"
+import List from "@mui/material/List"
+import { DebtView } from "../DebtView"
 
 export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
     const [inputDebtPeriod, setInputDebtPeriod] = useState<Dayjs | null>(
@@ -70,6 +72,14 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
                     <Button title="Добавить" type="button" onClick={open}>
                         <AddOutlined></AddOutlined>
                     </Button>
+                    <List>
+                        {debts.map((debt) => (
+                            <DebtView
+                                key={debt.period.toISOString()}
+                                debt={debt}
+                            />
+                        ))}
+                    </List>
                 </Container>
             </Box>
             <Popup {...popup}>
