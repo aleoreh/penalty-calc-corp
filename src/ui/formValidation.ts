@@ -1,4 +1,5 @@
-import { DecodeResult, Decoder, regex, string } from "decoders"
+import dayjs from "dayjs"
+import { DecodeResult, Decoder, datelike, regex, string } from "decoders"
 import { ChangeEvent, useCallback, useMemo, useState } from "react"
 
 type ValidationError = string | null
@@ -131,5 +132,6 @@ export const inputDecoders = {
     decimal: string
         .pipe(regex(/^\d*\.?\d*$/, "Ожидается число"))
         .transform(parseFloat),
+    date: string.transform(dayjs).describe("Ожидается дата").pipe(datelike),
 }
 
