@@ -19,6 +19,7 @@ import { UI } from "../../types"
 
 import styles from "./Calculator.module.css"
 import { usePopup } from "../../components/Popup/Popup"
+import { Input } from "../../components/Input/Input"
 
 type SettingsTableProps = {
     calculationDate: Date
@@ -107,19 +108,13 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
             </section>
             <Popup {...popup}>
                 <Form {...form}>
-                    <div>
-                        <label htmlFor={keyRateInput.attributes.id}>
-                            {keyRateInput.label}
-                        </label>
-                        <input
-                            {...keyRateInput.attributes}
-                            value={keyRateInput.value}
-                            className="input"
-                        />
-                        <small>
-                            {keyRateInput.validatedValue.error?.text || ""}
-                        </small>
-                    </div>
+                    <Input
+                        id={keyRateInput.attributes.id}
+                        label={keyRateInput.label}
+                        attributes={keyRateInput.attributes}
+                        value={keyRateInput.value}
+                        error={keyRateInput.validatedValue.error?.text || null}
+                    />
                 </Form>
             </Popup>
         </>
