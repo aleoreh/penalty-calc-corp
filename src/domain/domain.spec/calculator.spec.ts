@@ -2,9 +2,9 @@ import calculationResults from "../calculation-result"
 import {
     Calculator,
     calculatePenalty,
-    getDefaultDueDate,
     penaltyToResult,
 } from "../calculator"
+import { getDefaultDueDate } from "../debt"
 import { CalculatorConfig } from "../calculator-config"
 import { dayjs } from "../dayjs"
 import { Debt, addPayment } from "../debt"

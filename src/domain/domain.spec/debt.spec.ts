@@ -2,7 +2,7 @@ import { it } from "@fast-check/jest"
 import { A, D } from "@mobily/ts-belt"
 import { Arbitrary, array, date, integer, record } from "fast-check"
 
-import { getDefaultDueDate } from "../calculator"
+import { getDefaultDueDate } from "../debt"
 import { CalculatorConfig } from "../calculator-config"
 import { dayjs } from "../dayjs"
 import {

@@ -5,7 +5,7 @@ import {
     getKeyRatePart,
 } from "./calculator-config"
 import { dayjs } from "./dayjs"
-import { Debt } from "./debt"
+import { Debt, getDefaultDueDate } from "./debt"
 import formulas from "./formula"
 import keyRateParts, { type KeyRatePart } from "./keyrate-part"
 import { Penalty, PenaltyItem } from "./penalty"
@@ -178,12 +178,6 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
         ),
     }
 }
-
-export const getDefaultDueDate = (debtPeriod: Date, daysToPay: number): Date =>
-    dayjs(debtPeriod)
-        .endOf("month")
-        .add(daysToPay + 1, "day")
-        .toDate()
 
 const calculators = {
     calculatePenalty,

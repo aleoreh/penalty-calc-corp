@@ -1,4 +1,4 @@
-import { getDefaultDueDate } from "../domain/calculator"
+import { getDefaultDueDate } from "../domain/debt"
 
 export type GetDueDate = (debtPeriod: Date, daysToPay: number) => Promise<Date>
 

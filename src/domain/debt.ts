@@ -1,3 +1,4 @@
+import { dayjs } from "./dayjs"
 import { Payment } from "./payment"
 
 type PaymentId = number
@@ -44,12 +45,20 @@ export const paymentsLength = (debt: Debt): number => debt.payments.length
 export const paymentsAmount = (debt: Debt): Kopek =>
     debt.payments.reduce((acc, x) => acc + x.amount, 0) as Kopek
 
+export const getDefaultDueDate = (debtPeriod: Date, daysToPay: number): Date =>
+    dayjs(debtPeriod)
+        .endOf("month")
+        .add(daysToPay + 1, "day")
+        .toDate()
+
 const debts = {
     update: updateDebt,
     addPayment,
     removePayment,
     paymentsLength,
     paymentsAmount,
+    getDefaultDueDate,
 }
 
 export default debts
+
