@@ -7,7 +7,7 @@ import { DatePicker } from "@mui/x-date-pickers"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
 
-import { createEmptyDebt } from "../../../domain/debt"
+import { createEmptyDebt, getDefaultDueDate } from "../../../domain/debt"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
 import { Popup } from "../../components/Popup"
@@ -65,6 +65,14 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
         setPopupOpened(true)
     }
 
+    const handleInputDebtPeriodChange = (value: Dayjs | null) => {
+        setInputDebtPeriod(value)
+        value &&
+            setDueDate(
+                dayjs(getDefaultDueDate(value.toDate(), config.daysToPay))
+            )
+    }
+
     return (
         <>
             <Box component="section">
@@ -88,7 +96,7 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
                         <DatePicker
                             label={"Период"}
                             value={inputDebtPeriod}
-                            onChange={setInputDebtPeriod}
+                            onChange={handleInputDebtPeriodChange}
                             views={["month"]}
                             view="month"
                         />
