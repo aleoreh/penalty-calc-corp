@@ -128,7 +128,7 @@ export const useValidatedForm = (
 }
 
 export const inputDecoders = {
-    percent: string
+    decimal: string
         .pipe(regex(/^\d*\.?\d*$/, "Ожидается число"))
         .transform(parseFloat),
 }

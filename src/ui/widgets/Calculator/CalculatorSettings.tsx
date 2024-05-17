@@ -67,7 +67,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
     const keyRateInput = useValidatedInput(
         numberToPercent(config.keyRate).toString(),
         "Ключевая ставка, %",
-        inputDecoders.percent,
+        inputDecoders.decimal,
         {
             name: "keyRate",
             id: "key-rate",
