@@ -40,7 +40,7 @@ export const Calculator: UI.Calculator = ({
                 setConfig={setConfig}
                 defaultConfig={defaultConfig}
             />
-            <DebtList debts={debts} setDebts={setDebts} />
+            <DebtList config={config} debts={debts} setDebts={setDebts} />
             <Button
                 variant="outlined"
                 onClick={() =>

@@ -17,9 +17,11 @@ export namespace UI {
     }) => JSX.Element
 
     export type DebtList = (props: {
+        config: CalculatorConfig
         debts: Debt[]
         setDebts: (debts: Debt[]) => void
     }) => JSX.Element
 
     export type AppTitle = () => JSX.Element
 }
+
