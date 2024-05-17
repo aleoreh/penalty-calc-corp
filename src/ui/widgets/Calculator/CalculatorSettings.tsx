@@ -109,12 +109,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
             </section>
             <Popup {...popup}>
                 <Form {...form}>
-                    <Input
-                        label={keyRateInput.label}
-                        attributes={keyRateInput.attributes}
-                        value={keyRateInput.value}
-                        error={keyRateInput.validatedValue.error?.text || null}
-                    />
+                    <Input {...keyRateInput} />
                 </Form>
             </Popup>
         </>
