@@ -1,3 +1,4 @@
+import { Box, Container, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import { RD, SRD, failure, loading, success } from "srd"
 
@@ -6,8 +7,6 @@ import { GetCalculatorConfig } from "../../../app/ports"
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { ErrorView } from "../../components/ErrorView"
 import { Loader } from "../../components/Loader"
-import { Page } from "../../components/Page"
-import { AppTitle } from "../../widgets/AppTitle"
 import { Calculator } from "../../widgets/Calculator"
 
 type HomeProps = {
@@ -39,11 +38,15 @@ export const Home = ({
 
     return (
         <>
-            <Page>
-                <Page.Header>
-                    <AppTitle />
-                </Page.Header>
-                <Page.Content>
+            <Box>
+                <Container maxWidth="md">
+                    <Typography component="h1" variant="h3" align="center">
+                        Калькулятор пеней ЖКХ
+                    </Typography>
+                </Container>
+            </Box>
+            <Box>
+                <Container maxWidth="md">
                     {SRD.match(
                         {
                             notAsked: () => <></>,
@@ -61,8 +64,8 @@ export const Home = ({
                         },
                         defaultConfig
                     )}
-                </Page.Content>
-            </Page>
+                </Container>
+            </Box>
         </>
     )
 }

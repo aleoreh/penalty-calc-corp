@@ -1,3 +1,13 @@
+import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined"
+import Box from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Container from "@mui/material/Container"
+import Stack from "@mui/material/Stack"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableRow from "@mui/material/TableRow"
 import "css.gg/icons/css/pen.css"
 import { useState } from "react"
 
@@ -17,9 +27,11 @@ import {
 } from "../../formValidation"
 import { UI } from "../../types"
 
-import styles from "./Calculator.module.css"
-import { usePopup } from "../../components/Popup/Popup"
 import { Input } from "../../components/Input/Input"
+import { usePopup } from "../../components/Popup/Popup"
+
+import styles from "./Calculator.module.css"
+import { Backdrop } from "@mui/material"
 
 type SettingsTableProps = {
     calculationDate: Date
@@ -28,35 +40,41 @@ type SettingsTableProps = {
 
 const SettingsTable = ({ config }: SettingsTableProps) => {
     return (
-        <table>
-            <caption>Настройки расчета</caption>
-            <tbody>
-                <tr>
-                    <td>Ключевая ставка на дату расчета</td>
-                    <td>{numberToPercent(config.keyRate)}%</td>
-                </tr>
-                <tr>
-                    <td>Дней на оплату</td>
-                    <td>{config.daysToPay}</td>
-                </tr>
-                <tr>
-                    <td>Дней на отсрочку</td>
-                    <td>{config.deferredDaysCount}</td>
-                </tr>
-                <tr>
-                    <td>Действующие моратории</td>
-                    <td>
-                        {config.moratoriums.map(([start, end], i) => (
-                            <p key={i}>
-                                {`${dayjs(start).format("L")} - ${dayjs(
-                                    end
-                                ).format("L")}`}
-                            </p>
-                        ))}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <TableContainer>
+            <Table>
+                <caption className={styles.settings_table_caption}>
+                    Настройки расчета
+                </caption>
+                <TableBody>
+                    <TableRow key="keyRate">
+                        <TableCell>Ключевая ставка на дату расчета</TableCell>
+                        <TableCell>
+                            {numberToPercent(config.keyRate)}%
+                        </TableCell>
+                    </TableRow>
+                    <TableRow key="daysToPay">
+                        <TableCell>Дней на оплату</TableCell>
+                        <TableCell>{config.daysToPay}</TableCell>
+                    </TableRow>
+                    <TableRow key="deferredDaysCount">
+                        <TableCell>Дней на отсрочку</TableCell>
+                        <TableCell>{config.deferredDaysCount}</TableCell>
+                    </TableRow>
+                    <TableRow key="moratoriums">
+                        <TableCell>Действующие моратории</TableCell>
+                        <TableCell>
+                            {config.moratoriums.map(([start, end], i) => (
+                                <p key={i}>
+                                    {`${dayjs(start).format("L")} - ${dayjs(
+                                        end
+                                    ).format("L")}`}
+                                </p>
+                            ))}
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
     )
 }
 
@@ -102,12 +120,20 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
 
     return (
         <>
-            <section className={styles.calculator_settings}>
-                <SettingsTable {...props} />
-                <button title="Редактировать" type="button" onClick={open}>
-                    <span className="gg-pen"></span>
-                </button>
-            </section>
+            <Box className={styles.calculator_settings} component="section">
+                <Container>
+                    <Stack direction="row">
+                        <SettingsTable {...props} />
+                        <Button
+                            title="Редактировать"
+                            type="button"
+                            onClick={open}
+                        >
+                            <CreateOutlinedIcon></CreateOutlinedIcon>={" "}
+                        </Button>
+                    </Stack>
+                </Container>
+            </Box>
             <Popup {...popup}>
                 <Form {...form}>
                     <Input {...keyRateInput} />

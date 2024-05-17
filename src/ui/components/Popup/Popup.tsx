@@ -1,11 +1,7 @@
-import clsx from "clsx"
-import ReactDOM from "react-dom"
-
+import { Backdrop } from "@mui/material"
 import { useRef } from "react"
 import { useModalClose } from "../../hooks/useModalClose"
 import style from "./Popup.module.css"
-
-const popupElement = document.getElementById("popup")
 
 type PopupProps = {
     isOpened: boolean
@@ -22,13 +18,12 @@ export const Popup = ({ isOpened, close, children }: PopupProps) => {
         containerRef: contentRef,
     })
 
-    return ReactDOM.createPortal(
-        <div className={clsx(style.popup, isOpened && style.is_opened)}>
+    return (
+        <Backdrop open={isOpened}>
             <div ref={contentRef} className={style.content}>
                 {children}
             </div>
-        </div>,
-        popupElement!
+        </Backdrop>
     )
 }
 
@@ -37,7 +32,10 @@ type PopupHookResult = {
     close: () => void
 }
 
-export const usePopup = (isOpened: boolean, close: () => void): PopupHookResult => {
+export const usePopup = (
+    isOpened: boolean,
+    close: () => void
+): PopupHookResult => {
     return {
         isOpened,
         close,

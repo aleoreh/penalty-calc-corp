@@ -12,6 +12,10 @@ import dayjs from "dayjs"
 import { usePopup } from "../../components/Popup/Popup"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
+import Box from "@mui/material/Box"
+import Container from "@mui/material/Container"
+import Button from "@mui/material/Button"
+import { AddOutlined } from "@mui/icons-material"
 
 export const DebtList: UI.DebtList = ({ debts, setDebts }) => {
     const [lastInputDebtPeriod, setLastInputDebtPeriod] = useState(new Date())
@@ -68,17 +72,20 @@ export const DebtList: UI.DebtList = ({ debts, setDebts }) => {
         setPopupOpened(false)
     })
 
+    const open = () => {
+        debtAddForm.reset()
+        setPopupOpened(true)
+    }
+
     return (
         <>
-            <div>
-                <button
-                    title="Добавить"
-                    type="button"
-                    onClick={() => setPopupOpened(true)}
-                >
-                    <span className="gg-add-r"></span>
-                </button>
-            </div>
+            <Box component="section">
+                <Container maxWidth="md">
+                    <Button title="Добавить" type="button" onClick={open}>
+                        <AddOutlined></AddOutlined>
+                    </Button>
+                </Container>
+            </Box>
             <Popup {...popup}>
                 <Form {...debtAddForm}>
                     <Input {...periodInput} />

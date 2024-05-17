@@ -1,8 +1,15 @@
-import clsx from "clsx"
 import React, { FormEvent } from "react"
 
+import { styled } from "@mui/material"
+import Box, { BoxProps } from "@mui/material/Box"
+import Button from "@mui/material/Button"
+import Stack from "@mui/material/Stack"
 import { FormValidation } from "../../formValidation"
 import style from "./Form.module.css"
+
+const StyledForm = styled(Box)<BoxProps<"form">>(({ theme }) => ({
+    backgroundColor: theme.palette.background.default,
+}))
 
 type ModalFormProps = {
     validation: FormValidation
@@ -30,29 +37,30 @@ export const Form = ({
     }
 
     return (
-        <form
-            className={clsx(style.modal_form)}
+        <StyledForm
+            component="form"
+            className={style.modal_form}
             action="none"
             onReset={handleReset}
             onSubmit={handleSubmit}
         >
-            <div className={style.dangerous_actions}>
-                <button title="Сброс" type="reset" onClick={reset}>
+            <Stack direction="row">
+                <Button title="Сброс" type="reset" onClick={reset}>
                     Сброс
-                </button>
-                <button title="Отмена" type="button" onClick={onClose}>
+                </Button>
+                <Button title="Отмена" type="button" onClick={onClose}>
                     Отмена
-                </button>
-            </div>
+                </Button>
+            </Stack>
             {children}
-            <button
+            <Button
                 title="Применить"
                 type="submit"
                 disabled={!validation.isValid}
             >
                 Применить
-            </button>
-        </form>
+            </Button>
+        </StyledForm>
     )
 }
 

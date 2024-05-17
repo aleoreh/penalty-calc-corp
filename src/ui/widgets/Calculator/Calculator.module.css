@@ -1,5 +1,4 @@
-.calculator_settings {
-    justify-content: start;
-    align-items: start;
+.settings_table_caption {
+    caption-side: top;
 }
 

@@ -1,3 +1,5 @@
+import TextField from "@mui/material/TextField"
+
 type InputProps = {
     label: string
     attributes: Pick<
@@ -10,10 +12,12 @@ type InputProps = {
 
 export const Input = ({ label, attributes, value, error }: InputProps) => {
     return (
-        <div>
-            <label htmlFor={attributes.id}>{label}</label>
-            <input {...attributes} value={value} className="input" />
-            <small>{error || ""}</small>
-        </div>
+        <TextField
+            {...attributes}
+            value={value}
+            label={label}
+            error={!!error}
+            helperText={error}
+        />
     )
 }

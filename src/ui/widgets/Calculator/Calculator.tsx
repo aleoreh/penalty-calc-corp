@@ -1,4 +1,7 @@
-import dayjs from "dayjs"
+import Button from "@mui/material/Button"
+import Stack from "@mui/material/Stack"
+import { DatePicker } from "@mui/x-date-pickers/DatePicker"
+import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
 
 import { CalculatorConfig } from "../../../domain/calculator-config"
@@ -12,8 +15,8 @@ export const Calculator: UI.Calculator = ({
     defaultConfig,
     calculate,
 }) => {
-    const [calculationDate, setCalculationDate] = useState<Date>(
-        defaultCalculationDate
+    const [calculationDate, setCalculationDate] = useState<Dayjs | null>(
+        dayjs(defaultCalculationDate)
     )
     const [config, setConfig] = useState<CalculatorConfig>(defaultConfig)
     const [debts, setDebts] = useState<Debt[]>([])
@@ -22,36 +25,42 @@ export const Calculator: UI.Calculator = ({
         setDebts([])
     }
 
-    const handleCalculationDateInput = (
-        evt: React.FormEvent<HTMLInputElement>
-    ) => {
-        setCalculationDate(new Date(evt.currentTarget.value))
-    }
-
     return (
-        <>
-            <label className="calculation-date" title="Дата расчета">
-                Дата расчета
-                <input
-                    type="date"
-                    onInput={handleCalculationDateInput}
-                    value={dayjs(calculationDate).format("YYYY-MM-DD")}
-                />
-            </label>
+        <Stack direction="column">
+            <DatePicker
+                label="Дата расчета"
+                value={calculationDate}
+                onChange={setCalculationDate}
+            />
             <CalculatorSettings
-                calculationDate={calculationDate}
+                calculationDate={
+                    calculationDate?.toDate() || defaultCalculationDate
+                }
                 config={config}
                 setConfig={setConfig}
                 defaultConfig={defaultConfig}
             />
             <DebtList debts={debts} setDebts={setDebts} />
-            <button
-                onClick={() => calculate({ calculationDate, config }, debts[0])}
+            <Button
+                variant="outlined"
+                onClick={() =>
+                    calculate(
+                        {
+                            calculationDate:
+                                calculationDate?.toDate() ||
+                                defaultCalculationDate,
+                            config,
+                        },
+                        debts[0]
+                    )
+                }
             >
                 Рассчитать
-            </button>
-            <button onClick={clearDebtList}>Очистить список долгов</button>
-        </>
+            </Button>
+            <Button variant="outlined" onClick={clearDebtList}>
+                Очистить список долгов
+            </Button>
+        </Stack>
     )
 }
 
