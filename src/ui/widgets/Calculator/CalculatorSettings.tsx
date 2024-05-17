@@ -18,6 +18,7 @@ import {
 import { UI } from "../../types"
 
 import styles from "./Calculator.module.css"
+import { usePopup } from "../../components/Popup/Popup"
 
 type SettingsTableProps = {
     calculationDate: Date
@@ -87,8 +88,15 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         setPopupOpened(false)
     )
 
+    const popup = usePopup(popupOpened, () => {
+        form.reset()
+        setPopupOpened(false)
+    })
+
     return (
         <>
+            <pre>{JSON.stringify(keyRateInput, undefined, 2)}</pre>
+            <pre>{JSON.stringify(form, undefined, 2)}</pre>
             <section className={styles.calculator_settings}>
                 <SettingsTable {...props} />
                 <button
@@ -99,7 +107,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                     <span className="gg-pen"></span>
                 </button>
             </section>
-            <Popup isOpened={popupOpened} close={form.onClose}>
+            <Popup {...popup}>
                 <Form {...form}>
                     <div>
                         <label htmlFor={keyRateInput.attributes.id}>
