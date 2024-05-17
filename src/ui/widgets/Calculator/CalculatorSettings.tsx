@@ -70,6 +70,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
         "Ключевая ставка, %",
         inputDecoders.decimal,
         {
+            type: "text",
             name: "keyRate",
             id: "key-rate",
         }

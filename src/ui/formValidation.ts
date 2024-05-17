@@ -1,6 +1,12 @@
 import dayjs from "dayjs"
-import { DecodeResult, Decoder, datelike, regex, string } from "decoders"
-import { ChangeEvent, useCallback, useMemo, useState } from "react"
+import { DecodeResult, Decoder, date, regex, string } from "decoders"
+import {
+    ChangeEvent,
+    HTMLInputTypeAttribute,
+    useCallback,
+    useMemo,
+    useState,
+} from "react"
 
 type ValidationError = string | null
 
@@ -12,6 +18,7 @@ export type FormValidation = {
 }
 
 type Attributes = {
+    type: Extract<HTMLInputTypeAttribute, "text" | "date">
     name: string
     onChange?: (
         evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -55,7 +62,7 @@ export const useValidatedInput = <T>(
     initValue: string,
     label: string,
     decoder: Decoder<T>,
-    attributes: Pick<Attributes, "id" | "name">
+    attributes: Pick<Attributes, "id" | "name" | "type">
 ): ValidatedInput<T> => {
     const [value, setValue] = useState(initValue)
 
