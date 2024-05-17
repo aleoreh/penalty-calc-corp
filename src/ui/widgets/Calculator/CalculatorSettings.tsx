@@ -95,8 +95,6 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
 
     return (
         <>
-            <pre>{JSON.stringify(keyRateInput, undefined, 2)}</pre>
-            <pre>{JSON.stringify(form, undefined, 2)}</pre>
             <section className={styles.calculator_settings}>
                 <SettingsTable {...props} />
                 <button
