@@ -13,10 +13,10 @@ import { Input } from "../../components/Input"
 import { Popup } from "../../components/Popup"
 import { usePopup } from "../../components/Popup/Popup"
 import {
-    inputDecoders,
     useValidatedForm,
     useValidatedInput,
 } from "../../formValidation"
+import { inputDecoders } from "../../validationDecoders"
 import { UI } from "../../types"
 import List from "@mui/material/List"
 import { DebtView } from "../DebtView"

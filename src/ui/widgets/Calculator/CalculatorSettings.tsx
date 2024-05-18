@@ -18,16 +18,15 @@ import {
     percentToNumber,
 } from "../../../shared/percent"
 import { Form } from "../../components/Form"
+import { Input } from "../../components/Input/Input"
 import { Popup } from "../../components/Popup"
+import { usePopup } from "../../components/Popup/Popup"
 import {
-    inputDecoders,
     useValidatedForm,
     useValidatedInput,
 } from "../../formValidation"
 import { UI } from "../../types"
-
-import { Input } from "../../components/Input/Input"
-import { usePopup } from "../../components/Popup/Popup"
+import { inputDecoders } from "../../validationDecoders"
 
 import styles from "./Calculator.module.css"
 
