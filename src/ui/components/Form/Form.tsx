@@ -1,15 +1,15 @@
-import React, { FormEvent } from "react"
-
 import { BoxProps } from "@mui/material/Box"
 import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import CardActions from "@mui/material/CardActions"
+import CardContent from "@mui/material/CardContent"
+import CardHeader from "@mui/material/CardHeader"
 import Stack from "@mui/material/Stack"
+import { styled } from "@mui/material/styles"
+import React, { FormEvent } from "react"
+
 import { FormValidation } from "../../formValidation"
 import style from "./Form.module.css"
-import { styled } from "@mui/material/styles"
-import Card from "@mui/material/Card"
-import CardHeader from "@mui/material/CardHeader"
-import CardContent from "@mui/material/CardContent"
-import CardActions from "@mui/material/CardActions"
 
 const StyledForm = styled(Card)<BoxProps<"form">>(({ theme }) => ({
     backgroundColor: theme.palette.background.default,
@@ -20,6 +20,7 @@ type ModalFormProps = {
     reset: () => void
     onClose: () => void
     submit: () => void
+    submitAndContinue?: () => void
     children?: JSX.Element | JSX.Element[]
 }
 
@@ -28,6 +29,7 @@ export const Form = ({
     reset,
     onClose,
     submit,
+    submitAndContinue,
     children,
 }: ModalFormProps) => {
     const handleReset = (evt: React.FormEvent) => {
@@ -38,6 +40,11 @@ export const Form = ({
         evt.preventDefault()
         submit()
         onClose()
+    }
+
+    const handleSubmitAndContinue = () => {
+        onClose()
+        submitAndContinue?.()
     }
 
     return (
@@ -63,6 +70,16 @@ export const Form = ({
 
             <CardContent>{children}</CardContent>
             <CardActions>
+                {submitAndContinue && (
+                    <Button
+                        title="Применить и продолжить"
+                        type="button"
+                        disabled={!validation.isValid}
+                        onClick={handleSubmitAndContinue}
+                    >
+                        Применить и продолжить
+                    </Button>
+                )}
                 <Button
                     title="Применить"
                     type="submit"
