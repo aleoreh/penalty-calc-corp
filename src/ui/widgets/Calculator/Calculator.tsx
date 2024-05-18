@@ -26,7 +26,7 @@ export const Calculator: UI.Calculator = ({
     }
 
     return (
-        <Stack direction="column">
+        <Stack className="calculator" direction="column">
             <DatePicker
                 label="Дата расчета"
                 value={calculationDate}

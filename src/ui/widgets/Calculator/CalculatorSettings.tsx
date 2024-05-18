@@ -117,7 +117,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
 
     return (
         <>
-            <Box className={styles.calculator_settings} component="section">
+            <Box className="calculator-settings" component="section">
                 <Container>
                     <Stack direction="row">
                         <SettingsTable {...props} />

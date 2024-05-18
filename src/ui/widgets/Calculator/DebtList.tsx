@@ -99,7 +99,7 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
 
     return (
         <>
-            <Box component="section">
+            <Box className="debt-list" component="section">
                 <Container maxWidth="md">
                     <Button title="Добавить" type="button" onClick={open}>
                         <AddOutlined></AddOutlined>

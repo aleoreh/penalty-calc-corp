@@ -14,7 +14,7 @@ type Props = {
 
 export const DebtItem = ({ debt }: Props) => {
     return (
-        <TableContainer>
+        <TableContainer className="debt-item">
             <Table>
                 <TableHead>
                     <TableRow>
