@@ -14,12 +14,11 @@ import { DatePicker, DateValidationError } from "@mui/x-date-pickers"
 import dayjs, { Dayjs } from "dayjs"
 import { useMemo, useState } from "react"
 
-import {
+import debtsModule, {
     Debt,
     createEmptyDebt,
     getDefaultDueDate,
-    paymentsAmount,
-    periodKey,
+    periodKey
 } from "../../../domain/debt"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
@@ -35,8 +34,11 @@ function periodIsIn(periods: Date[]) {
         periods.map(periodKey).includes(periodKey(period.toDate()))
 }
 
-function allPaymentsAmount(debts: Debt[]) {
-    return debts.reduce((acc, debt) => acc + paymentsAmount(debt), 0)
+function totalRemainingBalance(debts: Debt[]) {
+    return debts.reduce(
+        (acc, debt) => acc + debtsModule.getRemainingBalance(debt),
+        0
+    )
 }
 
 export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
@@ -66,7 +68,15 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         const newDebt =
             inputDebtPeriod &&
             createEmptyDebt(inputDebtPeriod.toDate(), config.daysToPay)
-        newDebt && setDebts([...debts, newDebt])
+        newDebt &&
+            debtAmountInput.validatedValue.ok &&
+            setDebts([
+                ...debts,
+                {
+                    ...newDebt,
+                    amount: debtAmountInput.validatedValue.value as Kopek,
+                },
+            ])
     }
 
     const submitDebtAddAndContinue = () => {
@@ -140,7 +150,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <Typography>Итого: {allPaymentsAmount(debts)} р.</Typography>
+                    <Typography>Итого: {totalRemainingBalance(debts)} р.</Typography>
                 </Container>
             </Box>
             <Popup {...popup}>
