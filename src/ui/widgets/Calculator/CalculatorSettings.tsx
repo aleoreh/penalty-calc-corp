@@ -8,7 +8,6 @@ import TableBody from "@mui/material/TableBody"
 import TableCell from "@mui/material/TableCell"
 import TableContainer from "@mui/material/TableContainer"
 import TableRow from "@mui/material/TableRow"
-import "css.gg/icons/css/pen.css"
 import { useState } from "react"
 
 import { CalculatorConfig } from "../../../domain/calculator-config"
@@ -31,7 +30,6 @@ import { Input } from "../../components/Input/Input"
 import { usePopup } from "../../components/Popup/Popup"
 
 import styles from "./Calculator.module.css"
-import { Backdrop } from "@mui/material"
 
 type SettingsTableProps = {
     calculationDate: Date
