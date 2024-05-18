@@ -47,6 +47,11 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
         newDebt && setDebts([...debts, newDebt])
     }
 
+    const submitDebtAddAndContinue = () => {
+        submitDebtAdd()
+        open()
+    }
+
     const debtAddForm = useValidatedForm(
         [debtAmountInput],
         submitDebtAdd,
@@ -81,9 +86,10 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
                         <AddOutlined></AddOutlined>
                     </Button>
                     <List>
-                        {debts.map((debt) => (
+                        {debts.map((debt, i) => (
                             <DebtView
-                                key={debt.period.toISOString()}
+                                // key={debt.period.toISOString()}
+                                key={i}
                                 debt={debt}
                             />
                         ))}
@@ -91,7 +97,10 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
                 </Container>
             </Box>
             <Popup {...popup}>
-                <Form {...debtAddForm}>
+                <Form
+                    {...debtAddForm}
+                    submitAndContinue={submitDebtAddAndContinue}
+                >
                     <Stack>
                         <DatePicker
                             label={"Период"}
@@ -112,3 +121,4 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
         </>
     )
 }
+
