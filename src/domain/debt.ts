@@ -62,6 +62,10 @@ export const getRemainingBalance = (debt: Debt) =>
     debt.amount -
     debt.payments.reduce((acc, payment) => acc + payment.amount, 0)
 
+export const periodKey = (period: Date) => {
+    return dayjs(period).format("L")
+}
+
 const debts = {
     update: updateDebt,
     addPayment,
