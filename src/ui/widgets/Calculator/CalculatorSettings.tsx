@@ -126,7 +126,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                             type="button"
                             onClick={open}
                         >
-                            <CreateOutlinedIcon></CreateOutlinedIcon>={" "}
+                            <CreateOutlinedIcon></CreateOutlinedIcon>
                         </Button>
                     </Stack>
                 </Container>
