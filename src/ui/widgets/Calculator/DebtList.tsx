@@ -2,8 +2,14 @@ import { AddOutlined } from "@mui/icons-material"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Container from "@mui/material/Container"
-import List from "@mui/material/List"
 import Stack from "@mui/material/Stack"
+import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableContainer from "@mui/material/TableContainer"
+import TableHead from "@mui/material/TableHead"
+import TableRow from "@mui/material/TableRow"
+import Typography from "@mui/material/Typography"
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers"
 import dayjs, { Dayjs } from "dayjs"
 import { useMemo, useState } from "react"
@@ -20,7 +26,7 @@ import { usePopup } from "../../components/Popup/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
-import { DebtView } from "../DebtView"
+import { DebtItemRow } from "../DebtItemRow"
 
 function periodIsIn(periods: Date[]) {
     return (period: Dayjs) =>
@@ -101,18 +107,32 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
         <>
             <Box className="debt-list" component="section">
                 <Container maxWidth="md">
-                    <Button title="Добавить" type="button" onClick={open}>
-                        <AddOutlined></AddOutlined>
-                    </Button>
-                    <List>
-                        {debts.map((debt, i) => (
-                            <DebtView
-                                // key={debt.period.toISOString()}
-                                key={i}
-                                debt={debt}
-                            />
-                        ))}
-                    </List>
+                    <Stack direction="row">
+                        <Typography>Долги</Typography>
+                        <Button title="Добавить" type="button" onClick={open}>
+                            <AddOutlined></AddOutlined>
+                        </Button>
+                    </Stack>
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Период</TableCell>
+                                    <TableCell>Начало просрочки</TableCell>
+                                    <TableCell>Долг</TableCell>
+                                    <TableCell>Остаток</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {debts.map((debt) => (
+                                    <DebtItemRow
+                                        key={periodKey(debt.period)}
+                                        debt={debt}
+                                    />
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Container>
             </Box>
             <Popup {...popup}>
