@@ -7,7 +7,7 @@ import { useState } from "react"
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { Debt } from "../../../domain/debt"
 import { UI } from "../../types"
-import { DebtsList } from "../DebtsList/DebtList"
+import { DebtsList } from "../DebtsList/DebtsList"
 import { CalculatorSettings } from "./CalculatorSettings"
 
 export const Calculator: UI.Calculator = ({
