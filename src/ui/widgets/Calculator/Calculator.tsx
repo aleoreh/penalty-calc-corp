@@ -7,8 +7,8 @@ import { useState } from "react"
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { Debt } from "../../../domain/debt"
 import { UI } from "../../types"
+import { DebtsList } from "../DebtsList/DebtList"
 import { CalculatorSettings } from "./CalculatorSettings"
-import { DebtList } from "./DebtList"
 
 export const Calculator: UI.Calculator = ({
     defaultCalculationDate,
@@ -40,7 +40,7 @@ export const Calculator: UI.Calculator = ({
                 setConfig={setConfig}
                 defaultConfig={defaultConfig}
             />
-            <DebtList config={config} debts={debts} setDebts={setDebts} />
+            <DebtsList config={config} debts={debts} setDebts={setDebts} />
             <Button
                 variant="outlined"
                 onClick={() =>

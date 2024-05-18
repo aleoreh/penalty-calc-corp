@@ -26,14 +26,14 @@ import { usePopup } from "../../components/Popup/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
-import { DebtItemRow } from "../DebtItemRow"
+import { DebtItemRow } from "./DebtItemRow"
 
 function periodIsIn(periods: Date[]) {
     return (period: Dayjs) =>
         periods.map(periodKey).includes(periodKey(period.toDate()))
 }
 
-export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
+export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
     const [inputDebtPeriod, setInputDebtPeriod] = useState<Dayjs | null>(
         dayjs()
     )
@@ -121,6 +121,7 @@ export const DebtList: UI.DebtList = ({ config, debts, setDebts }) => {
                                     <TableCell>Начало просрочки</TableCell>
                                     <TableCell>Долг</TableCell>
                                     <TableCell>Остаток</TableCell>
+                                    <TableCell>...</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
