@@ -15,8 +15,10 @@ import dayjs, { Dayjs } from "dayjs"
 import { useMemo, useState } from "react"
 
 import {
+    Debt,
     createEmptyDebt,
     getDefaultDueDate,
+    paymentsAmount,
     periodKey,
 } from "../../../domain/debt"
 import { Form } from "../../components/Form"
@@ -31,6 +33,10 @@ import { DebtItemRow } from "./DebtItemRow"
 function periodIsIn(periods: Date[]) {
     return (period: Dayjs) =>
         periods.map(periodKey).includes(periodKey(period.toDate()))
+}
+
+function allPaymentsAmount(debts: Debt[]) {
+    return debts.reduce((acc, debt) => acc + paymentsAmount(debt), 0)
 }
 
 export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
@@ -134,6 +140,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    <Typography>Итого: {allPaymentsAmount(debts)} р.</Typography>
                 </Container>
             </Box>
             <Popup {...popup}>
