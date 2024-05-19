@@ -49,7 +49,7 @@ function addDebt(
     inputDebtPeriod: Dayjs,
     daysToPay: number,
     amount: Kopek
-) {
+): Debt[] {
     const newDebt = createEmptyDebt(inputDebtPeriod.toDate(), daysToPay)
     return [
         ...debts,
@@ -58,6 +58,12 @@ function addDebt(
             amount,
         },
     ]
+}
+
+function updateDebt(debts: Debt[], debt: Debt): Debt[] {
+    return debts.map((x) =>
+        periodKey(x.period) === periodKey(debt.period) ? debt : x
+    )
 }
 
 function deleteDebt(debts: Debt[], debt: Debt): Debt[] {
@@ -203,6 +209,12 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         setIsConfirmDeleteOpened(true)
     }
 
+    // ~~~~~~~~~~~~~~~ helpers ~~~~~~~~~~~~~~~ //
+
+    const setDebt = (debt: Debt) => {
+        setDebts(updateDebt(debts, debt))
+    }
+
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
@@ -237,6 +249,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                     <DebtItemRow
                                         key={periodKey(debt.period)}
                                         debt={debt}
+                                        setDebt={setDebt}
                                         deleteDebt={() =>
                                             confirmDebtDeleting(debt)
                                         }
