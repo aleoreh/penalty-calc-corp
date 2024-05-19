@@ -28,6 +28,7 @@ import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
 import { DebtItemRow } from "./DebtItemRow"
+import { CalculatorConfig } from "../../../domain/calculator-config"
 
 function periodIsIn(periods: Date[]) {
     return (period: Dayjs) =>
@@ -41,27 +42,27 @@ function totalRemainingBalance(debts: Debt[]) {
     )
 }
 
-export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
+type DebtAddFormProps = {
+    config: CalculatorConfig
+    debts: Debt[]
+    setDebts: (debts: Debt[]) => void
+    openPopup: () => void
+    closePopup: () => void
+}
+
+const DebtAddForm = ({
+    config,
+    debts,
+    setDebts,
+    openPopup,
+    closePopup,
+}: DebtAddFormProps) => {
     const [inputDebtPeriod, setInputDebtPeriod] = useState<Dayjs | null>(
         dayjs()
     )
     const [dueDate, setDueDate] = useState<Dayjs | null>(dayjs())
-
-    const [popupOpened, setPopupOpened] = useState<boolean>(false)
-
     const [periodError, setPeriodError] = useState<DateValidationError | null>(
         null
-    )
-
-    const debtAmountInput = useValidatedInput(
-        String(0),
-        "Сумма долга",
-        inputDecoders.decimal,
-        {
-            type: "text",
-            id: "debt-amount",
-            name: "debtAmount",
-        }
     )
 
     const submitDebtAdd = () => {
@@ -79,27 +80,26 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
             ])
     }
 
-    const submitDebtAddAndContinue = () => {
-        submitDebtAdd()
-        open()
-    }
+    const debtAmountInput = useValidatedInput(
+        String(0),
+        "Сумма долга",
+        inputDecoders.decimal,
+        {
+            type: "text",
+            id: "debt-amount",
+            name: "debtAmount",
+        }
+    )
 
     const debtAddForm = useValidatedForm(
         [debtAmountInput],
         submitDebtAdd,
-        () => {
-            setPopupOpened(false)
-        }
+        closePopup
     )
 
-    const popup = usePopup(popupOpened, () => {
-        debtAddForm.reset()
-        setPopupOpened(false)
-    })
-
-    const open = () => {
-        debtAddForm.reset()
-        setPopupOpened(true)
+    const submitDebtAddAndContinue = () => {
+        submitDebtAdd()
+        open()
     }
 
     const handleInputDebtPeriodChange = (value: Dayjs | null) => {
@@ -110,6 +110,11 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
             )
     }
 
+    const open = () => {
+        debtAddForm.reset()
+        openPopup()
+    }
+
     const periodErrorMessage = useMemo(() => {
         switch (periodError) {
             case "shouldDisableMonth":
@@ -118,6 +123,47 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                 return ""
         }
     }, [periodError])
+
+    return (
+        <Form {...debtAddForm} submitAndContinue={submitDebtAddAndContinue}>
+            <Stack>
+                <DatePicker
+                    label={"Период"}
+                    value={inputDebtPeriod}
+                    onChange={handleInputDebtPeriodChange}
+                    views={["month"]}
+                    view="month"
+                    shouldDisableMonth={periodIsIn(debts.map((x) => x.period))}
+                    onError={setPeriodError}
+                    slotProps={{
+                        textField: {
+                            helperText: periodErrorMessage,
+                        },
+                    }}
+                />
+                <DatePicker
+                    label={"Начало просрочки"}
+                    value={dueDate}
+                    onChange={setDueDate}
+                />
+                <Input {...debtAmountInput} />
+            </Stack>
+        </Form>
+    )
+}
+
+export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
+    const [popupOpened, setPopupOpened] = useState<boolean>(false)
+
+    const openPopup = () => {
+        setPopupOpened(true)
+    }
+
+    const closePopup = () => {
+        setPopupOpened(false)
+    }
+
+    const popup = usePopup(popupOpened, closePopup)
 
     const deleteDebt = (debt: Debt) => {
         setDebts(
@@ -131,7 +177,11 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                 <Container maxWidth="md">
                     <Stack direction="row">
                         <Typography>Долги</Typography>
-                        <Button title="Добавить" type="button" onClick={open}>
+                        <Button
+                            title="Добавить"
+                            type="button"
+                            onClick={openPopup}
+                        >
                             <AddOutlined></AddOutlined>
                         </Button>
                     </Stack>
@@ -163,35 +213,13 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                 </Container>
             </Box>
             <Popup {...popup}>
-                <Form
-                    {...debtAddForm}
-                    submitAndContinue={submitDebtAddAndContinue}
-                >
-                    <Stack>
-                        <DatePicker
-                            label={"Период"}
-                            value={inputDebtPeriod}
-                            onChange={handleInputDebtPeriodChange}
-                            views={["month"]}
-                            view="month"
-                            shouldDisableMonth={periodIsIn(
-                                debts.map((x) => x.period)
-                            )}
-                            onError={setPeriodError}
-                            slotProps={{
-                                textField: {
-                                    helperText: periodErrorMessage,
-                                },
-                            }}
-                        />
-                        <DatePicker
-                            label={"Начало просрочки"}
-                            value={dueDate}
-                            onChange={setDueDate}
-                        />
-                        <Input {...debtAmountInput} />
-                    </Stack>
-                </Form>
+                <DebtAddForm
+                    config={config}
+                    debts={debts}
+                    setDebts={setDebts}
+                    openPopup={openPopup}
+                    closePopup={closePopup}
+                />
             </Popup>
         </>
     )
