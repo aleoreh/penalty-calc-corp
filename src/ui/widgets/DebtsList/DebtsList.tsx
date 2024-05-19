@@ -14,24 +14,23 @@ import { DatePicker, DateValidationError } from "@mui/x-date-pickers"
 import dayjs, { Dayjs } from "dayjs"
 import { useMemo, useState } from "react"
 
+import { CalculatorConfig } from "../../../domain/calculator-config"
 import debtsModule, {
     Debt,
     createEmptyDebt,
     getDefaultDueDate,
     periodKey,
 } from "../../../domain/debt"
+import { ConfirmDialog } from "../../components/ConfirmDialog"
+import { useConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
-import { Popup } from "../../components/Popup"
-import { usePopup } from "../../components/Popup/Popup"
+import { Popup, usePopup } from "../../components/Popup"
+
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
 import { DebtItemRow } from "./DebtItemRow"
-import { CalculatorConfig } from "../../../domain/calculator-config"
-import { ConfirmDialog } from "../../components/ConfirmDialog"
-import { Debug } from "../../../debug"
-import { useConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog"
 
 function periodIsIn(periods: Date[]) {
     return (period: Dayjs) =>
@@ -225,9 +224,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                         key={periodKey(debt.period)}
                                         debt={debt}
                                         deleteDebt={() =>
-                                            Debug.log("on delete")(
-                                                confirmDebtDeleting(debt)
-                                            )
+                                            confirmDebtDeleting(debt)
                                         }
                                     />
                                 ))}

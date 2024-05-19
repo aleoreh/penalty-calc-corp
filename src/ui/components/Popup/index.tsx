@@ -1,1 +1,2 @@
-export { Popup } from "./Popup"
+export { Popup, usePopup } from "./Popup"
+
