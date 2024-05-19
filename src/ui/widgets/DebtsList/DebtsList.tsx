@@ -29,6 +29,9 @@ import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
 import { DebtItemRow } from "./DebtItemRow"
 import { CalculatorConfig } from "../../../domain/calculator-config"
+import { ConfirmDialog } from "../../components/ConfirmDialog"
+import { Debug } from "../../../debug"
+import { useConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog"
 
 function periodIsIn(periods: Date[]) {
     return (period: Dayjs) =>
@@ -155,6 +158,8 @@ const DebtAddForm = ({
 export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
     const [popupOpened, setPopupOpened] = useState<boolean>(false)
 
+    const [isConfirmDeleteOpened, setIsConfirmDeleteOpened] = useState(false)
+
     const openPopup = () => {
         setPopupOpened(true)
     }
@@ -163,12 +168,30 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         setPopupOpened(false)
     }
 
+    const debtDeleteConfirmDialog = useConfirmDialog({
+        id: "debtDeleteConfirm",
+        open: isConfirmDeleteOpened,
+        onClose: (debt?: Debt) => {
+            setIsConfirmDeleteOpened(false)
+            if (debt) {
+                setDebts(
+                    debts.filter(
+                        (x) => periodKey(x.period) !== periodKey(debt.period)
+                    )
+                )
+            }
+        },
+    })
+
     const popup = usePopup(popupOpened, closePopup)
 
-    const deleteDebt = (debt: Debt) => {
-        setDebts(
-            debts.filter((x) => periodKey(x.period) !== periodKey(debt.period))
-        )
+    const confirmDebtDeleting = (debt: Debt) => {
+        debtDeleteConfirmDialog.configure({
+            value: debt,
+            title: `Удалить долг за ${dayjs(debt.period).format("MMMM YYYY")}?`,
+            confirmText: "Да, удалить",
+        })
+        setIsConfirmDeleteOpened(true)
     }
 
     return (
@@ -201,7 +224,11 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                     <DebtItemRow
                                         key={periodKey(debt.period)}
                                         debt={debt}
-                                        deleteDebt={() => deleteDebt(debt)}
+                                        deleteDebt={() =>
+                                            Debug.log("on delete")(
+                                                confirmDebtDeleting(debt)
+                                            )
+                                        }
                                     />
                                 ))}
                             </TableBody>
@@ -221,6 +248,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                     closePopup={closePopup}
                 />
             </Popup>
+            <ConfirmDialog {...debtDeleteConfirmDialog} />
         </>
     )
 }
