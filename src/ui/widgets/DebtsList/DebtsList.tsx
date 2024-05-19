@@ -18,7 +18,7 @@ import debtsModule, {
     Debt,
     createEmptyDebt,
     getDefaultDueDate,
-    periodKey
+    periodKey,
 } from "../../../domain/debt"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
@@ -119,6 +119,12 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         }
     }, [periodError])
 
+    const deleteDebt = (debt: Debt) => {
+        setDebts(
+            debts.filter((x) => periodKey(x.period) !== periodKey(debt.period))
+        )
+    }
+
     return (
         <>
             <Box className="debt-list" component="section">
@@ -145,12 +151,15 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                     <DebtItemRow
                                         key={periodKey(debt.period)}
                                         debt={debt}
+                                        deleteDebt={() => deleteDebt(debt)}
                                     />
                                 ))}
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <Typography>Итого: {totalRemainingBalance(debts)} р.</Typography>
+                    <Typography>
+                        Итого: {totalRemainingBalance(debts)} р.
+                    </Typography>
                 </Container>
             </Box>
             <Popup {...popup}>

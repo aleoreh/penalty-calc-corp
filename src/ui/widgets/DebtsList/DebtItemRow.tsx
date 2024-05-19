@@ -14,7 +14,7 @@ import {
 type Props = {
     debt: Debt
     setDebt?: (debt: Debt) => () => void
-    deleteDebt?: (debt: Debt) => () => void
+    deleteDebt?: () => void
 }
 
 export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
@@ -32,7 +32,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                     <Button>
                         <CreateOutlined></CreateOutlined>
                     </Button>
-                    <Button onClick={deleteDebt?.(debt)}>
+                    <Button onClick={deleteDebt}>
                         <DeleteOutline></DeleteOutline>
                     </Button>
                 </Stack>
