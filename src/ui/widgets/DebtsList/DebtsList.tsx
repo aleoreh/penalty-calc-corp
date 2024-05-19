@@ -44,6 +44,10 @@ function totalRemainingBalance(debts: Debt[]) {
     )
 }
 
+function deleteDebt(debts: Debt[], debt: Debt): Debt[] {
+    return debts.filter((x) => periodKey(x.period) !== periodKey(debt.period))
+}
+
 type DebtAddFormProps = {
     config: CalculatorConfig
     debts: Debt[]
@@ -155,7 +159,15 @@ const DebtAddForm = ({
 }
 
 export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
+    // ~~~~~~~~~~~~ add debt form ~~~~~~~~~~~~ //
+
     const [addDebtPopupOpened, setAddDebtPopupOpened] = useState<boolean>(false)
+
+    const addDebtPopup = usePopup(addDebtPopupOpened, () => {
+        setAddDebtPopupOpened(false)
+    })
+
+    // ~~~~~~~~ confirm delete dialog ~~~~~~~~ //
 
     const [isConfirmDeleteOpened, setIsConfirmDeleteOpened] = useState(false)
 
@@ -164,18 +176,8 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         open: isConfirmDeleteOpened,
         onClose: (debt?: Debt) => {
             setIsConfirmDeleteOpened(false)
-            if (debt) {
-                setDebts(
-                    debts.filter(
-                        (x) => periodKey(x.period) !== periodKey(debt.period)
-                    )
-                )
-            }
+            debt && setDebts(deleteDebt(debts, debt))
         },
-    })
-
-    const addDebtPopup = usePopup(addDebtPopupOpened, () => {
-        setAddDebtPopupOpened(false)
     })
 
     const confirmDebtDeleting = (debt: Debt) => {
@@ -186,6 +188,8 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         })
         setIsConfirmDeleteOpened(true)
     }
+
+    // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
         <>
