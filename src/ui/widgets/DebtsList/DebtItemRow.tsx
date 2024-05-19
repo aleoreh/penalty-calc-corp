@@ -18,6 +18,7 @@ import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
+import { Payments } from "./Payments"
 import { Payment } from "../../../domain/payment"
 
 type DebtEditFormProps = {
@@ -137,6 +138,12 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
         setDebt(debts.addPayment(payment)(debt))
     }
 
+    // ~~~~~~~~~~~~~~~ payments ~~~~~~~~~~~~~~ //
+
+    const setPayments = () => {
+        throw new Error("DebtItemRow.setPayments' not implemented")
+    }
+
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
@@ -158,6 +165,14 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                             <DeleteOutline></DeleteOutline>
                         </Button>
                     </Stack>
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell colSpan={5}>
+                    <Payments
+                        payments={debt.payments}
+                        setPayments={setPayments}
+                    />
                 </TableCell>
             </TableRow>
             <Popup {...editDebtPopup}>
