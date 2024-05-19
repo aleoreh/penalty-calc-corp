@@ -10,7 +10,7 @@ import Stack from "@mui/material/Stack"
 import TableCell from "@mui/material/TableCell"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
-import { Debt, getRemainingBalance } from "../../../domain/debt"
+import debts, { Debt, getRemainingBalance } from "../../../domain/debt"
 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { Form } from "../../components/Form"
@@ -18,6 +18,7 @@ import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
+import { Payment } from "../../../domain/payment"
 
 type DebtEditFormProps = {
     debt: Debt
@@ -44,7 +45,7 @@ const DebtEditForm = ({ debt, setDebt, close }: DebtEditFormProps) => {
             dueDate &&
             setDebt({
                 ...debt,
-                amount: (debtAmountInput.validatedValue.value) as Kopek,
+                amount: debtAmountInput.validatedValue.value as Kopek,
                 dueDate: dueDate.toDate(),
             })
     }
@@ -65,6 +66,50 @@ const DebtEditForm = ({ debt, setDebt, close }: DebtEditFormProps) => {
     )
 }
 
+type AddPaymentFormProps = {
+    addPayment: (payment: Payment) => void
+    close: () => void
+}
+
+const AddPaymentForm = ({ addPayment, close }: AddPaymentFormProps) => {
+    const [paymentDate, setPaymentDate] = useState<Dayjs | null>(dayjs())
+
+    const amountInput = useValidatedInput(
+        String(0),
+        "Сумма оплаты",
+        inputDecoders.decimal,
+        {
+            type: "text",
+            id: "payment-amount",
+            name: "paymentAmount",
+        }
+    )
+
+    const submit = () => {
+        amountInput.validatedValue.ok &&
+            paymentDate &&
+            addPayment({
+                date: paymentDate.toDate(),
+                amount: amountInput.validatedValue.value as Kopek,
+            })
+    }
+
+    const form = useValidatedForm([amountInput], submit, close)
+
+    return (
+        <Form {...form}>
+            <Stack>
+                <DatePicker
+                    label={"Дата оплаты"}
+                    value={paymentDate}
+                    onChange={setPaymentDate}
+                />
+                <Input {...amountInput} />
+            </Stack>
+        </Form>
+    )
+}
+
 type Props = {
     debt: Debt
     setDebt: (debt: Debt) => void
@@ -80,6 +125,20 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
         setEditDebtOpened(false)
     })
 
+    // ~~~~~~~~~~~ add payment form ~~~~~~~~~~ //
+
+    const [addPaymentOpened, setAddPaymentOpened] = useState(false)
+
+    const addPaymentPopup = usePopup(addPaymentOpened, () => {
+        setAddPaymentOpened(false)
+    })
+
+    const addPayment = (payment: Payment) => {
+        setDebt(debts.addPayment(payment)(debt))
+    }
+
+    // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
+
     return (
         <>
             <TableRow className="debt-item-row">
@@ -89,7 +148,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                 <TableCell>{getRemainingBalance(debt)}</TableCell>
                 <TableCell>
                     <Stack direction="row">
-                        <Button>
+                        <Button onClick={() => setAddPaymentOpened(true)}>
                             <MoneyOutlined></MoneyOutlined>
                         </Button>
                         <Button onClick={() => setEditDebtOpened(true)}>
@@ -106,6 +165,12 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                     debt={debt}
                     setDebt={setDebt}
                     close={editDebtPopup.close}
+                />
+            </Popup>
+            <Popup {...addPaymentPopup}>
+                <AddPaymentForm
+                    addPayment={addPayment}
+                    close={addPaymentPopup.close}
                 />
             </Popup>
         </>
