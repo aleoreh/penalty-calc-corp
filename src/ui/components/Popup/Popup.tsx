@@ -1,23 +1,17 @@
 import Box from "@mui/material/Box"
 import Dialog from "@mui/material/Dialog"
-import { useRef } from "react"
-
-import style from "./Popup.module.css"
 
 type PopupProps = {
     isOpened: boolean
     close: () => void
+    className?: string
     children?: JSX.Element | JSX.Element[]
 }
 
-export const Popup = ({ isOpened, close, children }: PopupProps) => {
-    const contentRef = useRef<HTMLDivElement | null>(null)
-
+export const Popup = ({ isOpened, close, className, children }: PopupProps) => {
     return (
-        <Dialog open={isOpened} onClose={close}>
-            <Box ref={contentRef} className={style.content}>
-                {children}
-            </Box>
+        <Dialog className={className} open={isOpened} onClose={close}>
+            <Box>{children}</Box>
         </Dialog>
     )
 }
@@ -36,3 +30,4 @@ export const usePopup = (
         close,
     }
 }
+
