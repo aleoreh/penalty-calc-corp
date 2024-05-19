@@ -155,17 +155,9 @@ const DebtAddForm = ({
 }
 
 export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
-    const [popupOpened, setPopupOpened] = useState<boolean>(false)
+    const [addDebtPopupOpened, setAddDebtPopupOpened] = useState<boolean>(false)
 
     const [isConfirmDeleteOpened, setIsConfirmDeleteOpened] = useState(false)
-
-    const openPopup = () => {
-        setPopupOpened(true)
-    }
-
-    const closePopup = () => {
-        setPopupOpened(false)
-    }
 
     const debtDeleteConfirmDialog = useConfirmDialog({
         id: "debtDeleteConfirm",
@@ -182,7 +174,9 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         },
     })
 
-    const popup = usePopup(popupOpened, closePopup)
+    const addDebtPopup = usePopup(addDebtPopupOpened, () => {
+        setAddDebtPopupOpened(false)
+    })
 
     const confirmDebtDeleting = (debt: Debt) => {
         debtDeleteConfirmDialog.configure({
@@ -202,7 +196,9 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                         <Button
                             title="Добавить"
                             type="button"
-                            onClick={openPopup}
+                            onClick={() => {
+                                setAddDebtPopupOpened(true)
+                            }}
                         >
                             <AddOutlined></AddOutlined>
                         </Button>
@@ -236,13 +232,17 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                     </Typography>
                 </Container>
             </Box>
-            <Popup {...popup}>
+            <Popup {...addDebtPopup}>
                 <DebtAddForm
                     config={config}
                     debts={debts}
                     setDebts={setDebts}
-                    openPopup={openPopup}
-                    closePopup={closePopup}
+                    openPopup={() => {
+                        setAddDebtPopupOpened(true)
+                    }}
+                    closePopup={() => {
+                        setAddDebtPopupOpened(false)
+                    }}
                 />
             </Popup>
             <ConfirmDialog {...debtDeleteConfirmDialog} />
