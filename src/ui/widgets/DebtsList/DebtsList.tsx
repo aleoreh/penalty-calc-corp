@@ -44,6 +44,22 @@ function totalRemainingBalance(debts: Debt[]) {
     )
 }
 
+function addDebt(
+    debts: Debt[],
+    inputDebtPeriod: Dayjs,
+    daysToPay: number,
+    amount: Kopek
+) {
+    const newDebt = createEmptyDebt(inputDebtPeriod.toDate(), daysToPay)
+    return [
+        ...debts,
+        {
+            ...newDebt,
+            amount,
+        },
+    ]
+}
+
 function deleteDebt(debts: Debt[], debt: Debt): Debt[] {
     return debts.filter((x) => periodKey(x.period) !== periodKey(debt.period))
 }
@@ -72,18 +88,16 @@ const DebtAddForm = ({
     )
 
     const submitDebtAdd = () => {
-        const newDebt =
-            inputDebtPeriod &&
-            createEmptyDebt(inputDebtPeriod.toDate(), config.daysToPay)
-        newDebt &&
+        inputDebtPeriod &&
             debtAmountInput.validatedValue.ok &&
-            setDebts([
-                ...debts,
-                {
-                    ...newDebt,
-                    amount: debtAmountInput.validatedValue.value as Kopek,
-                },
-            ])
+            setDebts(
+                addDebt(
+                    debts,
+                    inputDebtPeriod,
+                    config.daysToPay,
+                    debtAmountInput.validatedValue.value as Kopek
+                )
+            )
     }
 
     const debtAmountInput = useValidatedInput(
