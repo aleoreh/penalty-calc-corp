@@ -30,7 +30,8 @@
     "react-scripts": "5.0.1",
     "srd": "^1.0.5",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "write-excel-file": "^2.0.1"
   },
   "scripts": {
     "predeploy": "npm run build",
