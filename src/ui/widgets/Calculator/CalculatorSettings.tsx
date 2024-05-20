@@ -37,7 +37,7 @@ type SettingsTableProps = {
 
 const SettingsTable = ({ config }: SettingsTableProps) => {
     return (
-        <TableContainer>
+        <TableContainer className="settings-table">
             <Table>
                 <caption className={styles.settings_table_caption}>
                     Настройки расчета

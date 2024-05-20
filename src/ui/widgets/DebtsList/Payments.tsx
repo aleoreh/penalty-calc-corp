@@ -38,7 +38,7 @@ const Payment = ({ payment, setPayment, onDelete }: PaymentProps) => {
 
     return (
         <>
-            <Stack direction="row">
+            <Stack className="payment" direction="row">
                 <Typography>{dayjs(payment.date).format("LL")}</Typography>
                 <Typography>{payment.amount}</Typography>
                 <Button onClick={() => onDelete(payment)}>
@@ -154,7 +154,7 @@ export const Payments = ({ debt, setDebt }: Props) => {
 
     return (
         <>
-            <Stack direction="row">
+            <Stack className="payments" direction="row">
                 <Typography>Оплачено</Typography>
                 <List>
                     {debt.payments.map((payment) => (

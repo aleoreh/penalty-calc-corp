@@ -219,7 +219,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
 
     return (
         <>
-            <Box className="debt-list" component="section">
+            <Box className="debts-list" component="section">
                 <Container maxWidth="md">
                     <Stack direction="row">
                         <Typography>Долги</Typography>
