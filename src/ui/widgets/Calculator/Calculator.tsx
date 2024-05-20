@@ -9,6 +9,7 @@ import { Debt } from "../../../domain/debt"
 import { UI } from "../../types"
 import { DebtsList } from "../DebtsList/DebtsList"
 import { CalculatorSettings } from "./CalculatorSettings"
+import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 
 export const Calculator: UI.Calculator = ({
     defaultCalculationDate,
@@ -21,9 +22,29 @@ export const Calculator: UI.Calculator = ({
     const [config, setConfig] = useState<CalculatorConfig>(defaultConfig)
     const [debts, setDebts] = useState<Debt[]>([])
 
-    const clearDebtList = () => {
-        setDebts([])
+    // ~~~~~~~~~~~~ clear confirm ~~~~~~~~~~~~ //
+
+    const [clearConfirmOpened, setClearConfirmOpened] = useState(false)
+
+    const clearConfirm = useConfirmDialog({
+        id: "clearConfirm",
+        open: clearConfirmOpened,
+        onClose: (debts?: Debt[]) => {
+            setClearConfirmOpened(false)
+            debts && setDebts([])
+        },
+    })
+
+    const onDebtsClear = () => {
+        clearConfirm.configure({
+            value: debts,
+            title: "Очистить список долгов?",
+            confirmText: "Да, очистить!",
+        })
+        setClearConfirmOpened(true)
     }
+
+    // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
         <Stack className="calculator" direction="column">
@@ -57,9 +78,10 @@ export const Calculator: UI.Calculator = ({
             >
                 Рассчитать
             </Button>
-            <Button variant="outlined" onClick={clearDebtList}>
+            <Button variant="outlined" onClick={onDebtsClear}>
                 Очистить список долгов
             </Button>
+            <ConfirmDialog {...clearConfirm} />
         </Stack>
     )
 }
