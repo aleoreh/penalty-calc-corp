@@ -3,12 +3,15 @@ export type Payment = {
     amount: Kopek
 }
 
-export const updatePayment =
+/**
+ * DEPRECATED!
+ */
+export const updatePaymentDeprecated =
     ({ date, amount }: Pick<Payment, "date" | "amount">) =>
     (payment: Payment): Payment => ({ ...payment, date, amount })
 
 const payments = {
-    update: updatePayment,
+    update: updatePaymentDeprecated,
 }
 
 export default payments

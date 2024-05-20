@@ -1,6 +1,6 @@
 import { it } from "@fast-check/jest"
 import { Arbitrary, date, integer, record } from "fast-check"
-import { Payment, updatePayment } from "../payment"
+import { Payment, updatePaymentDeprecated } from "../payment"
 
 const kopekArb = integer() as Arbitrary<Kopek>
 
@@ -13,7 +13,7 @@ describe("Оплата:", () => {
     it.prop([paymentArb, date(), kopekArb])(
         "при изменении платежа устанавливаются новые значения",
         (payment, newDate, newAmount) => {
-            const newPayment = updatePayment({
+            const newPayment = updatePaymentDeprecated({
                 date: newDate,
                 amount: newAmount,
             })(payment)

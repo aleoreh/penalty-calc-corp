@@ -41,6 +41,11 @@ export const addPayment =
         ],
     })
 
+export const updatePayment = (payment: DebtPayment) => (debt: Debt) => ({
+    ...debt,
+    payments: debt.payments.map((x) => (x.id === payment.id ? payment : x)),
+})
+
 export const removePayment =
     (id: PaymentId) =>
     (debt: Debt): Debt => ({
@@ -70,6 +75,7 @@ export const periodKey = (period: Date) => {
 const debts = {
     update: updateDebt,
     addPayment,
+    updatePayment,
     removePayment,
     paymentsLength,
     paymentsAmount,
