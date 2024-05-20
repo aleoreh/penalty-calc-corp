@@ -1,16 +1,19 @@
-import { Box, Container, Typography } from "@mui/material"
+import AppBar from "@mui/material/AppBar"
+import Box from "@mui/material/Box"
+import Container from "@mui/material/Container"
+import Typography from "@mui/material/Typography"
 import { useEffect, useState } from "react"
 import { RD, SRD, failure, loading, success } from "srd"
-
+import { calculate } from "../../../app/calculate"
 import { GetCalculatorConfig } from "../../../app/ports"
 import { CalculationResult } from "../../../domain/calculation-result"
+import { Calculator } from "../../../domain/calculator"
 import { CalculatorConfig } from "../../../domain/calculator-config"
+import { Debt } from "../../../domain/debt"
 import { ErrorView } from "../../components/ErrorView"
 import { Loader } from "../../components/Loader"
 import { Calculator as CalculatorView } from "../../widgets/Calculator"
-import { Debt } from "../../../domain/debt"
-import { calculate } from "../../../app/calculate"
-import { Calculator } from "../../../domain/calculator"
+import Toolbar from "@mui/material/Toolbar"
 
 type HomeProps = {
     defaultCalculationDate: Date
@@ -75,12 +78,16 @@ export const Home = ({
 
     return (
         <>
-            <Box>
-                <Container maxWidth="md">
-                    <Typography component="h1" variant="h3" align="center">
-                        Калькулятор пеней ЖКХ
-                    </Typography>
-                </Container>
+            <Box sx={{ flexGrow: 1 }}>
+                <AppBar position="static">
+                    <Toolbar>
+                        <Container>
+                            <Typography component="h1" variant="h6">
+                                Калькулятор пеней ЖКХ
+                            </Typography>
+                        </Container>
+                    </Toolbar>
+                </AppBar>
             </Box>
             <Box>
                 <Container maxWidth="md">
