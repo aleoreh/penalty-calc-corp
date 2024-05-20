@@ -77,7 +77,7 @@ export const Home = ({
     }
 
     return (
-        <>
+        <Box display="flex" flexDirection="column" sx={{ gap: 3 }}>
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static">
                     <Toolbar>
@@ -89,8 +89,8 @@ export const Home = ({
                     </Toolbar>
                 </AppBar>
             </Box>
-            <Box>
-                <Container maxWidth="md">
+            <Box className="content">
+                <Container>
                     {SRD.match(
                         {
                             notAsked: () => <></>,
@@ -111,7 +111,7 @@ export const Home = ({
                     )}
                 </Container>
             </Box>
-        </>
+        </Box>
     )
 }
 

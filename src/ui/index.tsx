@@ -12,21 +12,27 @@ import App from "./App"
 
 const theme = createTheme(
     {
-        spacing: 8,
         palette: {
             primary: { main: "#1976d2" },
         },
         components: {
+            MuiContainer: {
+                defaultProps: {
+                    maxWidth: "sm"
+                }
+            },
             MuiStack: {
                 defaultProps: {
                     useFlexGap: true,
-                    spacing: 1,
-                },
-            },
-        },
+                    gap: 2
+                }
+            }
+        }
     },
     ruRU
 )
+
+theme.spacing(2)
 
 export const render = (
     defaultCalculationDate: Date,

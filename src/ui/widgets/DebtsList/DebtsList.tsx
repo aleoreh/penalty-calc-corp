@@ -1,7 +1,6 @@
 import { AddOutlined } from "@mui/icons-material"
 import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-import Container from "@mui/material/Container"
+import IconButton from "@mui/material/IconButton"
 import Stack from "@mui/material/Stack"
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -13,20 +12,18 @@ import Typography from "@mui/material/Typography"
 import { DatePicker, DateValidationError } from "@mui/x-date-pickers"
 import dayjs, { Dayjs } from "dayjs"
 import { useMemo, useState } from "react"
-
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import debtsModule, {
     Debt,
     createEmptyDebt,
     getDefaultDueDate,
-    periodKey,
+    periodKey
 } from "../../../domain/debt"
 import { ConfirmDialog } from "../../components/ConfirmDialog"
 import { useConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
-
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
@@ -220,48 +217,60 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
     return (
         <>
             <Box className="debts-list" component="section">
-                <Container maxWidth="md">
-                    <Stack direction="row">
-                        <Typography>Долги</Typography>
-                        <Button
-                            title="Добавить"
-                            type="button"
-                            onClick={() => {
-                                setAddDebtPopupOpened(true)
-                            }}
-                        >
-                            <AddOutlined></AddOutlined>
-                        </Button>
-                    </Stack>
-                    <TableContainer>
-                        <Table>
+                <Stack
+                    direction="row"
+                    sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
+                    <Typography component="h2" variant="h6">
+                        Долги
+                    </Typography>
+                    <IconButton
+                        title="Добавить"
+                        type="button"
+                        onClick={() => {
+                            setAddDebtPopupOpened(true)
+                        }}
+                    >
+                        <AddOutlined></AddOutlined>
+                    </IconButton>
+                </Stack>
+                <TableContainer>
+                    <Table>
+                        {debts.length > 0 && (
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Период</TableCell>
                                     <TableCell>Начало просрочки</TableCell>
                                     <TableCell>Долг</TableCell>
                                     <TableCell>Остаток</TableCell>
-                                    <TableCell>...</TableCell>
+                                    <TableCell></TableCell>
                                 </TableRow>
                             </TableHead>
-                            <TableBody>
-                                {debts.map((debt) => (
-                                    <DebtItemRow
-                                        key={periodKey(debt.period)}
-                                        debt={debt}
-                                        setDebt={setDebt}
-                                        deleteDebt={() =>
-                                            confirmDebtDeleting(debt)
-                                        }
-                                    />
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <Typography>
-                        Итого: {totalRemainingBalance(debts)} р.
-                    </Typography>
-                </Container>
+                        )}
+                        <TableBody>
+                            {debts.map((debt) => (
+                                <DebtItemRow
+                                    key={periodKey(debt.period)}
+                                    debt={debt}
+                                    setDebt={setDebt}
+                                    deleteDebt={() => confirmDebtDeleting(debt)}
+                                />
+                            ))}
+                            {totalRemainingBalance(debts) > 0 && (
+                                <>
+                                    <TableCell colSpan={2}></TableCell>
+                                    <TableCell>Итого:</TableCell>
+                                    <TableCell colSpan={3}>
+                                        {totalRemainingBalance(debts)}
+                                    </TableCell>
+                                </>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Box>
             <Popup {...addDebtPopup}>
                 <DebtAddForm

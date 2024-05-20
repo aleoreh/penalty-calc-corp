@@ -3,7 +3,6 @@ import Stack from "@mui/material/Stack"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
-
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { Debt } from "../../../domain/debt"
 import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
@@ -59,12 +58,7 @@ export const Calculator: UI.Calculator = ({
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
-        <Stack className="calculator" direction="column">
-            <DatePicker
-                label="Дата расчета"
-                value={calculationDate}
-                onChange={setCalculationDate}
-            />
+        <Stack className="calculator">
             <CalculatorSettings
                 calculationDate={
                     calculationDate?.toDate() || defaultCalculationDate
@@ -73,13 +67,19 @@ export const Calculator: UI.Calculator = ({
                 setConfig={setConfig}
                 defaultConfig={defaultConfig}
             />
+            <DatePicker
+                label="Дата расчета"
+                value={calculationDate}
+                onChange={setCalculationDate}
+                sx={{ alignSelf: "flex-start" }}
+            />
             <DebtsList config={config} debts={debts} setDebts={setDebts} />
-            <Button variant="outlined" onClick={calculate}>
-                Рассчитать
-            </Button>
-            <Button variant="outlined" onClick={onDebtsClear}>
-                Очистить список долгов
-            </Button>
+            <Stack direction="row" justifyContent="flex-end">
+                <Button variant="outlined" onClick={onDebtsClear}>
+                    Очистить список долгов
+                </Button>
+                <Button variant="contained" onClick={calculate}>Рассчитать</Button>
+            </Stack>
             {calculationResults.length > 0 && (
                 <CalculationResults
                     calculationDate={

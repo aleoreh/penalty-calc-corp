@@ -1,7 +1,4 @@
 import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined"
-import Box from "@mui/material/Box"
-import Button from "@mui/material/Button"
-import Container from "@mui/material/Container"
 import Stack from "@mui/material/Stack"
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -21,14 +18,12 @@ import { Form } from "../../components/Form"
 import { Input } from "../../components/Input/Input"
 import { Popup } from "../../components/Popup"
 import { usePopup } from "../../components/Popup/Popup"
-import {
-    useValidatedForm,
-    useValidatedInput,
-} from "../../formValidation"
+import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
 
-import styles from "./Calculator.module.css"
+import IconButton from "@mui/material/IconButton"
+import Typography from "@mui/material/Typography"
 
 type SettingsTableProps = {
     calculationDate: Date
@@ -39,9 +34,6 @@ const SettingsTable = ({ config }: SettingsTableProps) => {
     return (
         <TableContainer className="settings-table">
             <Table>
-                <caption className={styles.settings_table_caption}>
-                    Настройки расчета
-                </caption>
                 <TableBody>
                     <TableRow key="keyRate">
                         <TableCell>Ключевая ставка на дату расчета</TableCell>
@@ -117,20 +109,16 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
 
     return (
         <>
-            <Box className="calculator-settings" component="section">
-                <Container>
-                    <Stack direction="row">
-                        <SettingsTable {...props} />
-                        <Button
-                            title="Редактировать"
-                            type="button"
-                            onClick={open}
-                        >
-                            <CreateOutlinedIcon></CreateOutlinedIcon>
-                        </Button>
-                    </Stack>
-                </Container>
-            </Box>
+            <Stack
+                direction="row"
+                sx={{ justifyContent: "space-between", alignItems: "center" }}
+            >
+                <Typography component="h2" variant="h6">Настройки</Typography>
+                <IconButton title="Редактировать" type="button" onClick={open}>
+                    <CreateOutlinedIcon></CreateOutlinedIcon>
+                </IconButton>
+            </Stack>
+            <SettingsTable {...props} />
             <Popup {...popup}>
                 <Form {...form}>
                     <Input {...keyRateInput} />
