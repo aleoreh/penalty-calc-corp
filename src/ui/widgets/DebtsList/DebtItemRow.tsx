@@ -169,10 +169,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
             </TableRow>
             <TableRow>
                 <TableCell colSpan={5}>
-                    <Payments
-                        payments={debt.payments}
-                        setPayments={setPayments}
-                    />
+                    <Payments debt={debt} setDebt={setDebt} />
                 </TableCell>
             </TableRow>
             <Popup {...editDebtPopup}>
