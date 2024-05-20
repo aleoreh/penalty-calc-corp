@@ -2,6 +2,7 @@ import { dayjs } from "./dayjs"
 import { Payment } from "./payment"
 
 type PaymentId = number
+export type DebtPayment = Payment & { id: PaymentId }
 
 const generatePaymentId = (debt: Debt): PaymentId =>
     debt.payments.length === 0
@@ -12,7 +13,7 @@ export type Debt = {
     period: Date
     amount: Kopek
     dueDate: Date
-    payments: (Payment & { id: PaymentId })[]
+    payments: DebtPayment[]
 }
 
 export const createEmptyDebt = (period: Date, daysToPay: number): Debt => ({
