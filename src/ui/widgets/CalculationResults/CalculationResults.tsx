@@ -1,3 +1,5 @@
+import { DownloadOutlined, SaveAltOutlined } from "@mui/icons-material"
+import Button from "@mui/material/Button"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
 import Stack from "@mui/material/Stack"
@@ -8,7 +10,12 @@ import TableContainer from "@mui/material/TableContainer"
 import TableHead from "@mui/material/TableHead"
 import TableRow from "@mui/material/TableRow"
 import Typography from "@mui/material/Typography"
-import dayjs from "dayjs"
+import dayjs, { Dayjs } from "dayjs"
+import { useEffect, useState } from "react"
+import {
+    downloadCalculationResult,
+    downloadCalculationResults,
+} from "../../../app/download-calculation-result"
 import {
     CalculationResultItem as CalculationResultItemType,
     CalculationResult as CalculationResultType,
@@ -39,10 +46,14 @@ const CalculationResultRow = ({ item }: CalculationResultRowProps) => {
 // ~~~~~~~~~~ CalculationResult ~~~~~~~~~~ //
 
 type CalculationResultProps = {
+    calculationDate: Dayjs
     calculationResult: CalculationResultType
 }
 
-const CalculationResult = ({ calculationResult }: CalculationResultProps) => {
+const CalculationResult = ({
+    calculationDate,
+    calculationResult,
+}: CalculationResultProps) => {
     const fields = [
         "Сумма долга",
         "Период с",
@@ -54,49 +65,116 @@ const CalculationResult = ({ calculationResult }: CalculationResultProps) => {
         "Сумма пени",
     ]
 
+    // ~~~~~~~~~~~~~~~ download ~~~~~~~~~~~~~~ //
+
+    const [downloadTrigger, setDownloadTrigger] = useState(false)
+
+    useEffect(() => {
+        async function download() {
+            await downloadCalculationResult(
+                calculationDate.toDate(),
+                calculationResult
+            ).finally(() => {
+                setDownloadTrigger(false)
+            })
+        }
+
+        if (!downloadTrigger) return
+
+        download()
+    }, [
+        calculationDate,
+        calculationResult,
+        calculationResult.rows,
+        downloadTrigger,
+    ])
+
+    // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
+
     return (
-        <TableContainer className="calculation-result">
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        {fields.map((field) => (
-                            <TableCell>{field}</TableCell>
+        <Stack className="calculation-result">
+            <Stack direction="row">
+                <Typography>
+                    {dayjs(calculationResult.period).format("YYYY MMMM")}
+                </Typography>
+                <Button
+                    onClick={() => {
+                        setDownloadTrigger(true)
+                    }}
+                >
+                    <DownloadOutlined></DownloadOutlined>
+                    Сохранить расчет{" "}
+                    {dayjs(calculationResult.period).format("YYYY MMMM")}
+                </Button>
+            </Stack>
+            <TableContainer className="calculation-result">
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            {fields.map((field) => (
+                                <TableCell>{field}</TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {calculationResult.rows.map((item) => (
+                            <CalculationResultRow item={item} />
                         ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {calculationResult.rows.map((item) => (
-                        <CalculationResultRow item={item} />
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Stack>
     )
 }
 
 // ~~~~~~~~~~~~ main component ~~~~~~~~~~~ //
 
 type Props = {
+    calculationDate: Dayjs
     calculationResults: CalculationResultType[]
 }
 
-export const CalculationResults = ({ calculationResults }: Props) => {
+export const CalculationResults = ({
+    calculationDate,
+    calculationResults,
+}: Props) => {
+    // ~~~~~~~~~~~~~~~ download ~~~~~~~~~~~~~~ //
+
+    const [downloadTrigger, setDownloadTrigger] = useState(false)
+
+    useEffect(() => {
+        async function download() {
+            await downloadCalculationResults(
+                calculationDate.toDate(),
+                calculationResults
+            ).finally(() => {
+                setDownloadTrigger(false)
+            })
+        }
+
+        if (!downloadTrigger) return
+
+        download()
+    }, [calculationDate, calculationResults, downloadTrigger])
+
+    // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
+
     return (
-        <List className="calculation-results">
-            {calculationResults.map((calculationResult) => (
-                <ListItem key={calculationResult.period.toISOString()}>
-                    <Stack>
-                        <Typography>
-                            {dayjs(calculationResult.period).format(
-                                "YYYY MMMM"
-                            )}
-                        </Typography>
+        <Stack className="calculation-results">
+            <Button onClick={() => setDownloadTrigger(true)}>
+                <SaveAltOutlined></SaveAltOutlined>
+                Сохранить все расчёты
+            </Button>
+            <List>
+                {calculationResults.map((calculationResult) => (
+                    <ListItem key={calculationResult.period.toISOString()}>
                         <CalculationResult
+                            calculationDate={calculationDate}
                             calculationResult={calculationResult}
                         />
-                    </Stack>
-                </ListItem>
-            ))}
-        </List>
+                    </ListItem>
+                ))}
+            </List>
+        </Stack>
     )
 }

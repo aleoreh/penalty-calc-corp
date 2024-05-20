@@ -1,8 +1,7 @@
 import writeXlsxFile from "write-excel-file"
-import {
-    CalculationResult
-} from "../domain/calculation-result"
+import { CalculationResult } from "../domain/calculation-result"
 import { formatKeyRatePart } from "../domain/keyrate-part"
+import dayjs from "dayjs"
 
 // ~~~~~~~~~~~~~~~ helpers ~~~~~~~~~~~~~~~ //
 
@@ -16,7 +15,9 @@ async function download(
 ): Promise<void> {
     const data = !Array.isArray(rows)
         ? rows.rows
-        : rows.map((row) => [row.rows, undefined]).flat(2)
+        : rows
+              .map((row) => [dayjs(row.period).format("MMMM YYYY"), row.rows])
+              .flat(2)
     const fileName = !Array.isArray(rows)
         ? generateFileName(calculationDate)
         : "несколько_" + generateFileName(calculationDate)
@@ -24,46 +25,56 @@ async function download(
         fileName,
         schema: [
             {
+                column: "Период",
+                type: String,
+                value: (x) => (typeof x === "string" ? x : undefined),
+            },
+            {
                 column: "Сумма долга",
                 type: Number,
-                value: (x) => x?.debtAmount,
+                value: (x) =>
+                    typeof x === "string" ? undefined : x.debtAmount,
             },
             {
                 column: "Период с",
                 type: Date,
-                value: (x) => x?.dateFrom,
+                value: (x) => (typeof x === "string" ? undefined : x.dateFrom),
                 format: "dd.mm.yyyy",
             },
             {
                 column: "Период по",
                 type: Date,
-                value: (x) => x?.dateTo,
+                value: (x) => (typeof x === "string" ? undefined : x.dateTo),
                 format: "dd.mm.yyyy",
             },
             {
                 column: "Всего дней",
                 type: Number,
-                value: (x) => x?.totalDays,
+                value: (x) => (typeof x === "string" ? undefined : x.totalDays),
             },
             {
                 column: "Доля ставка",
                 type: String,
-                value: (x) => x && formatKeyRatePart(x.ratePart),
+                value: (x) =>
+                    typeof x === "string"
+                        ? undefined
+                        : formatKeyRatePart(x.ratePart),
             },
             {
                 column: "Ставка",
                 type: Number,
-                value: (x) => x?.rate,
+                value: (x) => (typeof x === "string" ? undefined : x.rate),
             },
             {
                 column: "Расчет",
                 type: String,
-                value: (x) => x?.formula,
+                value: (x) => (typeof x === "string" ? undefined : x.formula),
             },
             {
                 column: "Сумма пени",
                 type: Number,
-                value: (x) => x?.penaltyAmount,
+                value: (x) =>
+                    typeof x === "string" ? undefined : x.penaltyAmount,
             },
         ],
     })

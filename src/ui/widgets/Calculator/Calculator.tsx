@@ -81,7 +81,12 @@ export const Calculator: UI.Calculator = ({
                 Очистить список долгов
             </Button>
             {calculationResults.length > 0 && (
-                <CalculationResults calculationResults={calculationResults} />
+                <CalculationResults
+                    calculationDate={
+                        calculationDate || dayjs(defaultCalculationDate)
+                    }
+                    calculationResults={calculationResults}
+                />
             )}
             <ConfirmDialog {...clearConfirm} />
         </Stack>
