@@ -1,4 +1,4 @@
-import { Calculate } from "../app/calculate"
+import { CalculationResult } from "../domain/calculation-result"
 import { CalculatorConfig } from "../domain/calculator-config"
 import { Debt } from "../domain/debt"
 
@@ -6,7 +6,12 @@ export namespace UI {
     export type Calculator = (props: {
         defaultCalculationDate: Date
         defaultConfig: CalculatorConfig
-        calculate: Calculate
+        startCalculation: (
+            calculationDate: Date,
+            config: CalculatorConfig,
+            debts: Debt[]
+        ) => void
+        calculationResults: CalculationResult[]
     }) => JSX.Element
 
     export type CalculatorSettings = (props: {

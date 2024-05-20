@@ -6,15 +6,17 @@ import { useState } from "react"
 
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { Debt } from "../../../domain/debt"
+import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { UI } from "../../types"
+import { CalculationResults } from "../CalculationResults"
 import { DebtsList } from "../DebtsList/DebtsList"
 import { CalculatorSettings } from "./CalculatorSettings"
-import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 
 export const Calculator: UI.Calculator = ({
     defaultCalculationDate,
     defaultConfig,
-    calculate,
+    startCalculation,
+    calculationResults,
 }) => {
     const [calculationDate, setCalculationDate] = useState<Dayjs | null>(
         dayjs(defaultCalculationDate)
@@ -44,6 +46,16 @@ export const Calculator: UI.Calculator = ({
         setClearConfirmOpened(true)
     }
 
+    // ~~~~~~~~~~~~~~~ helpers ~~~~~~~~~~~~~~~ //
+
+    const calculate = () => {
+        startCalculation(
+            calculationDate?.toDate() || defaultCalculationDate,
+            config,
+            debts
+        )
+    }
+
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
@@ -62,25 +74,15 @@ export const Calculator: UI.Calculator = ({
                 defaultConfig={defaultConfig}
             />
             <DebtsList config={config} debts={debts} setDebts={setDebts} />
-            <Button
-                variant="outlined"
-                onClick={() =>
-                    calculate(
-                        {
-                            calculationDate:
-                                calculationDate?.toDate() ||
-                                defaultCalculationDate,
-                            config,
-                        },
-                        debts[0]
-                    )
-                }
-            >
+            <Button variant="outlined" onClick={calculate}>
                 Рассчитать
             </Button>
             <Button variant="outlined" onClick={onDebtsClear}>
                 Очистить список долгов
             </Button>
+            {calculationResults.length > 0 && (
+                <CalculationResults calculationResults={calculationResults} />
+            )}
             <ConfirmDialog {...clearConfirm} />
         </Stack>
     )

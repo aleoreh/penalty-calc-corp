@@ -2,12 +2,15 @@ import { Box, Container, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import { RD, SRD, failure, loading, success } from "srd"
 
-import { calculate } from "../../../app/calculate"
 import { GetCalculatorConfig } from "../../../app/ports"
+import { CalculationResult } from "../../../domain/calculation-result"
 import { CalculatorConfig } from "../../../domain/calculator-config"
 import { ErrorView } from "../../components/ErrorView"
 import { Loader } from "../../components/Loader"
-import { Calculator } from "../../widgets/Calculator"
+import { Calculator as CalculatorView } from "../../widgets/Calculator"
+import { Debt } from "../../../domain/debt"
+import { calculate } from "../../../app/calculate"
+import { Calculator } from "../../../domain/calculator"
 
 type HomeProps = {
     defaultCalculationDate: Date
@@ -21,6 +24,13 @@ export const Home = ({
     const [defaultConfig, setDefaultConfig] = useState<
         RD<string, CalculatorConfig>
     >(loading())
+    const [calculationResults, setCalculationResults] = useState<
+        CalculationResult[]
+    >([])
+    // установка параметров запускает расчет в useEffect
+    const [calculationParameters, setCalculationParameters] = useState<
+        { calculator: Calculator; debts: Debt[] } | undefined
+    >(undefined)
 
     useEffect(() => {
         getDefaultConfig(defaultCalculationDate)
@@ -35,6 +45,33 @@ export const Home = ({
                 )
             })
     }, [defaultCalculationDate, getDefaultConfig])
+
+    useEffect(() => {
+        async function executeCalculation(
+            params: Exclude<typeof calculationParameters, undefined>
+        ) {
+            Promise.all(
+                params.debts.map(async (debt) => {
+                    return await calculate(params.calculator, debt)
+                })
+            ).then(setCalculationResults)
+        }
+
+        calculationParameters && executeCalculation(calculationParameters)
+
+        setCalculationParameters(undefined)
+    }, [calculationParameters])
+
+    const startCalculation = (
+        calculationDate: Date,
+        config: CalculatorConfig,
+        debts: Debt[]
+    ) => {
+        setCalculationParameters({
+            calculator: { calculationDate, config },
+            debts,
+        })
+    }
 
     return (
         <>
@@ -53,12 +90,13 @@ export const Home = ({
                             loading: () => <Loader />,
                             failure: (err) => <ErrorView message={err} />,
                             success: (defaultConfigValue) => (
-                                <Calculator
+                                <CalculatorView
                                     defaultCalculationDate={
                                         defaultCalculationDate
                                     }
                                     defaultConfig={defaultConfigValue}
-                                    calculate={calculate}
+                                    startCalculation={startCalculation}
+                                    calculationResults={calculationResults}
                                 />
                             ),
                         },
