@@ -30,7 +30,7 @@ type CalculationResultRowProps = {
 
 const CalculationResultRow = ({ item }: CalculationResultRowProps) => {
     return (
-        <TableRow>
+        <TableRow className="calculation-result-row">
             <TableCell>{item.debtAmount}</TableCell>
             <TableCell>{dayjs(item.dateFrom).format("L")}</TableCell>
             <TableCell>{dayjs(item.dateTo).format("L")}</TableCell>

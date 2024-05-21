@@ -77,7 +77,12 @@ export const Home = ({
     }
 
     return (
-        <Box display="flex" flexDirection="column" sx={{ gap: 3 }}>
+        <Box
+            className="home"
+            display="flex"
+            flexDirection="column"
+            sx={{ gap: 3 }}
+        >
             <Box sx={{ flexGrow: 1 }}>
                 <AppBar position="static">
                     <Toolbar>

@@ -113,7 +113,7 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
 
     return (
         <>
-            <Stack>
+            <Stack className="calculator-settings">
                 <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
                         <Typography component="h2" variant="h6">

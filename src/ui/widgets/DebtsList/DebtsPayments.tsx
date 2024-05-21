@@ -39,7 +39,7 @@ const DebtPayment = ({ payment, setPayment, onDelete }: DebtPaymentProps) => {
     return (
         <>
             <Stack
-                className="payment"
+                className="debt-payment"
                 direction="row"
                 justifyContent="flex-end"
                 alignItems="center"
@@ -162,7 +162,7 @@ export const DebtPayments = ({ debt, setDebt }: Props) => {
     return (
         <>
             <Stack
-                className="payments"
+                className="debt-payments"
                 direction="row"
                 justifyContent="flex-end"
                 alignItems="flex-start"

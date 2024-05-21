@@ -104,7 +104,7 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
 
     return (
         <>
-            <Stack direction="row" justifyContent="space-between">
+            <Stack className="payment" direction="row" justifyContent="space-between">
                 <Typography variant="body2">
                     от {dayjs(payment.date).format("LL")} на {payment.amount}
                 </Typography>
@@ -299,7 +299,7 @@ export const PaymentsList = ({
 
     return (
         <>
-            <Accordion defaultExpanded>
+            <Accordion className="payments" defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
                     <Typography component="h2" variant="h6">
                         Платежи

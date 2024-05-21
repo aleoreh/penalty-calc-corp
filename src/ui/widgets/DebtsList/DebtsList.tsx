@@ -219,7 +219,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
 
     return (
         <>
-            <Accordion defaultExpanded>
+            <Accordion className="debts-list" defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
                     <Typography component="h2" variant="h6">
                         Долги
