@@ -1,7 +1,12 @@
+interface IPaymentModule {
+    create: (paymentId: string | number, date: Date, amount: Kopek) => Payment
+    update: (paymentBody: PaymentBody, payment: Payment) => Payment
+}
+
 /**
  * Идентификатор документа оплаты
  */
-export type PaymentId = string & { __brand: PaymentId }
+export type PaymentId = (string | number) & { __brand: PaymentId }
 
 /**
  * Заголовочная часть документа оплаты
@@ -20,15 +25,27 @@ export type PaymentBody = {
 
 export type Payment = PaymentHead & PaymentBody
 
-/**
- * DEPRECATED!
- */
-export const updatePaymentDeprecated =
-    ({ date, amount }: Pick<Payment, "date" | "amount">) =>
-    (payment: Payment): Payment => ({ ...payment, date, amount })
+export const createPayment: IPaymentModule["create"] = (
+    paymentId,
+    date,
+    amount
+) => ({
+    id: paymentId as PaymentId,
+    date,
+    amount,
+})
 
-const payments = {
-    update: updatePaymentDeprecated,
+export const updatePayment: IPaymentModule["update"] = (
+    paymentBody,
+    payment
+) => ({
+    ...payment,
+    ...paymentBody,
+})
+
+const paymentModule: IPaymentModule = {
+    create: createPayment,
+    update: updatePayment,
 }
 
-export default payments
+export default paymentModule

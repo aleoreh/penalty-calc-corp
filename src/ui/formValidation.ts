@@ -104,12 +104,14 @@ type ValidatedForm = {
     submit: () => void
     reset: () => void
     onClose: () => void
+    onReset?: () => void
 }
 
 export const useValidatedForm = (
     validatedInputs: ValidatedInputMeta[],
     submit: () => void,
-    onClose: () => void
+    onClose: () => void,
+    onReset?: () => void
 ): ValidatedForm => {
     const getResult = useCallback(
         (): FormValidation => toFormValidation(validatedInputs),
@@ -117,6 +119,7 @@ export const useValidatedForm = (
     )
 
     const reset = () => {
+        onReset?.()
         validatedInputs.forEach((validatedInput) => validatedInput.reset())
     }
 
