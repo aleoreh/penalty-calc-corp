@@ -42,47 +42,56 @@ function updateDebt(debts: Debt[], debt: Debt): Debt[] {
 
 function distributePayment(
     payment: Payment,
-    debts: Debt[]
+    debts: Debt[],
+    method: "fifo" | "lastIsFirst"
 ): { debts: Debt[]; remainder: number } {
-    return [...debts]
-        .sort((d1, d2) => d1.period.getTime() - d2.period.getTime())
-        .reduce(
-            ({ debts, remainder }, debt) => {
-                if (remainder === 0) return { debts, remainder }
+    if (debts.length === 0) return { debts, remainder: payment.amount }
 
-                const debtRemainingBalance = getRemainingBalance(debt)
-                const [debtPaymentAmount, nextRemainder] =
-                    remainder < debtRemainingBalance
-                        ? [remainder, 0 as Kopek]
-                        : [
-                              debtRemainingBalance as Kopek,
-                              (remainder - debtRemainingBalance) as Kopek,
-                          ]
+    const sorter = (d1: Debt, d2: Debt) =>
+        d1.period.getTime() - d2.period.getTime()
 
-                const foundDebtPayment = debt.payments.find(
-                    (x) => x.paymentId === payment.id
-                )
+    const sortedDebts =
+        method === "fifo"
+            ? [...debts].sort(sorter)
+            : debts.slice(-1).concat(debts.slice(0, -1).sort(sorter))
 
-                const updatedDebt =
-                    foundDebtPayment !== undefined
-                        ? updatePayment({
-                              ...foundDebtPayment,
-                              amount: debtPaymentAmount,
-                          })(debt)
-                        : addDebtPayment(
-                              payment.id,
-                              createDebtPayment(payment.date, debtPaymentAmount)
-                          )(debt)
+    return sortedDebts.reduce(
+        ({ debts, remainder }, debt) => {
+            if (remainder === 0) return { debts, remainder }
 
-                const nextDebts = updateDebt(debts, updatedDebt)
+            const debtRemainingBalance = getRemainingBalance(debt)
+            const [debtPaymentAmount, nextRemainder] =
+                remainder < debtRemainingBalance
+                    ? [remainder, 0 as Kopek]
+                    : [
+                          debtRemainingBalance as Kopek,
+                          (remainder - debtRemainingBalance) as Kopek,
+                      ]
 
-                return { debts: nextDebts, remainder: nextRemainder as Kopek }
-            },
-            {
-                debts,
-                remainder: payment.amount,
-            }
-        )
+            const foundDebtPayment = debt.payments.find(
+                (x) => x.paymentId === payment.id
+            )
+
+            const updatedDebt =
+                foundDebtPayment !== undefined
+                    ? updatePayment({
+                          ...foundDebtPayment,
+                          amount: debtPaymentAmount,
+                      })(debt)
+                    : addDebtPayment(
+                          payment.id,
+                          createDebtPayment(payment.date, debtPaymentAmount)
+                      )(debt)
+
+            const nextDebts = updateDebt(debts, updatedDebt)
+
+            return { debts: nextDebts, remainder: nextRemainder as Kopek }
+        },
+        {
+            debts,
+            remainder: payment.amount,
+        }
+    )
 }
 
 export const Calculator: UI.Calculator = ({

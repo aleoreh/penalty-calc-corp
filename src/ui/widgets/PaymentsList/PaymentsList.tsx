@@ -27,9 +27,12 @@ import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
 
+type DistributeMethod = "fifo" | "lastIsFirst"
+
 type DistributePayments = (
     payment: Payment,
-    debts: Debt[]
+    debts: Debt[],
+    method: DistributeMethod
 ) => { debts: Debt[]; remainder: number }
 
 function addPayment(payments: Payment[], payment: Payment): Payment[] {
@@ -128,7 +131,7 @@ const AddPaymentForm = ({
         remainder: 0,
     })
 
-    const distribute = () => {
+    const distribute = (method: DistributeMethod) => () => {
         if (!paymentDate || !amountInput.validatedValue.ok) return
 
         setDistributedPayments(
@@ -138,7 +141,8 @@ const AddPaymentForm = ({
                     paymentDate.toDate(),
                     amountInput.validatedValue.value as Kopek
                 ),
-                debts
+                debts,
+                method
             )
         )
     }
@@ -168,7 +172,21 @@ const AddPaymentForm = ({
                     onChange={setPaymentDate}
                 />
                 <Input {...amountInput} />
-                <Button onClick={distribute}>Распределить</Button>
+                <Typography>Распределить</Typography>
+                <Stack direction="row">
+                    <Button
+                        onClick={distribute("fifo")}
+                        title="Распределить начиная с самых ранних"
+                    >
+                        С самых ранних
+                    </Button>
+                    <Button
+                        onClick={distribute("lastIsFirst")}
+                        title="Распределить сначала на последний долг, затем с самых ранних"
+                    >
+                        Сначала последний
+                    </Button>
+                </Stack>
                 <TableContainer>
                     <TableHead>
                         <TableRow>
