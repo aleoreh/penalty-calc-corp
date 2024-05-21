@@ -18,7 +18,8 @@ import { Debt, getRemainingBalance } from "../../../domain/debt"
 import {
     Payment,
     PaymentBody,
-    createPayment
+    createPayment,
+    toPaymentId,
 } from "../../../domain/payment"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
@@ -59,17 +60,20 @@ const PaymentView = ({ payment }: PaymentViewProps) => {
 
 type AddPaymentFormProps = {
     debts: Debt[]
-    addPayment: (payment: PaymentBody) => void
+    setDebts: (debts: Debt[]) => void
+    addPayment: (payment: Payment) => void
     distributePayment: DistributePayments
     close: () => void
 }
 
 const AddPaymentForm = ({
     debts,
+    setDebts,
     addPayment,
     distributePayment,
     close,
 }: AddPaymentFormProps) => {
+    const [paymentId] = useState(dayjs().unix())
     const [paymentDate, setPaymentDate] = useState<Dayjs | null>(dayjs())
 
     const amountInput = useValidatedInput(
@@ -96,7 +100,7 @@ const AddPaymentForm = ({
         setDistributedPayments(
             distributePayment(
                 createPayment(
-                    dayjs().unix(),
+                    paymentId,
                     paymentDate.toDate(),
                     amountInput.validatedValue.value as Kopek
                 ),
@@ -109,9 +113,12 @@ const AddPaymentForm = ({
         amountInput.validatedValue.ok &&
             paymentDate &&
             addPayment({
+                id: toPaymentId(paymentId),
                 date: paymentDate.toDate(),
                 amount: amountInput.validatedValue.value as Kopek,
             })
+
+        setDebts(distributedPayments.debts)
     }
 
     const form = useValidatedForm([amountInput], submit, close, () => {
@@ -151,7 +158,7 @@ const AddPaymentForm = ({
                     </Table>
                 </TableContainer>
                 <Typography>
-                    Остаток: {distributedPayments.remainder}
+                    Не распределено: {distributedPayments.remainder}
                 </Typography>
             </Stack>
         </Form>
@@ -160,12 +167,16 @@ const AddPaymentForm = ({
 
 type PaymentsListProps = {
     debts: Debt[]
+    setDebts: (debts: Debt[]) => void
     payments: Payment[]
+    setPayments: (payments: Payment[]) => void
     distributePayment: DistributePayments
 }
 
 export const PaymentsList = ({
     debts,
+    setDebts,
+    setPayments,
     payments,
     distributePayment,
 }: PaymentsListProps) => {
@@ -177,8 +188,8 @@ export const PaymentsList = ({
         setAddPaymentOpened(false)
     })
 
-    const addPayment = (payment: PaymentBody) => {
-        // setDebt(debts.addPayment(payment)(debt))
+    const handleAddPayment = (payment: Payment) => {
+        setPayments(addPayment(payments, payment))
     }
 
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
@@ -212,7 +223,8 @@ export const PaymentsList = ({
             <Popup {...addPaymentPopup}>
                 <AddPaymentForm
                     debts={debts}
-                    addPayment={addPayment}
+                    setDebts={setDebts}
+                    addPayment={handleAddPayment}
                     distributePayment={distributePayment}
                     close={addPaymentPopup.close}
                 />
@@ -220,3 +232,4 @@ export const PaymentsList = ({
         </>
     )
 }
+

@@ -137,7 +137,9 @@ export const Calculator: UI.Calculator = ({
             <DebtsList config={config} debts={debts} setDebts={setDebts} />
             <PaymentsList
                 debts={debts}
+                setDebts={setDebts}
                 payments={payments}
+                setPayments={setPayments}
                 distributePayment={distributePayment}
             />
             <Stack direction="row" justifyContent="flex-end">
