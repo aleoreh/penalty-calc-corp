@@ -264,13 +264,13 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                         />
                                     ))}
                                     {totalRemainingBalance(debts) > 0 && (
-                                        <>
+                                        <TableRow>
                                             <TableCell colSpan={2}></TableCell>
                                             <TableCell>Итого:</TableCell>
                                             <TableCell colSpan={3}>
                                                 {totalRemainingBalance(debts)}
                                             </TableCell>
-                                        </>
+                                        </TableRow>
                                     )}
                                 </TableBody>
                             </Table>
