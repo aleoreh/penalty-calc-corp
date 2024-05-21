@@ -21,6 +21,7 @@ import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
 import ListItem from "@mui/material/ListItem"
+import { formatCurrency, formatDateLong } from "../../../utils"
 
 type DebtPaymentProps = {
     payment: DebtPaymentType
@@ -46,9 +47,11 @@ const DebtPayment = ({ payment, setPayment, onDelete }: DebtPaymentProps) => {
                 alignItems="center"
             >
                 <Typography variant="body2">
-                    {dayjs(payment.date).format("LL")}
+                    {formatDateLong(payment.date)}
                 </Typography>
-                <Typography variant="body2">{payment.amount}</Typography>
+                <Typography variant="body2">
+                    {formatCurrency(payment.amount)}
+                </Typography>
                 <IconButton onClick={() => onDelete(payment)}>
                     <DeleteOutlined></DeleteOutlined>
                 </IconButton>

@@ -3,7 +3,7 @@ import TableRow from "@mui/material/TableRow"
 import {
     CreateOutlined,
     DeleteOutline,
-    MoneyOutlined,
+    MoneyOutlined
 } from "@mui/icons-material"
 import IconButton from "@mui/material/IconButton"
 import Stack from "@mui/material/Stack"
@@ -17,6 +17,7 @@ import {
     getRemainingBalance,
     paymentsAmount,
 } from "../../../domain/debt"
+import { formatCurrency, formatDateLong, formatPeriod } from "../../../utils"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
@@ -146,10 +147,10 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
     return (
         <>
             <TableRow className="debt-item-row">
-                <TableCell>{dayjs(debt.period).format("MMMM YYYY")}</TableCell>
-                <TableCell>{dayjs(debt.dueDate).format("L")}</TableCell>
-                <TableCell>{debt.amount}</TableCell>
-                <TableCell>{getRemainingBalance(debt)}</TableCell>
+                <TableCell>{formatPeriod(debt.period)}</TableCell>
+                <TableCell>{formatDateLong(debt.dueDate)}</TableCell>
+                <TableCell>{formatCurrency(debt.amount)}</TableCell>
+                <TableCell>{formatCurrency(getRemainingBalance(debt))}</TableCell>
                 <TableCell>
                     <Stack direction="row" gap={0}>
                         <IconButton onClick={() => setAddPaymentOpened(true)}>

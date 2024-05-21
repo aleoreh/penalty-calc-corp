@@ -29,6 +29,7 @@ import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
+import { formatCurrency, formatDateLong, formatPeriod } from "../../../utils"
 
 type DistributeMethod = "fifo" | "lastIsFirst"
 
@@ -112,7 +113,8 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
                 justifyContent="space-between"
             >
                 <Typography variant="body2">
-                    от {dayjs(payment.date).format("LL")} на {payment.amount}
+                    от {formatDateLong(payment.date)} на{" "}
+                    {formatCurrency(payment.amount)}
                 </Typography>
                 <IconButton onClick={() => confirmPaymentDeleting(payment)}>
                     <DeleteOutline></DeleteOutline>
@@ -127,14 +129,11 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
                                 ({ debt, debtPayment }) => (
                                     <TableRow key={debt.period.getTime()}>
                                         <TableCell>
-                                            {debtPayment.amount}
+                                            {formatCurrency(debtPayment.amount)}
                                         </TableCell>
                                         <TableCell>
-                                            (
-                                            {dayjs(debt.period).format(
-                                                "MMMM YYYY"
-                                            )}
-                                            , {debt.amount})
+                                            ({formatPeriod(debt.period)},{" "}
+                                            {formatCurrency(debt.amount)})
                                         </TableCell>
                                     </TableRow>
                                 )

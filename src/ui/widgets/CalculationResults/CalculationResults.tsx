@@ -21,6 +21,7 @@ import {
     CalculationResult as CalculationResultType,
 } from "../../../domain/calculation-result"
 import { formatKeyRatePart } from "../../../domain/keyrate-part"
+import { formatCurrency, formatPercent } from "../../../utils"
 
 // ~~~~~~~~~ CalculationResultRow ~~~~~~~~ //
 
@@ -31,14 +32,14 @@ type CalculationResultRowProps = {
 const CalculationResultRow = ({ item }: CalculationResultRowProps) => {
     return (
         <TableRow className="calculation-result-row">
-            <TableCell>{item.debtAmount}</TableCell>
+            <TableCell>{formatCurrency(item.debtAmount)}</TableCell>
             <TableCell>{dayjs(item.dateFrom).format("L")}</TableCell>
             <TableCell>{dayjs(item.dateTo).format("L")}</TableCell>
             <TableCell>{item.totalDays}</TableCell>
             <TableCell>{formatKeyRatePart(item.ratePart)}</TableCell>
-            <TableCell>{item.rate}</TableCell>
+            <TableCell>{formatPercent(item.rate)}</TableCell>
             <TableCell>{item.formula}</TableCell>
-            <TableCell>{item.penaltyAmount}</TableCell>
+            <TableCell>{formatCurrency(item.penaltyAmount)}</TableCell>
         </TableRow>
     )
 }

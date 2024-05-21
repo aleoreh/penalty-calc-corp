@@ -21,6 +21,7 @@ import debtsModule, {
     getDefaultDueDate,
     periodKey,
 } from "../../../domain/debt"
+import { formatCurrency } from "../../../utils"
 import { ConfirmDialog } from "../../components/ConfirmDialog"
 import { useConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog"
 import { Form } from "../../components/Form"
@@ -268,7 +269,9 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                             <TableCell colSpan={2}></TableCell>
                                             <TableCell>Итого:</TableCell>
                                             <TableCell colSpan={3}>
-                                                {totalRemainingBalance(debts)}
+                                                {formatCurrency(
+                                                    totalRemainingBalance(debts)
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     )}
