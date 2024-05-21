@@ -8,8 +8,11 @@ import AccordionDetails from "@mui/material/AccordionDetails"
 import AccordionSummary from "@mui/material/AccordionSummary"
 import Button from "@mui/material/Button"
 import IconButton from "@mui/material/IconButton"
+import List from "@mui/material/List"
+import ListItem from "@mui/material/ListItem"
 import Stack from "@mui/material/Stack"
 import Table from "@mui/material/Table"
+import TableBody from "@mui/material/TableBody"
 import TableCell from "@mui/material/TableCell"
 import TableContainer from "@mui/material/TableContainer"
 import TableHead from "@mui/material/TableHead"
@@ -26,7 +29,6 @@ import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
-import TableBody from "@mui/material/TableBody"
 
 type DistributeMethod = "fifo" | "lastIsFirst"
 
@@ -103,8 +105,12 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
     }
 
     return (
-        <>
-            <Stack className="payment" direction="row" justifyContent="space-between">
+        <ListItem key={payment.id}>
+            <Stack
+                className="payment"
+                direction="row"
+                justifyContent="space-between"
+            >
                 <Typography variant="body2">
                     от {dayjs(payment.date).format("LL")} на {payment.amount}
                 </Typography>
@@ -119,7 +125,7 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
                         <TableBody>
                             {getDebtPaymentsByPayment(payment, debts).map(
                                 ({ debt, debtPayment }) => (
-                                    <TableRow>
+                                    <TableRow key={debt.period.getTime()}>
                                         <TableCell>
                                             {debtPayment.amount}
                                         </TableCell>
@@ -138,7 +144,7 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
                 </TableContainer>
             </Stack>
             <ConfirmDialog {...paymentDeleteConfirmDialog} />
-        </>
+        </ListItem>
     )
 }
 
@@ -178,20 +184,26 @@ const AddPaymentForm = ({
         remainder: 0,
     })
 
-    const distribute = (method: DistributeMethod) => () => {
-        if (!paymentDate || !amountInput.validatedValue.ok) return
+    const [lastDistributeMethod, setLastDistributeMethod] = useState<
+        DistributeMethod | undefined
+    >(undefined)
+
+    const distribute = (date: typeof paymentDate, method: DistributeMethod) => {
+        if (!date || !amountInput.validatedValue.ok) return
 
         setDistributedPayments(
             distributePayment(
                 createPayment(
                     paymentId,
-                    paymentDate.toDate(),
+                    date.toDate(),
                     amountInput.validatedValue.value as Kopek
                 ),
                 debts,
                 method
             )
         )
+
+        setLastDistributeMethod(method)
     }
 
     const submit = () => {
@@ -210,25 +222,32 @@ const AddPaymentForm = ({
         setDistributedPayments({ debts, remainder: 0 })
     })
 
+    const handlePaymentDateChange = (value: typeof paymentDate) => {
+        setPaymentDate(() => {
+            lastDistributeMethod && distribute(value, lastDistributeMethod)
+            return value
+        })
+    }
+
     return (
         <Form {...form}>
             <Stack>
                 <DatePicker
                     label={"Дата платежа"}
                     value={paymentDate}
-                    onChange={setPaymentDate}
+                    onChange={handlePaymentDateChange}
                 />
                 <Input {...amountInput} />
                 <Typography>Распределить</Typography>
                 <Stack direction="row">
                     <Button
-                        onClick={distribute("fifo")}
+                        onClick={() => distribute(paymentDate, "fifo")}
                         title="Распределить начиная с самых ранних"
                     >
                         С самых ранних
                     </Button>
                     <Button
-                        onClick={distribute("lastIsFirst")}
+                        onClick={() => distribute(paymentDate, "lastIsFirst")}
                         title="Распределить сначала на последний долг, затем с самых ранних"
                     >
                         Сначала последний
@@ -245,7 +264,7 @@ const AddPaymentForm = ({
                         </TableHead>
                         <TableBody>
                             {distributedPayments.debts.map((debt) => (
-                                <TableRow>
+                                <TableRow key={debt.period.getTime()}>
                                     <TableCell>
                                         {dayjs(debt.period).format("MMMM YYYY")}
                                     </TableCell>
@@ -317,13 +336,15 @@ export const PaymentsList = ({
                         >
                             <AddOutlined></AddOutlined>
                         </IconButton>
-                        {payments.map((payment) => (
-                            <PaymentView
-                                payment={payment}
-                                deletePayment={() => deletePayment(payment)}
-                                debts={debts}
-                            />
-                        ))}
+                        <List>
+                            {payments.map((payment) => (
+                                <PaymentView
+                                    payment={payment}
+                                    deletePayment={() => deletePayment(payment)}
+                                    debts={debts}
+                                />
+                            ))}
+                        </List>
                     </Stack>
                 </AccordionDetails>
             </Accordion>
