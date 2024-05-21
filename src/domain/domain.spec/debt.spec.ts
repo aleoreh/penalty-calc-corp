@@ -1,9 +1,9 @@
 import { it } from "@fast-check/jest"
 import { A, D } from "@mobily/ts-belt"
-import { Arbitrary, array, date, integer, record, string } from "fast-check"
+import { Arbitrary, array, date, integer, record, uuid } from "fast-check"
 import {
     Debt,
-    DebtPaymentBody,
+    DebtPayment,
     addDebtPayment,
     getDefaultDueDate,
     paymentsAmount,
@@ -11,7 +11,7 @@ import {
     removePayment,
     updateDebt,
 } from "../debt"
-import { PaymentId } from "../payment"
+import { PaymentId, toPaymentId } from "../payment"
 
 type DebtInit = {
     period: Date
@@ -25,44 +25,39 @@ const debtArb: Arbitrary<DebtInit> = record({
     amount: kopekArb,
 })
 
-const debtPaymentArb: Arbitrary<DebtPaymentBody> = record({
+const idArb: Arbitrary<number> = integer()
+const paymentIdArb: Arbitrary<PaymentId> = uuid().map(toPaymentId)
+
+const debtPaymentArb: Arbitrary<DebtPayment> = record({
+    paymentId: paymentIdArb,
+    id: idArb,
     date: date(),
     amount: kopekArb,
 })
-
-const paymentIdArb: Arbitrary<string> = string()
 
 const debtPaymentsArb = array(debtPaymentArb)
 const nonEmptyPaymentsArb = array(debtPaymentArb, { minLength: 1 })
 
 const daysToPay = 10
 
-const createDebt = (
-    paymentId: PaymentId,
-    debtData: DebtInit,
-    payments: DebtPaymentBody[]
-): Debt => {
+const createDebt = (debtData: DebtInit, payments: DebtPayment[]): Debt => {
     const initialDebt: Debt = {
         ...debtData,
         dueDate: getDefaultDueDate(debtData.period, daysToPay),
         payments: [],
     }
     const debt = payments.reduce(
-        (acc, x) => addDebtPayment(paymentId, x)(acc),
+        (acc, x) => addDebtPayment(x.paymentId, x)(acc),
         initialDebt
     )
     return debt
 }
 
 describe("Долг:", () => {
-    it.prop([paymentIdArb, debtArb, debtPaymentsArb, date(), kopekArb])(
+    it.prop([debtArb, debtPaymentsArb, date(), kopekArb])(
         "при обновлении долга устанавливаются новые значения",
-        (paymentId, debtData, payments, newDueDate, newAmount) => {
-            const initDebt = createDebt(
-                paymentId as PaymentId,
-                debtData,
-                payments
-            )
+        (debtData, payments, newDueDate, newAmount) => {
+            const initDebt = createDebt(debtData, payments)
             const newDebt = updateDebt({
                 amount: newAmount,
                 dueDate: newDueDate,
@@ -78,7 +73,7 @@ describe("Долг:", () => {
     it.prop([paymentIdArb, debtArb, debtPaymentsArb])(
         "при добавлении платежей их количество увеличивается ",
         (paymentId, debtData, payments) => {
-            const debt = createDebt(paymentId as PaymentId, debtData, payments)
+            const debt = createDebt(debtData, payments)
             payments.forEach((payment) => {
                 expect(
                     paymentsLength(
@@ -92,11 +87,7 @@ describe("Долг:", () => {
     it.prop([paymentIdArb, debtArb, debtPaymentsArb, debtPaymentArb])(
         "новый идентификатор платежа больше максимального на единицу",
         (paymentId, debtData, payments, newPayment) => {
-            const initDebt = createDebt(
-                paymentId as PaymentId,
-                debtData,
-                payments
-            )
+            const initDebt = createDebt(debtData, payments)
             const initDebtMaxId =
                 paymentsLength(initDebt) === 0
                     ? 0
@@ -111,13 +102,13 @@ describe("Долг:", () => {
         }
     )
 
-    it.prop([paymentIdArb, debtArb, nonEmptyPaymentsArb])(
+    it.prop([debtArb, nonEmptyPaymentsArb])(
         "при удалении платежа сумма платежей уменьшается на сумму удаленного платежа",
-        (paymentId, debtData, payments) => {
-            const debt = createDebt(paymentId as PaymentId, debtData, payments)
+        (debtData, payments) => {
+            const debt = createDebt(debtData, payments)
             const randomIndex = Math.floor(Math.random() * paymentsLength(debt))
             const removedAmount = debt.payments[randomIndex].amount
-            const randomIndexId = debt.payments[randomIndex].id
+            const randomIndexId = debt.payments[randomIndex].paymentId
             const newDebt = removePayment(randomIndexId)(debt)
 
             expect(paymentsAmount(newDebt)).toEqual(

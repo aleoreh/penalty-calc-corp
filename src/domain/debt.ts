@@ -70,10 +70,10 @@ export const updatePayment = (payment: DebtPayment) => (debt: Debt) => ({
 })
 
 export const removePayment =
-    (id: DebtPaymentId) =>
+    (paymentId: PaymentId) =>
     (debt: Debt): Debt => ({
         ...debt,
-        payments: debt.payments.filter((x) => x.id !== id),
+        payments: debt.payments.filter((x) => x.paymentId !== paymentId),
     })
 
 export const paymentsLength = (debt: Debt): number => debt.payments.length

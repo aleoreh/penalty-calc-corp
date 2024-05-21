@@ -136,7 +136,7 @@ export const DebtPayments = ({ debt, setDebt }: Props) => {
         open: paymentDeleteConfirmIsOpened,
         onClose: (payment?: Debt["payments"][number]) => {
             setPaymentDeleteConfirmIsOpened(false)
-            payment && setDebt(removePayment(payment.id)(debt))
+            payment && setDebt(removePayment(payment.paymentId)(debt))
         },
     })
 
