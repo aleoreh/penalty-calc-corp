@@ -14,7 +14,7 @@ type ConfirmDialogProps<T> = {
 }
 
 export const ConfirmDialog = <T,>(props: ConfirmDialogProps<T>) => {
-    const { onClose, value, open, title, confirmText, ...other } = props
+    const { onClose, value, open, title, confirmText, id } = props
 
     const handleOk = () => {
         onClose(value)
@@ -25,7 +25,7 @@ export const ConfirmDialog = <T,>(props: ConfirmDialogProps<T>) => {
     }
 
     return (
-        <Dialog open={open} onClose={handleCancel} {...other}>
+        <Dialog open={open} onClose={handleCancel} id={id}>
             <DialogTitle>{title}</DialogTitle>
             <DialogActions>
                 <Button onClick={handleOk}>{confirmText}</Button>
@@ -66,3 +66,4 @@ export const useConfirmDialog = <T,>(
         ...config,
     }
 }
+
