@@ -11,7 +11,7 @@ import TableCell from "@mui/material/TableCell"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
-import debts, {
+import {
     Debt,
     DebtPaymentBody,
     getRemainingBalance,
@@ -22,7 +22,7 @@ import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
-import { Payments } from "./Payments"
+import { DebtPayments } from "./DebtsPayments"
 
 type DebtEditFormProps = {
     debt: Debt
@@ -138,7 +138,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
     })
 
     const addPayment = (payment: DebtPaymentBody) => {
-        setDebt(debts.addPayment(payment)(debt))
+        // setDebt(debts.addPayment(payment)(debt))
     }
 
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
@@ -167,7 +167,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
             {paymentsAmount(debt) > 0 && (
                 <TableRow>
                     <TableCell colSpan={3}>
-                        <Payments debt={debt} setDebt={setDebt} />
+                        <DebtPayments debt={debt} setDebt={setDebt} />
                     </TableCell>
                 </TableRow>
             )}

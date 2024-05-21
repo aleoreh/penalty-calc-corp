@@ -1,9 +1,22 @@
 import { dayjs } from "./dayjs"
+import { PaymentId } from "./payment"
 
 type DebtPaymentId = number
 
-export type DebtPaymentHead = { id: DebtPaymentId }
+/**
+ * Заголовочная часть погашения
+ */
+export type DebtPaymentHead = { id: DebtPaymentId; paymentId: PaymentId }
+
+/**
+ * Тело погашения
+ */
 export type DebtPaymentBody = { date: Date; amount: Kopek }
+
+/**
+ * Погашение долга - та часть оплаты,
+ * которая зачитывается в погашение этого долга
+ */
 export type DebtPayment = DebtPaymentHead & DebtPaymentBody
 
 const generatePaymentId = (debt: Debt): DebtPaymentId =>
@@ -33,13 +46,13 @@ export const updateDebt =
         dueDate,
     })
 
-export const addPayment =
-    (payment: DebtPaymentBody) =>
+export const addDebtPayment =
+    (paymentId: PaymentId, debtPayment: DebtPaymentBody) =>
     (debt: Debt): Debt => ({
         ...debt,
         payments: [
             ...debt.payments,
-            { ...payment, id: generatePaymentId(debt) },
+            { ...debtPayment, id: generatePaymentId(debt), paymentId },
         ],
     })
 
@@ -76,7 +89,7 @@ export const periodKey = (period: Date) => {
 
 const debts = {
     update: updateDebt,
-    addPayment,
+    addDebtPayment,
     updatePayment,
     removePayment,
     paymentsLength,

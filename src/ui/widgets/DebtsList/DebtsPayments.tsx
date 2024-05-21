@@ -9,7 +9,7 @@ import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
 import {
     Debt,
-    DebtPayment,
+    DebtPayment as DebtPaymentType,
     removePayment,
     updatePayment,
 } from "../../../domain/debt"
@@ -21,13 +21,13 @@ import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
 
-type PaymentProps = {
-    payment: DebtPayment
-    setPayment: (payment: DebtPayment) => void
-    onDelete: (payment: DebtPayment) => void
+type DebtPaymentProps = {
+    payment: DebtPaymentType
+    setPayment: (payment: DebtPaymentType) => void
+    onDelete: (payment: DebtPaymentType) => void
 }
 
-const Payment = ({ payment, setPayment, onDelete }: PaymentProps) => {
+const DebtPayment = ({ payment, setPayment, onDelete }: DebtPaymentProps) => {
     // ~~~~~~~~~ payment edit dialog ~~~~~~~~~ //
 
     const [paymentEditPopupOpened, setPaymentEditPopupOpened] = useState(false)
@@ -56,7 +56,7 @@ const Payment = ({ payment, setPayment, onDelete }: PaymentProps) => {
                 </IconButton>
             </Stack>
             <Popup {...paymentEditPopup}>
-                <PaymentEditForm
+                <DebtPaymentEditForm
                     payment={payment}
                     setPayment={setPayment}
                     close={paymentEditPopup.close}
@@ -66,17 +66,17 @@ const Payment = ({ payment, setPayment, onDelete }: PaymentProps) => {
     )
 }
 
-type PaymentEditFormProps = {
-    payment: DebtPayment
-    setPayment: (payment: DebtPayment) => void
+type DebtPaymentEditFormProps = {
+    payment: DebtPaymentType
+    setPayment: (payment: DebtPaymentType) => void
     close: () => void
 }
 
-const PaymentEditForm = ({
+const DebtPaymentEditForm = ({
     payment,
     setPayment,
     close,
-}: PaymentEditFormProps) => {
+}: DebtPaymentEditFormProps) => {
     const [paymentDate, setPaymentDate] = useState<Dayjs | null>(dayjs())
 
     const amountInput = useValidatedInput(
@@ -125,7 +125,7 @@ type Props = {
     setDebt: (debt: Debt) => void
 }
 
-export const Payments = ({ debt, setDebt }: Props) => {
+export const DebtPayments = ({ debt, setDebt }: Props) => {
     // ~~~~~~~~ payment delete confirm ~~~~~~~ //
 
     const [paymentDeleteConfirmIsOpened, setPaymentDeleteConfirmIsOpened] =
@@ -140,7 +140,7 @@ export const Payments = ({ debt, setDebt }: Props) => {
         },
     })
 
-    const onPaymentDelete = (payment: DebtPayment) => {
+    const onPaymentDelete = (payment: DebtPaymentType) => {
         paymentDeleteConfirm.configure({
             value: payment,
             title: `Удалить оплату от ${dayjs(payment.date).format(
@@ -153,7 +153,7 @@ export const Payments = ({ debt, setDebt }: Props) => {
 
     // ~~~~~~~~~~~~~~~ helpers ~~~~~~~~~~~~~~~ //
 
-    const setPayment = (payment: DebtPayment) => {
+    const setPayment = (payment: DebtPaymentType) => {
         setDebt(updatePayment(payment)(debt))
     }
 
@@ -170,7 +170,7 @@ export const Payments = ({ debt, setDebt }: Props) => {
                 <Typography variant="body2">Зачтено:</Typography>
                 <List>
                     {debt.payments.map((payment) => (
-                        <Payment
+                        <DebtPayment
                             key={payment.id}
                             payment={payment}
                             setPayment={setPayment}

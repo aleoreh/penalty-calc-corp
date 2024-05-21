@@ -1,7 +1,7 @@
 /**
  * Идентификатор документа оплаты
  */
-type PaymentId = string & { __brand: PaymentId }
+export type PaymentId = string & { __brand: PaymentId }
 
 /**
  * Заголовочная часть документа оплаты
