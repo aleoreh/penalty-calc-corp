@@ -1,10 +1,12 @@
 import { dayjs } from "./dayjs"
-import { PaymentBody } from "./payment"
 
-type PaymentId = number
-export type DebtPayment = PaymentBody & { id: PaymentId }
+type DebtPaymentId = number
 
-const generatePaymentId = (debt: Debt): PaymentId =>
+export type DebtPaymentHead = { id: DebtPaymentId }
+export type DebtPaymentBody = { date: Date; amount: Kopek }
+export type DebtPayment = DebtPaymentHead & DebtPaymentBody
+
+const generatePaymentId = (debt: Debt): DebtPaymentId =>
     debt.payments.length === 0
         ? 1
         : Math.max(...debt.payments.map((x) => x.id)) + 1
@@ -32,7 +34,7 @@ export const updateDebt =
     })
 
 export const addPayment =
-    (payment: PaymentBody) =>
+    (payment: DebtPaymentBody) =>
     (debt: Debt): Debt => ({
         ...debt,
         payments: [
@@ -47,7 +49,7 @@ export const updatePayment = (payment: DebtPayment) => (debt: Debt) => ({
 })
 
 export const removePayment =
-    (id: PaymentId) =>
+    (id: DebtPaymentId) =>
     (debt: Debt): Debt => ({
         ...debt,
         payments: debt.payments.filter((x) => x.id !== id),

@@ -3,12 +3,14 @@ import { A, D } from "@mobily/ts-belt"
 import { Arbitrary, array, date, integer, record } from "fast-check"
 import {
     Debt,
-    addPayment, getDefaultDueDate, paymentsAmount,
+    DebtPaymentBody,
+    addPayment,
+    getDefaultDueDate,
+    paymentsAmount,
     paymentsLength,
     removePayment,
-    updateDebt
+    updateDebt,
 } from "../debt"
-import { PaymentBody } from "../payment"
 
 type DebtInit = {
     period: Date
@@ -22,7 +24,7 @@ const debtArb: Arbitrary<DebtInit> = record({
     amount: kopekArb,
 })
 
-const paymentArb: Arbitrary<PaymentBody> = record({
+const paymentArb: Arbitrary<DebtPaymentBody> = record({
     date: date(),
     amount: kopekArb,
 })
@@ -32,7 +34,7 @@ const nonEmptyPaymentsArb = array(paymentArb, { minLength: 1 })
 
 const daysToPay = 10
 
-const createDebt = (debtData: DebtInit, payments: PaymentBody[]): Debt => {
+const createDebt = (debtData: DebtInit, payments: DebtPaymentBody[]): Debt => {
     const initialDebt: Debt = {
         ...debtData,
         dueDate: getDefaultDueDate(debtData.period, daysToPay),

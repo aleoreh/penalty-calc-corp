@@ -13,10 +13,10 @@ import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
 import debts, {
     Debt,
+    DebtPaymentBody,
     getRemainingBalance,
     paymentsAmount,
 } from "../../../domain/debt"
-import { PaymentBody } from "../../../domain/payment"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
@@ -71,7 +71,7 @@ const DebtEditForm = ({ debt, setDebt, close }: DebtEditFormProps) => {
 }
 
 type AddPaymentFormProps = {
-    addPayment: (payment: PaymentBody) => void
+    addPayment: (payment: DebtPaymentBody) => void
     close: () => void
 }
 
@@ -137,7 +137,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
         setAddPaymentOpened(false)
     })
 
-    const addPayment = (payment: PaymentBody) => {
+    const addPayment = (payment: DebtPaymentBody) => {
         setDebt(debts.addPayment(payment)(debt))
     }
 

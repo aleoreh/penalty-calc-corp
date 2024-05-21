@@ -6,9 +6,8 @@ import {
 } from "../calculator"
 import { CalculatorConfig } from "../calculator-config"
 import { dayjs } from "../dayjs"
-import { Debt, addPayment, getDefaultDueDate } from "../debt"
+import { Debt, DebtPaymentBody, addPayment, getDefaultDueDate } from "../debt"
 import { Moratorium } from "../moratorium"
-import { PaymentBody } from "../payment"
 import penalties from "../penalty"
 
 const moratoriums = (
@@ -28,7 +27,7 @@ function createCalculation() {
         keyRate: 0.095,
         fractionChangeDay: 90
     }
-    const payments: PaymentBody[] = [
+    const payments: DebtPaymentBody[] = [
         { date: new Date("2020-01-01"), amount: 10000 as Kopek },
     ]
     const calculator: Calculator = {
