@@ -1,4 +1,5 @@
 interface IPaymentModule {
+    toPaymentId: (value: string | number) => PaymentId
     create: (paymentId: string | number, date: Date, amount: Kopek) => Payment
     update: (paymentBody: PaymentBody, payment: Payment) => Payment
 }
@@ -43,9 +44,14 @@ export const updatePayment: IPaymentModule["update"] = (
     ...paymentBody,
 })
 
+export const toPaymentId: IPaymentModule["toPaymentId"] = (value) =>
+    value as PaymentId
+
 const paymentModule: IPaymentModule = {
+    toPaymentId,
     create: createPayment,
     update: updatePayment,
 }
 
 export default paymentModule
+
