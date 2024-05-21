@@ -20,6 +20,7 @@ import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
+import ListItem from "@mui/material/ListItem"
 
 type DebtPaymentProps = {
     payment: DebtPaymentType
@@ -37,7 +38,7 @@ const DebtPayment = ({ payment, setPayment, onDelete }: DebtPaymentProps) => {
     })
 
     return (
-        <>
+        <ListItem key={payment.id}>
             <Stack
                 className="debt-payment"
                 direction="row"
@@ -62,7 +63,7 @@ const DebtPayment = ({ payment, setPayment, onDelete }: DebtPaymentProps) => {
                     close={paymentEditPopup.close}
                 />
             </Popup>
-        </>
+        </ListItem>
     )
 }
 
@@ -171,7 +172,6 @@ export const DebtPayments = ({ debt, setDebt }: Props) => {
                 <List>
                     {debt.payments.map((payment) => (
                         <DebtPayment
-                            key={payment.id}
                             payment={payment}
                             setPayment={setPayment}
                             onDelete={onPaymentDelete}
