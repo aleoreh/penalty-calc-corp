@@ -3,7 +3,7 @@ import TableRow from "@mui/material/TableRow"
 import {
     CreateOutlined,
     DeleteOutline,
-    MoneyOutlined
+    MoneyOutlined,
 } from "@mui/icons-material"
 import IconButton from "@mui/material/IconButton"
 import Stack from "@mui/material/Stack"
@@ -150,13 +150,21 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                 <TableCell>{formatPeriod(debt.period)}</TableCell>
                 <TableCell>{formatDateLong(debt.dueDate)}</TableCell>
                 <TableCell>{formatCurrency(debt.amount)}</TableCell>
-                <TableCell>{formatCurrency(getRemainingBalance(debt))}</TableCell>
+                <TableCell>
+                    {formatCurrency(getRemainingBalance(debt))}
+                </TableCell>
                 <TableCell>
                     <Stack direction="row" gap={0}>
-                        <IconButton onClick={() => setAddPaymentOpened(true)}>
+                        <IconButton
+                            onClick={() => setAddPaymentOpened(true)}
+                            sx={{ display: "none" }}
+                        >
                             <MoneyOutlined></MoneyOutlined>
                         </IconButton>
-                        <IconButton onClick={() => setEditDebtOpened(true)}>
+                        <IconButton
+                            onClick={() => setEditDebtOpened(true)}
+                            sx={{ display: "none" }}
+                        >
                             <CreateOutlined></CreateOutlined>
                         </IconButton>
                         <IconButton onClick={deleteDebt}>
@@ -167,7 +175,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
             </TableRow>
             {paymentsAmount(debt) > 0 && (
                 <TableRow>
-                    <TableCell colSpan={3}>
+                    <TableCell colSpan={5}>
                         <DebtPayments debt={debt} setDebt={setDebt} />
                     </TableCell>
                 </TableRow>

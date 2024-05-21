@@ -52,10 +52,16 @@ const DebtPayment = ({ payment, setPayment, onDelete }: DebtPaymentProps) => {
                 <Typography variant="body2">
                     {formatCurrency(payment.amount)}
                 </Typography>
-                <IconButton onClick={() => onDelete(payment)}>
+                <IconButton
+                    onClick={() => onDelete(payment)}
+                    sx={{ display: "none" }}
+                >
                     <DeleteOutlined></DeleteOutlined>
                 </IconButton>
-                <IconButton onClick={() => setPaymentEditPopupOpened(true)}>
+                <IconButton
+                    onClick={() => setPaymentEditPopupOpened(true)}
+                    sx={{ display: "none" }}
+                >
                     <CreateOutlined></CreateOutlined>
                 </IconButton>
             </Stack>
