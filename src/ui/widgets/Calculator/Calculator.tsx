@@ -10,6 +10,7 @@ import {
     createDebtPayment,
     getRemainingBalance,
     periodKey,
+    removePayment,
     updatePayment,
 } from "../../../domain/debt"
 import { Payment } from "../../../domain/payment"
@@ -17,8 +18,21 @@ import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { UI } from "../../types"
 import { CalculationResults } from "../CalculationResults"
 import { DebtsList } from "../DebtsList/DebtsList"
-import { PaymentsList } from "../PaymentsList"
+import {
+    PaymentsList,
+    deletePayment as deletePaymentFromPayments,
+} from "../PaymentsList"
 import { CalculatorSettings } from "./CalculatorSettings"
+
+function deletePayment(
+    payment: Payment,
+    payments: Payment[],
+    debts: Debt[]
+): [Payment[], Debt[]] {
+    const nextPayments = deletePaymentFromPayments(payments, payment)
+    const nextDebts = debts.map((debt) => removePayment(payment.id)(debt))
+    return [nextPayments, nextDebts]
+}
 
 function updateDebt(debts: Debt[], debt: Debt): Debt[] {
     return debts.map((x) =>
@@ -116,6 +130,12 @@ export const Calculator: UI.Calculator = ({
         )
     }
 
+    const onPaymentDelete = (payment: Payment) => {
+        const [newPayments, newDebts] = deletePayment(payment, payments, debts)
+        setDebts(newDebts)
+        setPayments(newPayments)
+    }
+
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
@@ -140,6 +160,7 @@ export const Calculator: UI.Calculator = ({
                 setDebts={setDebts}
                 payments={payments}
                 setPayments={setPayments}
+                deletePayment={onPaymentDelete}
                 distributePayment={distributePayment}
             />
             <Stack direction="row" justifyContent="flex-end">

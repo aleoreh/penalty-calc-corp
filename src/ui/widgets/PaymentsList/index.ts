@@ -1,1 +1,2 @@
-export { PaymentsList } from "./PaymentsList"
+export { PaymentsList, deletePayment } from "./PaymentsList"
+

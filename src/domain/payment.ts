@@ -1,5 +1,8 @@
+import Opaque, { BaseType, create, widen } from "ts-opaque"
+
 interface IPaymentModule {
     toPaymentId: (value: string | number) => PaymentId
+    fromPaymentId: (paymentId: PaymentId) => BaseType<PaymentId>
     create: (paymentId: string | number, date: Date, amount: Kopek) => Payment
     update: (paymentBody: PaymentBody, payment: Payment) => Payment
 }
@@ -7,7 +10,7 @@ interface IPaymentModule {
 /**
  * Идентификатор документа оплаты
  */
-export type PaymentId = (string | number) & { __brand: PaymentId }
+export type PaymentId = Opaque<string | number, "PaymentId">
 
 /**
  * Заголовочная часть документа оплаты
@@ -45,10 +48,14 @@ export const updatePayment: IPaymentModule["update"] = (
 })
 
 export const toPaymentId: IPaymentModule["toPaymentId"] = (value) =>
-    value as PaymentId
+    create<PaymentId>(value)
+
+export const fromPaymentId: IPaymentModule["fromPaymentId"] = (paymentId) =>
+    widen(paymentId)
 
 const paymentModule: IPaymentModule = {
     toPaymentId,
+    fromPaymentId,
     create: createPayment,
     update: updatePayment,
 }

@@ -1,4 +1,8 @@
-import { AddOutlined, ExpandMoreOutlined } from "@mui/icons-material"
+import {
+    AddOutlined,
+    DeleteOutline,
+    ExpandMoreOutlined,
+} from "@mui/icons-material"
 import Accordion from "@mui/material/Accordion"
 import AccordionDetails from "@mui/material/AccordionDetails"
 import AccordionSummary from "@mui/material/AccordionSummary"
@@ -15,12 +19,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
 import { Debt, getRemainingBalance } from "../../../domain/debt"
-import {
-    Payment,
-    PaymentBody,
-    createPayment,
-    toPaymentId,
-} from "../../../domain/payment"
+import { Payment, createPayment, toPaymentId } from "../../../domain/payment"
+import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
@@ -36,7 +36,10 @@ function addPayment(payments: Payment[], payment: Payment): Payment[] {
     return [...payments, payment]
 }
 
-function deletePayment(payments: Payment[], payment: Payment): Payment[] {
+export function deletePayment(
+    payments: Payment[],
+    payment: Payment
+): Payment[] {
     return payments.filter((x) => x.id !== payment.id)
 }
 
@@ -46,15 +49,46 @@ function replacePayment(payments: Payment[], payment: Payment): Payment[] {
 
 type PaymentViewProps = {
     payment: Payment
+    deletePayment: (payment: Payment) => void
 }
 
-const PaymentView = ({ payment }: PaymentViewProps) => {
+const PaymentView = ({ deletePayment, payment }: PaymentViewProps) => {
+    // ~~~~~~~~ confirm delete dialog ~~~~~~~~ //
+
+    const [isConfirmDeleteOpened, setIsConfirmDeleteOpened] = useState(false)
+
+    const paymentDeleteConfirmDialog = useConfirmDialog({
+        id: "paymentDeleteConfirm",
+        open: isConfirmDeleteOpened,
+        onClose: (payment?: Payment) => {
+            setIsConfirmDeleteOpened(false)
+            payment && deletePayment(payment)
+        },
+    })
+
+    const confirmPaymentDeleting = (payment: Payment) => {
+        paymentDeleteConfirmDialog.configure({
+            value: payment,
+            title: `Удалить платёж от ${dayjs(payment.date).format(
+                "LL"
+            )} на сумму ${payment.amount}?`,
+            confirmText: "Да, удалить",
+        })
+        setIsConfirmDeleteOpened(true)
+    }
+
     return (
-        <Stack direction="row" justifyContent="space-between">
-            <Typography variant="body2">
-                от {dayjs(payment.date).format("LL")} на {payment.amount}
-            </Typography>
-        </Stack>
+        <>
+            <Stack direction="row" justifyContent="space-between">
+                <Typography variant="body2">
+                    от {dayjs(payment.date).format("LL")} на {payment.amount}
+                </Typography>
+                <IconButton onClick={() => confirmPaymentDeleting(payment)}>
+                    <DeleteOutline></DeleteOutline>
+                </IconButton>
+            </Stack>
+            <ConfirmDialog {...paymentDeleteConfirmDialog} />
+        </>
     )
 }
 
@@ -170,6 +204,7 @@ type PaymentsListProps = {
     setDebts: (debts: Debt[]) => void
     payments: Payment[]
     setPayments: (payments: Payment[]) => void
+    deletePayment: (payment: Payment) => void
     distributePayment: DistributePayments
 }
 
@@ -178,6 +213,7 @@ export const PaymentsList = ({
     setDebts,
     setPayments,
     payments,
+    deletePayment,
     distributePayment,
 }: PaymentsListProps) => {
     // ~~~~~~~~~~~ add payment form ~~~~~~~~~~ //
@@ -215,7 +251,10 @@ export const PaymentsList = ({
                             <AddOutlined></AddOutlined>
                         </IconButton>
                         {payments.map((payment) => (
-                            <PaymentView payment={payment} />
+                            <PaymentView
+                                payment={payment}
+                                deletePayment={() => deletePayment(payment)}
+                            />
                         ))}
                     </Stack>
                 </AccordionDetails>
