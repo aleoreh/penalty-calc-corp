@@ -1,6 +1,6 @@
 import { DeleteOutlined } from "@mui/icons-material"
 import CreateOutlined from "@mui/icons-material/CreateOutlined"
-import Button from "@mui/material/Button"
+import IconButton from "@mui/material/IconButton"
 import List from "@mui/material/List"
 import Stack from "@mui/material/Stack"
 import Typography from "@mui/material/Typography"
@@ -38,15 +38,22 @@ const Payment = ({ payment, setPayment, onDelete }: PaymentProps) => {
 
     return (
         <>
-            <Stack className="payment" direction="row">
-                <Typography>{dayjs(payment.date).format("LL")}</Typography>
-                <Typography>{payment.amount}</Typography>
-                <Button onClick={() => onDelete(payment)}>
+            <Stack
+                className="payment"
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="center"
+            >
+                <Typography variant="body2">
+                    {dayjs(payment.date).format("LL")}
+                </Typography>
+                <Typography variant="body2">{payment.amount}</Typography>
+                <IconButton onClick={() => onDelete(payment)}>
                     <DeleteOutlined></DeleteOutlined>
-                </Button>
-                <Button onClick={() => setPaymentEditPopupOpened(true)}>
+                </IconButton>
+                <IconButton onClick={() => setPaymentEditPopupOpened(true)}>
                     <CreateOutlined></CreateOutlined>
-                </Button>
+                </IconButton>
             </Stack>
             <Popup {...paymentEditPopup}>
                 <PaymentEditForm
@@ -154,8 +161,13 @@ export const Payments = ({ debt, setDebt }: Props) => {
 
     return (
         <>
-            <Stack className="payments" direction="row">
-                <Typography>Оплачено</Typography>
+            <Stack
+                className="payments"
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="flex-start"
+            >
+                <Typography variant="body2">Зачтено:</Typography>
                 <List>
                     {debt.payments.map((payment) => (
                         <Payment

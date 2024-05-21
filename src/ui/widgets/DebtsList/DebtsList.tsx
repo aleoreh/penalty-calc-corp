@@ -1,5 +1,7 @@
-import { AddOutlined } from "@mui/icons-material"
-import Box from "@mui/material/Box"
+import { AddOutlined, ExpandMoreOutlined } from "@mui/icons-material"
+import Accordion from "@mui/material/Accordion"
+import AccordionDetails from "@mui/material/AccordionDetails"
+import AccordionSummary from "@mui/material/AccordionSummary"
 import IconButton from "@mui/material/IconButton"
 import Stack from "@mui/material/Stack"
 import Table from "@mui/material/Table"
@@ -17,7 +19,7 @@ import debtsModule, {
     Debt,
     createEmptyDebt,
     getDefaultDueDate,
-    periodKey
+    periodKey,
 } from "../../../domain/debt"
 import { ConfirmDialog } from "../../components/ConfirmDialog"
 import { useConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog"
@@ -154,8 +156,9 @@ const DebtAddForm = ({
                     label={"Период"}
                     value={inputDebtPeriod}
                     onChange={handleInputDebtPeriodChange}
-                    views={["month"]}
+                    views={["year", "month"]}
                     view="month"
+                    openTo="year"
                     shouldDisableMonth={periodIsIn(debts.map((x) => x.period))}
                     onError={setPeriodError}
                     slotProps={{
@@ -216,62 +219,65 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
 
     return (
         <>
-            <Box className="debts-list" component="section">
-                <Stack
-                    direction="row"
-                    sx={{
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                    }}
-                >
+            <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
                     <Typography component="h2" variant="h6">
                         Долги
                     </Typography>
-                    <IconButton
-                        title="Добавить"
-                        type="button"
-                        onClick={() => {
-                            setAddDebtPopupOpened(true)
-                        }}
-                    >
-                        <AddOutlined></AddOutlined>
-                    </IconButton>
-                </Stack>
-                <TableContainer>
-                    <Table>
-                        {debts.length > 0 && (
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Период</TableCell>
-                                    <TableCell>Начало просрочки</TableCell>
-                                    <TableCell>Долг</TableCell>
-                                    <TableCell>Остаток</TableCell>
-                                    <TableCell></TableCell>
-                                </TableRow>
-                            </TableHead>
-                        )}
-                        <TableBody>
-                            {debts.map((debt) => (
-                                <DebtItemRow
-                                    key={periodKey(debt.period)}
-                                    debt={debt}
-                                    setDebt={setDebt}
-                                    deleteDebt={() => confirmDebtDeleting(debt)}
-                                />
-                            ))}
-                            {totalRemainingBalance(debts) > 0 && (
-                                <>
-                                    <TableCell colSpan={2}></TableCell>
-                                    <TableCell>Итого:</TableCell>
-                                    <TableCell colSpan={3}>
-                                        {totalRemainingBalance(debts)}
-                                    </TableCell>
-                                </>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Box>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Stack>
+                        <IconButton
+                            title="Добавить"
+                            type="button"
+                            onClick={() => {
+                                setAddDebtPopupOpened(true)
+                            }}
+                            sx={{ alignSelf: "flex-end" }}
+                        >
+                            <AddOutlined></AddOutlined>
+                        </IconButton>
+                        <TableContainer>
+                            <Table>
+                                {debts.length > 0 && (
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Период</TableCell>
+                                            <TableCell>
+                                                Начало просрочки
+                                            </TableCell>
+                                            <TableCell>Долг</TableCell>
+                                            <TableCell>Остаток</TableCell>
+                                            <TableCell></TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                )}
+                                <TableBody>
+                                    {debts.map((debt) => (
+                                        <DebtItemRow
+                                            key={periodKey(debt.period)}
+                                            debt={debt}
+                                            setDebt={setDebt}
+                                            deleteDebt={() =>
+                                                confirmDebtDeleting(debt)
+                                            }
+                                        />
+                                    ))}
+                                    {totalRemainingBalance(debts) > 0 && (
+                                        <>
+                                            <TableCell colSpan={2}></TableCell>
+                                            <TableCell>Итого:</TableCell>
+                                            <TableCell colSpan={3}>
+                                                {totalRemainingBalance(debts)}
+                                            </TableCell>
+                                        </>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Stack>
+                </AccordionDetails>
+            </Accordion>
             <Popup {...addDebtPopup}>
                 <DebtAddForm
                     config={config}

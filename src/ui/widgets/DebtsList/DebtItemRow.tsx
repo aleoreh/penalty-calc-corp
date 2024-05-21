@@ -166,7 +166,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
             </TableRow>
             {paymentsAmount(debt) > 0 && (
                 <TableRow>
-                    <TableCell colSpan={5}>
+                    <TableCell colSpan={3}>
                         <Payments debt={debt} setDebt={setDebt} />
                     </TableCell>
                 </TableRow>

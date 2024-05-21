@@ -24,6 +24,10 @@ import { inputDecoders } from "../../validationDecoders"
 
 import IconButton from "@mui/material/IconButton"
 import Typography from "@mui/material/Typography"
+import Accordion from "@mui/material/Accordion"
+import AccordionSummary from "@mui/material/AccordionSummary"
+import { ExpandMoreOutlined } from "@mui/icons-material"
+import AccordionDetails from "@mui/material/AccordionDetails"
 
 type SettingsTableProps = {
     calculationDate: Date
@@ -109,16 +113,28 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
 
     return (
         <>
-            <Stack
-                direction="row"
-                sx={{ justifyContent: "space-between", alignItems: "center" }}
-            >
-                <Typography component="h2" variant="h6">Настройки</Typography>
-                <IconButton title="Редактировать" type="button" onClick={open}>
-                    <CreateOutlinedIcon></CreateOutlinedIcon>
-                </IconButton>
+            <Stack>
+                <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+                        <Typography component="h2" variant="h6">
+                            Настройки
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Stack>
+                            <IconButton
+                                title="Редактировать"
+                                type="button"
+                                onClick={open}
+                                sx={{alignSelf: "flex-end"}}
+                            >
+                                <CreateOutlinedIcon></CreateOutlinedIcon>
+                            </IconButton>
+                            <SettingsTable {...props} />
+                        </Stack>
+                    </AccordionDetails>
+                </Accordion>
             </Stack>
-            <SettingsTable {...props} />
             <Popup {...popup}>
                 <Form {...form}>
                     <Input {...keyRateInput} />
