@@ -56,6 +56,14 @@ export const addDebtPayment =
         ],
     })
 
+export const createDebtPayment = (
+    date: Date,
+    amount: number
+): DebtPaymentBody => ({
+    date,
+    amount: amount as Kopek,
+})
+
 export const updatePayment = (payment: DebtPayment) => (debt: Debt) => ({
     ...debt,
     payments: debt.payments.map((x) => (x.id === payment.id ? payment : x)),
@@ -97,6 +105,7 @@ const debts = {
     getDefaultDueDate,
     createEmptyDebt,
     getRemainingBalance,
+    createDebtPayment,
 }
 
 export default debts

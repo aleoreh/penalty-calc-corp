@@ -4,12 +4,71 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
 import { CalculatorConfig } from "../../../domain/calculator-config"
-import { Debt } from "../../../domain/debt"
+import {
+    Debt,
+    addDebtPayment,
+    createDebtPayment,
+    getRemainingBalance,
+    periodKey,
+    updatePayment,
+} from "../../../domain/debt"
+import { Payment } from "../../../domain/payment"
 import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { UI } from "../../types"
 import { CalculationResults } from "../CalculationResults"
 import { DebtsList } from "../DebtsList/DebtsList"
 import { CalculatorSettings } from "./CalculatorSettings"
+
+function updateDebt(debts: Debt[], debt: Debt): Debt[] {
+    return debts.map((x) =>
+        periodKey(x.period) === periodKey(debt.period) ? debt : x
+    )
+}
+
+function distributePayment(
+    payment: Payment,
+    debts: Debt[]
+): { debts: Debt[]; remainder: number } {
+    return [...debts]
+        .sort((d1, d2) => d1.period.getTime() - d2.period.getTime())
+        .reduce(
+            ({ debts, remainder }, debt) => {
+                if (remainder === 0) return { debts, remainder }
+
+                const debtRemainingBalance = getRemainingBalance(debt)
+                const [debtPaymentAmount, nextRemainder] =
+                    remainder < debtRemainingBalance
+                        ? [remainder, 0 as Kopek]
+                        : [
+                              debtRemainingBalance as Kopek,
+                              (remainder - debtRemainingBalance) as Kopek,
+                          ]
+
+                const foundDebtPayment = debt.payments.find(
+                    (x) => x.paymentId === payment.id
+                )
+
+                const updatedDebt =
+                    foundDebtPayment !== undefined
+                        ? updatePayment({
+                              ...foundDebtPayment,
+                              amount: debtPaymentAmount,
+                          })(debt)
+                        : addDebtPayment(
+                              payment.id,
+                              createDebtPayment(payment.date, debtPaymentAmount)
+                          )(debt)
+
+                const nextDebts = updateDebt(debts, updatedDebt)
+
+                return { debts: nextDebts, remainder: nextRemainder as Kopek }
+            },
+            {
+                debts,
+                remainder: payment.amount,
+            }
+        )
+}
 
 export const Calculator: UI.Calculator = ({
     defaultCalculationDate,
