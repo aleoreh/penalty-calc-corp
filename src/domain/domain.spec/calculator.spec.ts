@@ -4,12 +4,11 @@ import {
     calculatePenalty,
     penaltyToResult,
 } from "../calculator"
-import { getDefaultDueDate } from "../debt"
 import { CalculatorConfig } from "../calculator-config"
 import { dayjs } from "../dayjs"
-import { Debt, addPayment } from "../debt"
+import { Debt, addPayment, getDefaultDueDate } from "../debt"
 import { Moratorium } from "../moratorium"
-import { Payment } from "../payment"
+import { PaymentBody } from "../payment"
 import penalties from "../penalty"
 
 const moratoriums = (
@@ -29,7 +28,7 @@ function createCalculation() {
         keyRate: 0.095,
         fractionChangeDay: 90
     }
-    const payments: Payment[] = [
+    const payments: PaymentBody[] = [
         { date: new Date("2020-01-01"), amount: 10000 as Kopek },
     ]
     const calculator: Calculator = {

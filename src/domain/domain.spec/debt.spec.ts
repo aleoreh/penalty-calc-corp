@@ -1,20 +1,14 @@
 import { it } from "@fast-check/jest"
 import { A, D } from "@mobily/ts-belt"
 import { Arbitrary, array, date, integer, record } from "fast-check"
-
-import { getDefaultDueDate } from "../debt"
-import { CalculatorConfig } from "../calculator-config"
-import { dayjs } from "../dayjs"
 import {
     Debt,
-    addPayment,
-    paymentsAmount,
+    addPayment, getDefaultDueDate, paymentsAmount,
     paymentsLength,
     removePayment,
-    updateDebt,
+    updateDebt
 } from "../debt"
-import { Payment } from "../payment"
-import { getDefaultCalculatorConfig } from "../../services/calculator-config-service"
+import { PaymentBody } from "../payment"
 
 type DebtInit = {
     period: Date
@@ -28,7 +22,7 @@ const debtArb: Arbitrary<DebtInit> = record({
     amount: kopekArb,
 })
 
-const paymentArb: Arbitrary<Payment> = record({
+const paymentArb: Arbitrary<PaymentBody> = record({
     date: date(),
     amount: kopekArb,
 })
@@ -38,7 +32,7 @@ const nonEmptyPaymentsArb = array(paymentArb, { minLength: 1 })
 
 const daysToPay = 10
 
-const createDebt = (debtData: DebtInit, payments: Payment[]): Debt => {
+const createDebt = (debtData: DebtInit, payments: PaymentBody[]): Debt => {
     const initialDebt: Debt = {
         ...debtData,
         dueDate: getDefaultDueDate(debtData.period, daysToPay),

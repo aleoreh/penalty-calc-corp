@@ -1,8 +1,8 @@
 import { dayjs } from "./dayjs"
-import { Payment } from "./payment"
+import { PaymentBody } from "./payment"
 
 type PaymentId = number
-export type DebtPayment = Payment & { id: PaymentId }
+export type DebtPayment = PaymentBody & { id: PaymentId }
 
 const generatePaymentId = (debt: Debt): PaymentId =>
     debt.payments.length === 0
@@ -32,7 +32,7 @@ export const updateDebt =
     })
 
 export const addPayment =
-    (payment: Payment) =>
+    (payment: PaymentBody) =>
     (debt: Debt): Debt => ({
         ...debt,
         payments: [

@@ -1,7 +1,24 @@
-export type Payment = {
+/**
+ * Идентификатор документа оплаты
+ */
+type PaymentId = string & { __brand: PaymentId }
+
+/**
+ * Заголовочная часть документа оплаты
+ */
+export type PaymentHead = {
+    id: PaymentId
+}
+
+/**
+ * Содержательная часть документа оплаты
+ */
+export type PaymentBody = {
     date: Date
     amount: Kopek
 }
+
+export type Payment = PaymentHead & PaymentBody
 
 /**
  * DEPRECATED!

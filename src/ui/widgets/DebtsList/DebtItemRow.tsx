@@ -16,7 +16,7 @@ import debts, {
     getRemainingBalance,
     paymentsAmount,
 } from "../../../domain/debt"
-import { Payment } from "../../../domain/payment"
+import { PaymentBody } from "../../../domain/payment"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
@@ -71,7 +71,7 @@ const DebtEditForm = ({ debt, setDebt, close }: DebtEditFormProps) => {
 }
 
 type AddPaymentFormProps = {
-    addPayment: (payment: Payment) => void
+    addPayment: (payment: PaymentBody) => void
     close: () => void
 }
 
@@ -137,7 +137,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
         setAddPaymentOpened(false)
     })
 
-    const addPayment = (payment: Payment) => {
+    const addPayment = (payment: PaymentBody) => {
         setDebt(debts.addPayment(payment)(debt))
     }
 
