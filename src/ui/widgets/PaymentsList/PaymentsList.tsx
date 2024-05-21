@@ -18,7 +18,7 @@ import Typography from "@mui/material/Typography"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
-import { Debt, getRemainingBalance } from "../../../domain/debt"
+import { Debt, DebtPayment, getRemainingBalance } from "../../../domain/debt"
 import { Payment, createPayment, toPaymentId } from "../../../domain/payment"
 import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { Form } from "../../components/Form"
@@ -26,6 +26,7 @@ import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
+import TableBody from "@mui/material/TableBody"
 
 type DistributeMethod = "fifo" | "lastIsFirst"
 
@@ -50,12 +51,33 @@ function replacePayment(payments: Payment[], payment: Payment): Payment[] {
     return payments.map((x) => (x.id === payment.id ? payment : x))
 }
 
+function getDebtPaymentsByPayment(
+    payment: Payment,
+    debts: Debt[]
+): Array<{ debt: Debt; debtPayment: DebtPayment }> {
+    return debts
+        .reduce(
+            (acc, debt) =>
+                acc.concat(
+                    debt.payments
+                        .filter(
+                            (debtPayment) =>
+                                debtPayment.paymentId === payment.id
+                        )
+                        .map((debtPayment) => ({ debt, debtPayment }))
+                ),
+            [[]] as Array<{ debt: Debt; debtPayment: DebtPayment }>[]
+        )
+        .flat()
+}
+
 type PaymentViewProps = {
     payment: Payment
     deletePayment: (payment: Payment) => void
+    debts: Debt[]
 }
 
-const PaymentView = ({ deletePayment, payment }: PaymentViewProps) => {
+const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
     // ~~~~~~~~ confirm delete dialog ~~~~~~~~ //
 
     const [isConfirmDeleteOpened, setIsConfirmDeleteOpened] = useState(false)
@@ -89,6 +111,31 @@ const PaymentView = ({ deletePayment, payment }: PaymentViewProps) => {
                 <IconButton onClick={() => confirmPaymentDeleting(payment)}>
                     <DeleteOutline></DeleteOutline>
                 </IconButton>
+            </Stack>
+            <Stack direction="row">
+                <Typography variant="body2">Погашает:</Typography>
+                <TableContainer>
+                    <Table>
+                        <TableBody>
+                            {getDebtPaymentsByPayment(payment, debts).map(
+                                ({ debt, debtPayment }) => (
+                                    <TableRow>
+                                        <TableCell>
+                                            {debtPayment.amount}
+                                        </TableCell>
+                                        <TableCell>
+                                            (
+                                            {dayjs(debt.period).format(
+                                                "MMMM YYYY"
+                                            )}
+                                            , {debt.amount})
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Stack>
             <ConfirmDialog {...paymentDeleteConfirmDialog} />
         </>
@@ -188,25 +235,27 @@ const AddPaymentForm = ({
                     </Button>
                 </Stack>
                 <TableContainer>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Период</TableCell>
-                            <TableCell>Сумма</TableCell>
-                            <TableCell>Остаток</TableCell>
-                        </TableRow>
-                    </TableHead>
                     <Table>
-                        {distributedPayments.debts.map((debt) => (
+                        <TableHead>
                             <TableRow>
-                                <TableCell>
-                                    {dayjs(debt.period).format("MMMM YYYY")}
-                                </TableCell>
-                                <TableCell>{debt.amount}</TableCell>
-                                <TableCell>
-                                    {getRemainingBalance(debt)}
-                                </TableCell>
+                                <TableCell>Период</TableCell>
+                                <TableCell>Сумма</TableCell>
+                                <TableCell>Остаток</TableCell>
                             </TableRow>
-                        ))}
+                        </TableHead>
+                        <TableBody>
+                            {distributedPayments.debts.map((debt) => (
+                                <TableRow>
+                                    <TableCell>
+                                        {dayjs(debt.period).format("MMMM YYYY")}
+                                    </TableCell>
+                                    <TableCell>{debt.amount}</TableCell>
+                                    <TableCell>
+                                        {getRemainingBalance(debt)}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
                     </Table>
                 </TableContainer>
                 <Typography>
@@ -272,6 +321,7 @@ export const PaymentsList = ({
                             <PaymentView
                                 payment={payment}
                                 deletePayment={() => deletePayment(payment)}
+                                debts={debts}
                             />
                         ))}
                     </Stack>
