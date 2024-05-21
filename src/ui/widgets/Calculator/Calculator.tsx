@@ -17,6 +17,7 @@ import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { UI } from "../../types"
 import { CalculationResults } from "../CalculationResults"
 import { DebtsList } from "../DebtsList/DebtsList"
+import { PaymentsList } from "../PaymentsList"
 import { CalculatorSettings } from "./CalculatorSettings"
 
 function updateDebt(debts: Debt[], debt: Debt): Debt[] {
@@ -81,6 +82,7 @@ export const Calculator: UI.Calculator = ({
     )
     const [config, setConfig] = useState<CalculatorConfig>(defaultConfig)
     const [debts, setDebts] = useState<Debt[]>([])
+    const [payments, setPayments] = useState<Payment[]>([])
 
     // ~~~~~~~~~~~~ clear confirm ~~~~~~~~~~~~ //
 
@@ -133,11 +135,18 @@ export const Calculator: UI.Calculator = ({
                 sx={{ alignSelf: "flex-start" }}
             />
             <DebtsList config={config} debts={debts} setDebts={setDebts} />
+            <PaymentsList
+                debts={debts}
+                payments={payments}
+                distributePayment={distributePayment}
+            />
             <Stack direction="row" justifyContent="flex-end">
                 <Button variant="outlined" onClick={onDebtsClear}>
                     Очистить список долгов
                 </Button>
-                <Button variant="contained" onClick={calculate}>Рассчитать</Button>
+                <Button variant="contained" onClick={calculate}>
+                    Рассчитать
+                </Button>
             </Stack>
             {calculationResults.length > 0 && (
                 <CalculationResults
