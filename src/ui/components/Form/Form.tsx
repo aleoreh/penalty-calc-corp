@@ -78,7 +78,7 @@ export const Form = ({
             />
 
             <CardContent>{children}</CardContent>
-            <CardActions>
+            <CardActions sx={{ justifyContent: "flex-end" }}>
                 {submitAndContinue && (
                     <Button
                         title="Применить и продолжить"
