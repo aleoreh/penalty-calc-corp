@@ -127,6 +127,7 @@ const DebtAddForm = ({
     const submitDebtAddAndContinue = () => {
         submitDebtAdd()
         open()
+        setInputDebtPeriod(inputDebtPeriod?.add(1, "month") || null)
     }
 
     const handleInputDebtPeriodChange = (value: Dayjs | null) => {
