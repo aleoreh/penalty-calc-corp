@@ -18,6 +18,7 @@ export const Input = ({ label, attributes, value, error }: InputProps) => {
             label={label}
             error={!!error}
             helperText={error}
+            autoComplete="off"
         />
     )
 }
