@@ -48,13 +48,18 @@ function distributePayment(
 ): { debts: Debt[]; remainder: number } {
     if (debts.length === 0) return { debts, remainder: payment.amount }
 
+    /**
+     * fifo - сортируем по возрастанию периода долга
+     * lastIsFirst - сначала целевой период (payment.period), затем - fifo
+     */
     const sorter = (d1: Debt, d2: Debt) =>
-        d1.period.getTime() - d2.period.getTime()
-
-    const sortedDebts =
         method === "fifo"
-            ? [...debts].sort(sorter)
-            : debts.slice(-1).concat(debts.slice(0, -1).sort(sorter))
+            ? d1.period.getTime() - d2.period.getTime()
+            : dayjs(d1.period).isSame(payment.period, "month")
+            ? -Infinity
+            : d1.period.getTime() - d2.period.getTime()
+
+    const sortedDebts = [...debts].sort(sorter)
 
     return sortedDebts.reduce(
         ({ debts, remainder }, debt) => {
