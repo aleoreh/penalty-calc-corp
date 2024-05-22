@@ -127,14 +127,15 @@ export const penaltyToResult: PenaltyToResult = (penalty) => {
         resultRow: CalculationResultItem,
         row: PenaltyItem
     ): CalculationResultItem => {
-        return {
+        const res = {
             ...resultRow,
             dateTo: row.date,
             totalDays: resultRow.totalDays + 1,
             penaltyAmount: (resultRow.penaltyAmount +
                 row.penaltyAmount) as Kopek,
-            formula: formulas.createFormula(resultRow),
+            formula: "",
         }
+        return { ...res, formula: formulas.createFormula(res) }
     }
 
     const equals = (
