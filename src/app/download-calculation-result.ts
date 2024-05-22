@@ -1,7 +1,8 @@
+import dayjs from "dayjs"
 import writeXlsxFile from "write-excel-file"
 import { CalculationResult } from "../domain/calculation-result"
 import { formatKeyRatePart } from "../domain/keyrate-part"
-import dayjs from "dayjs"
+import { formatPercent } from "../utils"
 
 // ~~~~~~~~~~~~~~~ helpers ~~~~~~~~~~~~~~~ //
 
@@ -60,8 +61,9 @@ async function download(
             },
             {
                 column: "Ставка",
-                type: Number,
-                value: (x) => (typeof x === "string" ? undefined : x.rate),
+                type: String,
+                value: (x) =>
+                    typeof x === "string" ? undefined : formatPercent(x.rate),
             },
             {
                 column: "Расчет",
