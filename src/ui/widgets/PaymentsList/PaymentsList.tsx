@@ -261,7 +261,7 @@ const AddPaymentForm = ({
     }
 
     return (
-        <Form {...form}>
+        <Form {...form} title="Оплата">
             <Stack>
                 <Stack direction="row">
                     <DatePicker

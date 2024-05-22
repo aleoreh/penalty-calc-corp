@@ -153,7 +153,11 @@ const DebtAddForm = ({
     }, [periodError])
 
     return (
-        <Form {...debtAddForm} submitAndContinue={submitDebtAddAndContinue}>
+        <Form
+            {...debtAddForm}
+            submitAndContinue={submitDebtAddAndContinue}
+            title="Долг"
+        >
             <Stack>
                 <DatePicker
                     label={"Период"}
