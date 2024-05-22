@@ -74,6 +74,10 @@ function getDebtPaymentsByPayment(
         .flat()
 }
 
+function getTotalAmount(payments: Payment[]): number {
+    return payments.reduce((acc, payment) => acc + payment.amount, 0)
+}
+
 type PaymentViewProps = {
     payment: Payment
     deletePayment: (payment: Payment) => void
@@ -106,44 +110,55 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
     }
 
     return (
-        <ListItem key={payment.id}>
-            <Stack
-                className="payment"
-                direction="row"
-                justifyContent="space-between"
-            >
+        <TableRow key={payment.id} sx={{ verticalAlign: "baseline" }}>
+            <TableCell align="right">
                 <Typography variant="body2">
                     от {formatDateLong(payment.date)} на{" "}
                     {formatCurrency(payment.amount)}
                 </Typography>
+            </TableCell>
+            <TableCell>
+                <List>
+                    {getDebtPaymentsByPayment(payment, debts).map(
+                        ({ debt, debtPayment }) => (
+                            <ListItem
+                                key={debt.period.getTime()}
+                                sx={{ padding: 0 }}
+                            >
+                                <Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center"
+                                    flexGrow={1}
+                                >
+                                    <Typography
+                                        variant="body2"
+                                        align="right"
+                                        width="50%"
+                                    >
+                                        {formatCurrency(debtPayment.amount)}
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        align="right"
+                                        width="50%"
+                                    >
+                                        {formatPeriod(debt.period)} на{" "}
+                                        {formatCurrency(debt.amount)}
+                                    </Typography>
+                                </Stack>
+                            </ListItem>
+                        )
+                    )}
+                </List>
+            </TableCell>
+            <TableCell align="right">
                 <IconButton onClick={() => confirmPaymentDeleting(payment)}>
                     <DeleteOutline></DeleteOutline>
                 </IconButton>
-            </Stack>
-            <Stack direction="row">
-                <Typography variant="body2">Погашает:</Typography>
-                <TableContainer>
-                    <Table>
-                        <TableBody>
-                            {getDebtPaymentsByPayment(payment, debts).map(
-                                ({ debt, debtPayment }) => (
-                                    <TableRow key={debt.period.getTime()}>
-                                        <TableCell>
-                                            {formatCurrency(debtPayment.amount)}
-                                        </TableCell>
-                                        <TableCell>
-                                            ({formatPeriod(debt.period)},{" "}
-                                            {formatCurrency(debt.amount)})
-                                        </TableCell>
-                                    </TableRow>
-                                )
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Stack>
+            </TableCell>
             <ConfirmDialog {...paymentDeleteConfirmDialog} />
-        </ListItem>
+        </TableRow>
     )
 }
 
@@ -265,11 +280,15 @@ const AddPaymentForm = ({
                             {distributedPayments.debts.map((debt) => (
                                 <TableRow key={debt.period.getTime()}>
                                     <TableCell>
-                                        {dayjs(debt.period).format("MMMM YYYY")}
+                                        {formatPeriod(debt.period)}
                                     </TableCell>
-                                    <TableCell>{debt.amount}</TableCell>
-                                    <TableCell>
-                                        {getRemainingBalance(debt)}
+                                    <TableCell align="right">
+                                        {formatCurrency(debt.amount)}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        {formatCurrency(
+                                            getRemainingBalance(debt)
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -335,15 +354,45 @@ export const PaymentsList = ({
                         >
                             <AddOutlined></AddOutlined>
                         </IconButton>
-                        <List>
-                            {payments.map((payment) => (
-                                <PaymentView
-                                    payment={payment}
-                                    deletePayment={() => deletePayment(payment)}
-                                    debts={debts}
-                                />
-                            ))}
-                        </List>
+                        {payments.length > 0 && (
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Оплата</TableCell>
+                                            <TableCell>Погашает</TableCell>
+                                            <TableCell></TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {payments.map((payment) => (
+                                            <PaymentView
+                                                payment={payment}
+                                                deletePayment={() =>
+                                                    deletePayment(payment)
+                                                }
+                                                debts={debts}
+                                            />
+                                        ))}
+                                        <TableRow>
+                                            <TableCell
+                                                align="right"
+                                                sx={{ border: "none" }}
+                                            >
+                                                Итого:{" "}
+                                                {formatCurrency(
+                                                    getTotalAmount(payments)
+                                                )}
+                                            </TableCell>
+                                            <TableCell
+                                                colSpan={2}
+                                                sx={{ border: "none" }}
+                                            ></TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        )}
                     </Stack>
                 </AccordionDetails>
             </Accordion>

@@ -1,4 +1,8 @@
-import { DownloadOutlined, SaveAltOutlined } from "@mui/icons-material"
+import {
+    DownloadOutlined,
+    ExpandMoreOutlined,
+    SaveAltOutlined,
+} from "@mui/icons-material"
 import Button from "@mui/material/Button"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
@@ -22,6 +26,9 @@ import {
 } from "../../../domain/calculation-result"
 import { formatKeyRatePart } from "../../../domain/keyrate-part"
 import { formatCurrency, formatPercent } from "../../../utils"
+import Accordion from "@mui/material/Accordion"
+import AccordionSummary from "@mui/material/AccordionSummary"
+import AccordionDetails from "@mui/material/AccordionDetails"
 
 // ~~~~~~~~~ CalculationResultRow ~~~~~~~~ //
 
@@ -32,14 +39,18 @@ type CalculationResultRowProps = {
 const CalculationResultRow = ({ item }: CalculationResultRowProps) => {
     return (
         <TableRow className="calculation-result-row">
-            <TableCell>{formatCurrency(item.debtAmount)}</TableCell>
+            <TableCell align="right">
+                {formatCurrency(item.debtAmount)}
+            </TableCell>
             <TableCell>{dayjs(item.dateFrom).format("L")}</TableCell>
             <TableCell>{dayjs(item.dateTo).format("L")}</TableCell>
             <TableCell>{item.totalDays}</TableCell>
             <TableCell>{formatKeyRatePart(item.ratePart)}</TableCell>
             <TableCell>{formatPercent(item.rate)}</TableCell>
             <TableCell>{item.formula}</TableCell>
-            <TableCell>{formatCurrency(item.penaltyAmount)}</TableCell>
+            <TableCell align="right">
+                {formatCurrency(item.penaltyAmount)}
+            </TableCell>
         </TableRow>
     )
 }
@@ -94,8 +105,12 @@ const CalculationResult = ({
 
     return (
         <Stack className="calculation-result">
-            <Stack direction="row">
-                <Typography>
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+            >
+                <Typography variant="h6">
                     {dayjs(calculationResult.period).format("YYYY MMMM")}
                 </Typography>
                 <Button
@@ -160,22 +175,39 @@ export const CalculationResults = ({
 
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
-    return (
-        <Stack className="calculation-results">
-            <Button onClick={() => setDownloadTrigger(true)}>
-                <SaveAltOutlined></SaveAltOutlined>
-                Сохранить все расчёты
-            </Button>
-            <List>
-                {calculationResults.map((calculationResult) => (
-                    <ListItem key={calculationResult.period.toISOString()}>
-                        <CalculationResult
-                            calculationDate={calculationDate}
-                            calculationResult={calculationResult}
-                        />
-                    </ListItem>
-                ))}
-            </List>
-        </Stack>
+    return calculationResults.length > 0 ? (
+        <Accordion className="calculation-results" defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
+                <Typography component="h2" variant="h6">
+                    Результат
+                </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Stack className="calculation-results">
+                    <Button
+                        onClick={() => setDownloadTrigger(true)}
+                        sx={{ alignSelf: "flex-end" }}
+                    >
+                        <SaveAltOutlined></SaveAltOutlined>
+                        Сохранить все расчёты
+                    </Button>
+                    <List>
+                        {calculationResults.map((calculationResult) => (
+                            <ListItem
+                                key={calculationResult.period.toISOString()}
+                            >
+                                <CalculationResult
+                                    calculationDate={calculationDate}
+                                    calculationResult={calculationResult}
+                                />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Stack>
+            </AccordionDetails>
+        </Accordion>
+    ) : (
+        <></>
     )
 }
+

@@ -248,6 +248,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                                 Начало просрочки
                                             </TableCell>
                                             <TableCell>Долг</TableCell>
+                                            <TableCell>Погашение</TableCell>
                                             <TableCell>Остаток</TableCell>
                                             <TableCell></TableCell>
                                         </TableRow>
@@ -266,13 +267,27 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                     ))}
                                     {totalRemainingBalance(debts) > 0 && (
                                         <TableRow>
-                                            <TableCell colSpan={2}></TableCell>
-                                            <TableCell>Итого:</TableCell>
-                                            <TableCell colSpan={3}>
+                                            <TableCell
+                                                colSpan={3}
+                                                sx={{ border: "none" }}
+                                            ></TableCell>
+                                            <TableCell
+                                                align="right"
+                                                sx={{ border: "none" }}
+                                            >
+                                                Итого:
+                                            </TableCell>
+                                            <TableCell
+                                                align="right"
+                                                sx={{ border: "none" }}
+                                            >
                                                 {formatCurrency(
                                                     totalRemainingBalance(debts)
                                                 )}
                                             </TableCell>
+                                            <TableCell
+                                                sx={{ border: "none" }}
+                                            ></TableCell>
                                         </TableRow>
                                     )}
                                 </TableBody>

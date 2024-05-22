@@ -18,16 +18,26 @@ const theme = createTheme(
         components: {
             MuiContainer: {
                 defaultProps: {
-                    maxWidth: "md"
-                }
+                    maxWidth: "md",
+                },
             },
             MuiStack: {
                 defaultProps: {
                     useFlexGap: true,
-                    gap: 2
-                }
-            }
-        }
+                    gap: 2,
+                },
+            },
+            MuiTableCell: {
+                defaultProps: {
+                    size: "small",
+                },
+            },
+            MuiAccordion: {
+                defaultProps: {
+                    variant: "outlined",
+                },
+            },
+        },
     },
     ruRU
 )

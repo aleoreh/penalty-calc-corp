@@ -24,6 +24,7 @@ import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
 import { DebtPayments } from "./DebtsPayments"
+import Typography from "@mui/material/Typography"
 
 type DebtEditFormProps = {
     debt: Debt
@@ -146,15 +147,27 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
 
     return (
         <>
-            <TableRow className="debt-item-row">
+            <TableRow
+                className="debt-item-row"
+                sx={{ verticalAlign: "baseline" }}
+            >
                 <TableCell>{formatPeriod(debt.period)}</TableCell>
                 <TableCell>{formatDateLong(debt.dueDate)}</TableCell>
-                <TableCell>{formatCurrency(debt.amount)}</TableCell>
+                <TableCell align="right">
+                    {formatCurrency(debt.amount)}
+                </TableCell>
                 <TableCell>
+                    {paymentsAmount(debt) > 0 ? (
+                        <DebtPayments debt={debt} setDebt={setDebt} />
+                    ) : (
+                        <Typography align="center">-</Typography>
+                    )}
+                </TableCell>
+                <TableCell align="right">
                     {formatCurrency(getRemainingBalance(debt))}
                 </TableCell>
                 <TableCell>
-                    <Stack direction="row" gap={0}>
+                    <Stack direction="row" gap={0} justifyContent="flex-end">
                         <IconButton
                             onClick={() => setAddPaymentOpened(true)}
                             sx={{ display: "none" }}
@@ -167,19 +180,13 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                         >
                             <CreateOutlined></CreateOutlined>
                         </IconButton>
-                        <IconButton onClick={deleteDebt}>
+                        <IconButton onClick={deleteDebt} >
                             <DeleteOutline></DeleteOutline>
                         </IconButton>
                     </Stack>
                 </TableCell>
             </TableRow>
-            {paymentsAmount(debt) > 0 && (
-                <TableRow>
-                    <TableCell colSpan={5}>
-                        <DebtPayments debt={debt} setDebt={setDebt} />
-                    </TableCell>
-                </TableRow>
-            )}
+
             <Popup {...editDebtPopup}>
                 <DebtEditForm
                     debt={debt}

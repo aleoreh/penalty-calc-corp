@@ -39,17 +39,18 @@ const DebtPayment = ({ payment, setPayment, onDelete }: DebtPaymentProps) => {
     })
 
     return (
-        <ListItem key={payment.id}>
+        <ListItem key={payment.id} sx={{ padding: 0 }}>
             <Stack
                 className="debt-payment"
                 direction="row"
-                justifyContent="flex-end"
+                justifyContent="space-between"
                 alignItems="center"
+                flexGrow={1}
             >
                 <Typography variant="body2">
                     {formatDateLong(payment.date)}
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body2" align="right">
                     {formatCurrency(payment.amount)}
                 </Typography>
                 <IconButton
@@ -171,23 +172,15 @@ export const DebtPayments = ({ debt, setDebt }: Props) => {
 
     return (
         <>
-            <Stack
-                className="debt-payments"
-                direction="row"
-                justifyContent="flex-end"
-                alignItems="flex-start"
-            >
-                <Typography variant="body2">Зачтено:</Typography>
-                <List>
-                    {debt.payments.map((payment) => (
-                        <DebtPayment
-                            payment={payment}
-                            setPayment={setPayment}
-                            onDelete={onPaymentDelete}
-                        />
-                    ))}
-                </List>
-            </Stack>
+            <List>
+                {debt.payments.map((payment) => (
+                    <DebtPayment
+                        payment={payment}
+                        setPayment={setPayment}
+                        onDelete={onPaymentDelete}
+                    />
+                ))}
+            </List>
             <ConfirmDialog {...paymentDeleteConfirm} />
         </>
     )
