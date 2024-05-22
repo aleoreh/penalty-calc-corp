@@ -145,10 +145,7 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
                                     >
                                         {formatCurrency(debtPayment.amount)} из:
                                     </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        flexGrow={1}
-                                    >
+                                    <Typography variant="body2" flexGrow={1}>
                                         {debtRepr(debt)}
                                     </Typography>
                                 </Stack>
@@ -372,6 +369,11 @@ export const PaymentsList = ({
                     <Typography component="h2" variant="h6">
                         Оплата
                     </Typography>
+                    {payments.length > 0 && (
+                        <Typography variant="h6" paddingInlineStart={1}>
+                            ({payments.length})
+                        </Typography>
+                    )}
                 </AccordionSummary>
                 <AccordionDetails>
                     <Stack>

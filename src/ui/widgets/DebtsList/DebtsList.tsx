@@ -231,6 +231,11 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                     <Typography component="h2" variant="h6">
                         Долги
                     </Typography>
+                    {debts.length > 0 && (
+                        <Typography variant="h6" paddingInlineStart={1}>
+                            ({debts.length})
+                        </Typography>
+                    )}
                 </AccordionSummary>
                 <AccordionDetails>
                     <Stack>
