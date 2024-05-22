@@ -196,9 +196,13 @@ export const Calculator: UI.Calculator = ({
                 distributePayment={distributePayment}
             />
             <Stack direction="row" justifyContent="space-between">
-                <DangerousButton onClick={onCalculationClear}>
+                <DangerousButton
+                    onClick={onCalculationClear}
+                    disabled={calculationResults.length === 0}
+                >
                     Очистить расчёт
                 </DangerousButton>
+
                 <Button variant="contained" onClick={calculate}>
                     Рассчитать
                 </Button>
