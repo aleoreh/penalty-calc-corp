@@ -270,7 +270,7 @@ const AddPaymentForm = ({
                         onChange={handlePaymentDateChange}
                     />
                     <DatePicker
-                        label="Целевой период"
+                        label="Период (если есть)"
                         value={payedPeriod}
                         onChange={handlePayedPeriodChange}
                         view="month"
@@ -282,7 +282,7 @@ const AddPaymentForm = ({
                 <Typography variant="h6" align="center">
                     Распределить
                 </Typography>
-                <Stack direction="row">
+                <Stack direction="row" justifyContent="center">
                     <Button
                         onClick={() => distribute(paymentDate, "fifo")}
                         title="Распределить начиная с самых ранних"
