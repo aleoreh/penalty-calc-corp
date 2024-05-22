@@ -50,7 +50,9 @@ const CalculationResultRow = ({ item }: CalculationResultRowProps) => {
             <TableCell>{item.totalDays}</TableCell>
             <TableCell>{formatKeyRatePart(item.ratePart)}</TableCell>
             <TableCell>{formatPercent(item.rate)}</TableCell>
-            <TableCell>{item.formula}</TableCell>
+            <TableCell sx={(theme) => ({
+                fontSize: theme.typography.caption
+            })}>{item.formula}</TableCell>
             <TableCell align="right">
                 {formatCurrency(item.penaltyAmount)}
             </TableCell>

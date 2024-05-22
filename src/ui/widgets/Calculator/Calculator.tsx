@@ -135,7 +135,7 @@ export const Calculator: UI.Calculator = ({
     const onCalculationClear = () => {
         clearConfirm.configure({
             value: debts,
-            title: "Очистить расчёт?",
+            title: "Очистить долги, оплаты и расчёт?",
             confirmText: "Да, очистить!",
         })
         setClearConfirmOpened(true)
@@ -205,7 +205,7 @@ export const Calculator: UI.Calculator = ({
                     onClick={onCalculationClear}
                     disabled={calculationResults.length === 0}
                 >
-                    Очистить расчёт
+                    Очистить
                 </DangerousButton>
 
                 <Button

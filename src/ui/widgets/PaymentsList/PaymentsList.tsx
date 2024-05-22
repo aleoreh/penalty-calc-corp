@@ -127,30 +127,36 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
             <TableCell colSpan={3}>
                 <List>
                     {getDebtPaymentsByPayment(payment, debts).map(
-                        ({ debt, debtPayment }) => (
-                            <ListItem
-                                key={debt.period.getTime()}
-                                sx={{ padding: 0 }}
-                            >
-                                <Stack
-                                    direction="row"
-                                    justifyContent="space-between"
-                                    alignItems="baseline"
-                                    flexGrow={1}
+                        ({ debt, debtPayment }) =>
+                            debtPayment.amount > 0 && (
+                                <ListItem
+                                    key={debt.period.getTime()}
+                                    sx={{ padding: 0 }}
                                 >
-                                    <Typography
-                                        variant="body2"
-                                        align="right"
-                                        flexGrow={0}
+                                    <Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="baseline"
+                                        flexGrow={1}
                                     >
-                                        {formatCurrency(debtPayment.amount)} из:
-                                    </Typography>
-                                    <Typography variant="body2" flexGrow={1}>
-                                        {debtRepr(debt)}
-                                    </Typography>
-                                </Stack>
-                            </ListItem>
-                        )
+                                        <Typography
+                                            variant="body2"
+                                            align="right"
+                                            flexGrow={0}
+                                        >
+                                            {formatCurrency(debtPayment.amount)}{" "}
+                                            из:
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            flexGrow={1}
+                                            align="left"
+                                        >
+                                            {debtRepr(debt)}
+                                        </Typography>
+                                    </Stack>
+                                </ListItem>
+                            )
                     )}
                 </List>
             </TableCell>

@@ -173,13 +173,16 @@ export const DebtPayments = ({ debt, setDebt }: Props) => {
     return (
         <>
             <List>
-                {debt.payments.map((payment) => (
-                    <DebtPayment
-                        payment={payment}
-                        setPayment={setPayment}
-                        onDelete={onPaymentDelete}
-                    />
-                ))}
+                {debt.payments.map(
+                    (payment) =>
+                        payment.amount > 0 && (
+                            <DebtPayment
+                                payment={payment}
+                                setPayment={setPayment}
+                                onDelete={onPaymentDelete}
+                            />
+                        )
+                )}
             </List>
             <ConfirmDialog {...paymentDeleteConfirm} />
         </>
