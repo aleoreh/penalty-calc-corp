@@ -182,6 +182,7 @@ const AddPaymentForm = ({
 }: AddPaymentFormProps) => {
     const [paymentId] = useState(dayjs().unix())
     const [paymentDate, setPaymentDate] = useState<Dayjs | null>(dayjs())
+    const [payedPeriod, setPayedPeriod] = useState<Dayjs | null>(null)
 
     const amountInput = useValidatedInput(
         "",
@@ -213,7 +214,8 @@ const AddPaymentForm = ({
                 createPayment(
                     paymentId,
                     date.toDate(),
-                    amountInput.validatedValue.value as Kopek
+                    amountInput.validatedValue.value as Kopek,
+                    payedPeriod?.toDate()
                 ),
                 debts,
                 method
@@ -246,14 +248,31 @@ const AddPaymentForm = ({
         })
     }
 
+    const handlePayedPeriodChange = (value: typeof payedPeriod) => {
+        setPayedPeriod(() => {
+            lastDistributeMethod && distribute(value, lastDistributeMethod)
+            return value
+        })
+    }
+
     return (
         <Form {...form}>
             <Stack>
-                <DatePicker
-                    label={"Дата платежа"}
-                    value={paymentDate}
-                    onChange={handlePaymentDateChange}
-                />
+                <Stack direction="row">
+                    <DatePicker
+                        label="Дата платежа"
+                        value={paymentDate}
+                        onChange={handlePaymentDateChange}
+                    />
+                    <DatePicker
+                        label="Целевой период"
+                        value={payedPeriod}
+                        onChange={handlePayedPeriodChange}
+                        view="month"
+                        views={["year", "month"]}
+                        openTo="year"
+                    />
+                </Stack>
                 <Input {...amountInput} />
                 <Typography variant="h6" align="center">
                     Распределить
@@ -267,9 +286,9 @@ const AddPaymentForm = ({
                     </Button>
                     <Button
                         onClick={() => distribute(paymentDate, "lastIsFirst")}
-                        title="Распределить сначала на последний долг, затем с самых ранних"
+                        title="Распределить сначала на целевой период, затем с самых ранних"
                     >
-                        Сначала последний
+                        Сначала целевой
                     </Button>
                 </Stack>
                 <TableContainer>
@@ -357,7 +376,7 @@ export const PaymentsList = ({
                             onClick={() => {
                                 setAddPaymentOpened(true)
                             }}
-                            sx={{ alignSelf: "flex-end" }}
+                            sx={{ alignSelf: "flex-start" }}
                             startIcon={<AddOutlined />}
                         >
                             Добавить оплату

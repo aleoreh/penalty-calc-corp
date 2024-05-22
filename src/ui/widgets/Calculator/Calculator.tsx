@@ -208,7 +208,11 @@ export const Calculator: UI.Calculator = ({
                     Очистить расчёт
                 </DangerousButton>
 
-                <Button variant="contained" onClick={calculate}>
+                <Button
+                    variant="contained"
+                    onClick={calculate}
+                    disabled={debts.length === 0}
+                >
                     Рассчитать
                 </Button>
             </Stack>

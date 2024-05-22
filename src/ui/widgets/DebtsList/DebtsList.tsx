@@ -235,7 +235,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                             onClick={() => {
                                 setAddDebtPopupOpened(true)
                             }}
-                            sx={{ alignSelf: "flex-end" }}
+                            sx={{ alignSelf: "flex-start" }}
                             startIcon={<AddOutlined />}
                         >
                             Добавить долг
@@ -275,13 +275,17 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                             ></TableCell>
                                             <TableCell
                                                 align="right"
-                                                sx={{ border: "none" }}
+                                                sx={{
+                                                    border: "none",
+                                                }}
                                             >
                                                 Итого:
                                             </TableCell>
                                             <TableCell
                                                 align="right"
-                                                sx={{ border: "none" }}
+                                                sx={{
+                                                    border: "none",
+                                                }}
                                             >
                                                 {formatCurrency(
                                                     totalRemainingBalance(debts)
