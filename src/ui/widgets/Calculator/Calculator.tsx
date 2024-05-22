@@ -163,6 +163,11 @@ export const Calculator: UI.Calculator = ({
         setPayments(payments)
     }
 
+    const onConfigSet = (config: CalculatorConfig) => {
+        clearCalculationResults()
+        setConfig(config)
+    }
+
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
@@ -172,7 +177,7 @@ export const Calculator: UI.Calculator = ({
                     calculationDate?.toDate() || defaultCalculationDate
                 }
                 config={config}
-                setConfig={setConfig}
+                setConfig={onConfigSet}
                 defaultConfig={defaultConfig}
             />
             <DatePicker
