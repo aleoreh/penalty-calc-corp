@@ -3,6 +3,7 @@ import Dialog from "@mui/material/Dialog"
 import DialogActions from "@mui/material/DialogActions"
 import DialogTitle from "@mui/material/DialogTitle"
 import { useState } from "react"
+import { DangerousButton } from "../Buttons/DangerousButton"
 
 type ConfirmDialogProps<T> = {
     id?: string
@@ -28,8 +29,10 @@ export const ConfirmDialog = <T,>(props: ConfirmDialogProps<T>) => {
         <Dialog open={open} onClose={handleCancel} id={id}>
             <DialogTitle>{title}</DialogTitle>
             <DialogActions>
-                <Button onClick={handleOk}>{confirmText}</Button>
-                <Button autoFocus onClick={handleCancel}>
+                <DangerousButton onClick={handleOk}>
+                    {confirmText}
+                </DangerousButton>
+                <Button autoFocus onClick={handleCancel} variant="outlined">
                     Отмена
                 </Button>
             </DialogActions>

@@ -206,7 +206,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         debtDeleteConfirmDialog.configure({
             value: debt,
             title: `Удалить долг за ${dayjs(debt.period).format("MMMM YYYY")}?`,
-            confirmText: "Да, удалить",
+            confirmText: "Да, удалить!",
         })
         setIsConfirmDeleteOpened(true)
     }

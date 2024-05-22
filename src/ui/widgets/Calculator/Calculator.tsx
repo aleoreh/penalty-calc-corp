@@ -14,6 +14,7 @@ import {
     updatePayment,
 } from "../../../domain/debt"
 import { Payment } from "../../../domain/payment"
+import { DangerousButton } from "../../components/Buttons/DangerousButton"
 import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { UI } from "../../types"
 import { CalculationResults } from "../CalculationResults"
@@ -190,9 +191,9 @@ export const Calculator: UI.Calculator = ({
                 distributePayment={distributePayment}
             />
             <Stack direction="row" justifyContent="space-between">
-                <Button variant="outlined" onClick={onCalculationClear}>
+                <DangerousButton onClick={onCalculationClear}>
                     Очистить расчёт
-                </Button>
+                </DangerousButton>
                 <Button variant="contained" onClick={calculate}>
                     Рассчитать
                 </Button>

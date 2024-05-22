@@ -1,8 +1,10 @@
 import {
-    DownloadOutlined,
     ExpandMoreOutlined,
-    SaveAltOutlined,
+    FileDownloadOutlined
 } from "@mui/icons-material"
+import Accordion from "@mui/material/Accordion"
+import AccordionDetails from "@mui/material/AccordionDetails"
+import AccordionSummary from "@mui/material/AccordionSummary"
 import Button from "@mui/material/Button"
 import List from "@mui/material/List"
 import ListItem from "@mui/material/ListItem"
@@ -25,10 +27,11 @@ import {
     CalculationResult as CalculationResultType,
 } from "../../../domain/calculation-result"
 import { formatKeyRatePart } from "../../../domain/keyrate-part"
-import { formatCurrency, formatPercent } from "../../../utils"
-import Accordion from "@mui/material/Accordion"
-import AccordionSummary from "@mui/material/AccordionSummary"
-import AccordionDetails from "@mui/material/AccordionDetails"
+import {
+    formatCurrency,
+    formatPercent,
+    formatPeriod
+} from "../../../utils"
 
 // ~~~~~~~~~ CalculationResultRow ~~~~~~~~ //
 
@@ -111,16 +114,14 @@ const CalculationResult = ({
                 alignItems="center"
             >
                 <Typography variant="h6">
-                    {dayjs(calculationResult.period).format("YYYY MMMM")}
+                    {formatPeriod(calculationResult.period)}
                 </Typography>
                 <Button
                     onClick={() => {
                         setDownloadTrigger(true)
                     }}
                 >
-                    <DownloadOutlined></DownloadOutlined>
-                    Сохранить расчет{" "}
-                    {dayjs(calculationResult.period).format("YYYY MMMM")}
+                    Сохранить расчет за {formatPeriod(calculationResult.period)}
                 </Button>
             </Stack>
             <TableContainer className="calculation-result">
@@ -187,8 +188,8 @@ export const CalculationResults = ({
                     <Button
                         onClick={() => setDownloadTrigger(true)}
                         sx={{ alignSelf: "flex-end" }}
+                        startIcon={<FileDownloadOutlined />}
                     >
-                        <SaveAltOutlined></SaveAltOutlined>
                         Сохранить все расчёты
                     </Button>
                     <List>

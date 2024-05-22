@@ -9,6 +9,7 @@ import { styled } from "@mui/material/styles"
 import React, { FormEvent } from "react"
 
 import { FormValidation } from "../../formValidation"
+import { DangerousButton } from "../Buttons/DangerousButton"
 import style from "./Form.module.css"
 
 const StyledForm = styled(Card)<BoxProps<"form">>(({ theme }) => ({
@@ -57,13 +58,21 @@ export const Form = ({
         >
             <CardHeader
                 action={
-                    <Stack direction="row">
-                        <Button title="Сброс" type="reset" onClick={reset}>
+                    <Stack direction="row" justifyContent="space-between">
+                        <DangerousButton
+                            title="Сброс"
+                            type="reset"
+                            onClick={reset}
+                        >
                             Сброс
-                        </Button>
-                        <Button title="Отмена" type="button" onClick={onClose}>
+                        </DangerousButton>
+                        <DangerousButton
+                            title="Отмена"
+                            type="button"
+                            onClick={onClose}
+                        >
                             Отмена
-                        </Button>
+                        </DangerousButton>
                     </Stack>
                 }
             />
@@ -76,6 +85,7 @@ export const Form = ({
                         type="button"
                         disabled={!validation.isValid}
                         onClick={handleSubmitAndContinue}
+                        variant="outlined"
                     >
                         Применить и продолжить
                     </Button>
@@ -84,6 +94,7 @@ export const Form = ({
                     title="Применить"
                     type="submit"
                     disabled={!validation.isValid}
+                    variant="outlined"
                 >
                     Применить
                 </Button>

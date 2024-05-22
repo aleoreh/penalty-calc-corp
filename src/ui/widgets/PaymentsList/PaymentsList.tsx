@@ -104,7 +104,7 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
             title: `Удалить платёж от ${dayjs(payment.date).format(
                 "LL"
             )} на сумму ${payment.amount}?`,
-            confirmText: "Да, удалить",
+            confirmText: "Да, удалить!",
         })
         setIsConfirmDeleteOpened(true)
     }
@@ -153,7 +153,10 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
                 </List>
             </TableCell>
             <TableCell align="right">
-                <IconButton onClick={() => confirmPaymentDeleting(payment)}>
+                <IconButton
+                    onClick={() => confirmPaymentDeleting(payment)}
+                    title={`Удалить оплату от ${formatDateLong(payment.date)}`}
+                >
                     <DeleteOutline></DeleteOutline>
                 </IconButton>
             </TableCell>
@@ -299,8 +302,7 @@ const AddPaymentForm = ({
                 </TableContainer>
                 {distributedPayments.remainder > 0 && (
                     <Typography align="right">
-                        Остаток:{" "}
-                        {formatCurrency(distributedPayments.remainder)}
+                        Остаток: {formatCurrency(distributedPayments.remainder)}
                     </Typography>
                 )}
             </Stack>

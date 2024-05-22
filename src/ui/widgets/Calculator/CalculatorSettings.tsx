@@ -22,58 +22,20 @@ import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
 
+import { ExpandMoreOutlined } from "@mui/icons-material"
+import Accordion from "@mui/material/Accordion"
+import AccordionDetails from "@mui/material/AccordionDetails"
+import AccordionSummary from "@mui/material/AccordionSummary"
 import IconButton from "@mui/material/IconButton"
 import Typography from "@mui/material/Typography"
-import Accordion from "@mui/material/Accordion"
-import AccordionSummary from "@mui/material/AccordionSummary"
-import { ExpandMoreOutlined } from "@mui/icons-material"
-import AccordionDetails from "@mui/material/AccordionDetails"
 
 type SettingsTableProps = {
     calculationDate: Date
     config: CalculatorConfig
+    setConfig: (value: CalculatorConfig) => void
 }
 
-const SettingsTable = ({ config }: SettingsTableProps) => {
-    return (
-        <TableContainer className="settings-table">
-            <Table>
-                <TableBody>
-                    <TableRow key="keyRate">
-                        <TableCell>Ключевая ставка на дату расчета</TableCell>
-                        <TableCell>
-                            {numberToPercent(config.keyRate)}%
-                        </TableCell>
-                    </TableRow>
-                    <TableRow key="daysToPay">
-                        <TableCell>Дней на оплату</TableCell>
-                        <TableCell>{config.daysToPay}</TableCell>
-                    </TableRow>
-                    <TableRow key="deferredDaysCount">
-                        <TableCell>Дней на отсрочку</TableCell>
-                        <TableCell>{config.deferredDaysCount}</TableCell>
-                    </TableRow>
-                    <TableRow key="moratoriums">
-                        <TableCell>Действующие моратории</TableCell>
-                        <TableCell>
-                            {config.moratoriums.map(([start, end], i) => (
-                                <p key={i}>
-                                    {`${dayjs(start).format("L")} - ${dayjs(
-                                        end
-                                    ).format("L")}`}
-                                </p>
-                            ))}
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </TableContainer>
-    )
-}
-
-export const CalculatorSettings: UI.CalculatorSettings = (props) => {
-    const { config, setConfig } = props
-
+const SettingsTable = ({ config, setConfig }: SettingsTableProps) => {
     const [popupOpened, setPopupOpened] = useState<boolean>(false)
 
     const keyRateInput = useValidatedInput(
@@ -113,6 +75,66 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
 
     return (
         <>
+            <TableContainer className="settings-table">
+                <Table>
+                    <TableBody>
+                        <TableRow key="keyRate">
+                            <TableCell>
+                                Ключевая ставка на дату расчета
+                            </TableCell>
+                            <TableCell>
+                                {numberToPercent(config.keyRate)}%
+                            </TableCell>
+                            <TableCell align="right">
+                                <IconButton
+                                    title="Редактировать"
+                                    type="button"
+                                    onClick={open}
+                                    sx={{ alignSelf: "flex-end" }}
+                                    size="small"
+                                >
+                                    <CreateOutlinedIcon></CreateOutlinedIcon>
+                                </IconButton>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow key="daysToPay">
+                            <TableCell>Дней на оплату</TableCell>
+                            <TableCell>{config.daysToPay}</TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                        <TableRow key="deferredDaysCount">
+                            <TableCell>Дней на отсрочку</TableCell>
+                            <TableCell>{config.deferredDaysCount}</TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                        <TableRow key="moratoriums">
+                            <TableCell>Действующие моратории</TableCell>
+                            <TableCell>
+                                {config.moratoriums.map(([start, end], i) => (
+                                    <p key={i}>
+                                        {`${dayjs(start).format("L")} - ${dayjs(
+                                            end
+                                        ).format("L")}`}
+                                    </p>
+                                ))}
+                            </TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <Popup {...popup}>
+                <Form {...form}>
+                    <Input {...keyRateInput} />
+                </Form>
+            </Popup>
+        </>
+    )
+}
+
+export const CalculatorSettings: UI.CalculatorSettings = (props) => {
+    return (
+        <>
             <Stack className="calculator-settings">
                 <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
@@ -122,24 +144,11 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                     </AccordionSummary>
                     <AccordionDetails>
                         <Stack>
-                            <IconButton
-                                title="Редактировать"
-                                type="button"
-                                onClick={open}
-                                sx={{alignSelf: "flex-end"}}
-                            >
-                                <CreateOutlinedIcon></CreateOutlinedIcon>
-                            </IconButton>
                             <SettingsTable {...props} />
                         </Stack>
                     </AccordionDetails>
                 </Accordion>
             </Stack>
-            <Popup {...popup}>
-                <Form {...form}>
-                    <Input {...keyRateInput} />
-                </Form>
-            </Popup>
         </>
     )
 }

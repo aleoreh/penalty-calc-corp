@@ -180,7 +180,12 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                         >
                             <CreateOutlined></CreateOutlined>
                         </IconButton>
-                        <IconButton onClick={deleteDebt} >
+                        <IconButton
+                            onClick={deleteDebt}
+                            title={`Удалить долг за ${formatPeriod(
+                                debt.period
+                            )}`}
+                        >
                             <DeleteOutline></DeleteOutline>
                         </IconButton>
                     </Stack>
