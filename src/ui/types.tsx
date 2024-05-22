@@ -11,7 +11,8 @@ export namespace UI {
             config: CalculatorConfig,
             debts: Debt[]
         ) => void
-        calculationResults: CalculationResult[]
+        calculationResults: CalculationResult[],
+        clearCalculationResults: () => void
     }) => JSX.Element
 
     export type CalculatorSettings = (props: {

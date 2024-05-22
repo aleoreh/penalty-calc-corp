@@ -109,6 +109,9 @@ export const Home = ({
                                     defaultConfig={defaultConfigValue}
                                     startCalculation={startCalculation}
                                     calculationResults={calculationResults}
+                                    clearCalculationResults={() =>
+                                        setCalculationResults([])
+                                    }
                                 />
                             ),
                         },

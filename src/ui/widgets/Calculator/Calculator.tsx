@@ -99,6 +99,7 @@ export const Calculator: UI.Calculator = ({
     defaultConfig,
     startCalculation,
     calculationResults,
+    clearCalculationResults,
 }) => {
     const [calculationDate, setCalculationDate] = useState<Dayjs | null>(
         dayjs(defaultCalculationDate)
@@ -116,14 +117,19 @@ export const Calculator: UI.Calculator = ({
         open: clearConfirmOpened,
         onClose: (debts?: Debt[]) => {
             setClearConfirmOpened(false)
-            debts && setDebts([])
+
+            if (debts !== undefined) {
+                setDebts([])
+                setPayments([])
+                clearCalculationResults()
+            }
         },
     })
 
-    const onDebtsClear = () => {
+    const onCalculationClear = () => {
         clearConfirm.configure({
             value: debts,
-            title: "Очистить список долгов?",
+            title: "Очистить расчёт?",
             confirmText: "Да, очистить!",
         })
         setClearConfirmOpened(true)
@@ -172,9 +178,9 @@ export const Calculator: UI.Calculator = ({
                 deletePayment={onPaymentDelete}
                 distributePayment={distributePayment}
             />
-            <Stack direction="row" justifyContent="flex-end">
-                <Button variant="outlined" onClick={onDebtsClear}>
-                    Очистить список долгов
+            <Stack direction="row" justifyContent="space-between">
+                <Button variant="outlined" onClick={onCalculationClear}>
+                    Очистить расчёт
                 </Button>
                 <Button variant="contained" onClick={calculate}>
                     Рассчитать
