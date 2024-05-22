@@ -22,6 +22,7 @@ type ModalFormProps = {
     onClose: () => void
     submit: () => void
     submitAndContinue?: () => void
+    title?: string
     children?: JSX.Element | JSX.Element[]
 }
 
@@ -31,6 +32,7 @@ export const Form = ({
     onClose,
     submit,
     submitAndContinue,
+    title,
     children,
 }: ModalFormProps) => {
     const handleReset = (evt: React.FormEvent) => {
@@ -57,6 +59,7 @@ export const Form = ({
             onSubmit={handleSubmit}
         >
             <CardHeader
+                title={title}
                 action={
                     <Stack direction="row" justifyContent="space-between">
                         <DangerousButton
