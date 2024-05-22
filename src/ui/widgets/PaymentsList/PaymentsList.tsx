@@ -252,7 +252,9 @@ const AddPaymentForm = ({
                     onChange={handlePaymentDateChange}
                 />
                 <Input {...amountInput} />
-                <Typography>Распределить</Typography>
+                <Typography variant="h6" align="center">
+                    Распределить
+                </Typography>
                 <Stack direction="row">
                     <Button
                         onClick={() => distribute(paymentDate, "fifo")}
@@ -295,9 +297,12 @@ const AddPaymentForm = ({
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <Typography>
-                    Не распределено: {distributedPayments.remainder}
-                </Typography>
+                {distributedPayments.remainder > 0 && (
+                    <Typography align="right">
+                        Остаток:{" "}
+                        {formatCurrency(distributedPayments.remainder)}
+                    </Typography>
+                )}
             </Stack>
         </Form>
     )
@@ -339,21 +344,22 @@ export const PaymentsList = ({
             <Accordion className="payments" defaultExpanded>
                 <AccordionSummary expandIcon={<ExpandMoreOutlined />}>
                     <Typography component="h2" variant="h6">
-                        Платежи
+                        Оплата
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Stack>
-                        <IconButton
+                        <Button
                             title="Добавить"
                             type="button"
                             onClick={() => {
                                 setAddPaymentOpened(true)
                             }}
                             sx={{ alignSelf: "flex-end" }}
+                            startIcon={<AddOutlined />}
                         >
-                            <AddOutlined></AddOutlined>
-                        </IconButton>
+                            Добавить оплату
+                        </Button>
                         {payments.length > 0 && (
                             <TableContainer>
                                 <Table>

@@ -31,6 +31,7 @@ import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
 import { DebtItemRow } from "./DebtItemRow"
+import Button from "@mui/material/Button"
 
 function periodIsIn(periods: Date[]) {
     return (period: Dayjs) =>
@@ -228,16 +229,17 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Stack>
-                        <IconButton
+                        <Button
                             title="Добавить"
                             type="button"
                             onClick={() => {
                                 setAddDebtPopupOpened(true)
                             }}
                             sx={{ alignSelf: "flex-end" }}
+                            startIcon={<AddOutlined />}
                         >
-                            <AddOutlined></AddOutlined>
-                        </IconButton>
+                            Добавить долг
+                        </Button>
                         <TableContainer>
                             <Table>
                                 {debts.length > 0 && (
