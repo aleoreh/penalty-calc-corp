@@ -21,8 +21,18 @@ import Typography from "@mui/material/Typography"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
-import { Debt, DebtPayment, getRemainingBalance } from "../../../domain/debt"
-import { Payment, createPayment, toPaymentId } from "../../../domain/payment"
+import {
+    Debt,
+    DebtPayment,
+    debtRepr,
+    getRemainingBalance,
+} from "../../../domain/debt"
+import {
+    Payment,
+    createPayment,
+    paymentRepr,
+    toPaymentId,
+} from "../../../domain/payment"
 import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
@@ -112,12 +122,9 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
     return (
         <TableRow key={payment.id} sx={{ verticalAlign: "baseline" }}>
             <TableCell align="right">
-                <Typography variant="body2">
-                    от {formatDateLong(payment.date)} на{" "}
-                    {formatCurrency(payment.amount)}
-                </Typography>
+                <Typography variant="body2">{paymentRepr(payment)}</Typography>
             </TableCell>
-            <TableCell>
+            <TableCell colSpan={3}>
                 <List>
                     {getDebtPaymentsByPayment(payment, debts).map(
                         ({ debt, debtPayment }) => (
@@ -128,23 +135,21 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
                                 <Stack
                                     direction="row"
                                     justifyContent="space-between"
-                                    alignItems="center"
+                                    alignItems="baseline"
                                     flexGrow={1}
                                 >
                                     <Typography
                                         variant="body2"
                                         align="right"
-                                        width="50%"
+                                        flexGrow={0}
                                     >
-                                        {formatCurrency(debtPayment.amount)}
+                                        {formatCurrency(debtPayment.amount)} из:
                                     </Typography>
                                     <Typography
                                         variant="body2"
-                                        align="right"
-                                        width="50%"
+                                        flexGrow={1}
                                     >
-                                        {formatPeriod(debt.period)} на{" "}
-                                        {formatCurrency(debt.amount)}
+                                        {debtRepr(debt)}
                                     </Typography>
                                 </Stack>
                             </ListItem>
@@ -387,7 +392,9 @@ export const PaymentsList = ({
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>Оплата</TableCell>
-                                            <TableCell>Погашает</TableCell>
+                                            <TableCell colSpan={3}>
+                                                Погашает
+                                            </TableCell>
                                             <TableCell></TableCell>
                                         </TableRow>
                                     </TableHead>
