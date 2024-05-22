@@ -13,11 +13,9 @@ async function download(
     calculationDate: Date,
     rows: CalculationResult | CalculationResult[]
 ): Promise<void> {
-    const data = !Array.isArray(rows)
-        ? rows.rows
-        : rows
-              .map((row) => [dayjs(row.period).format("MMMM YYYY"), row.rows])
-              .flat(2)
+    const data = (Array.isArray(rows) ? rows : [rows])
+        .map((row) => [dayjs(row.period).format("MMMM YYYY"), row.rows])
+        .flat(2)
     const fileName = !Array.isArray(rows)
         ? generateFileName(calculationDate)
         : "несколько_" + generateFileName(calculationDate)
@@ -74,7 +72,9 @@ async function download(
                 column: "Сумма пени",
                 type: Number,
                 value: (x) =>
-                    typeof x === "string" ? undefined : x.penaltyAmount,
+                    typeof x === "string"
+                        ? undefined
+                        : Math.round(x.penaltyAmount * 100) / 100,
             },
         ],
     })
