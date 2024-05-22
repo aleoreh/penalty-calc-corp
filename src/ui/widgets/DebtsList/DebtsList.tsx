@@ -108,7 +108,7 @@ const DebtAddForm = ({
     }
 
     const debtAmountInput = useValidatedInput(
-        String(0),
+        "",
         "Сумма долга",
         inputDecoders.decimal,
         {

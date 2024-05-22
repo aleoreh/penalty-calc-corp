@@ -181,7 +181,7 @@ const AddPaymentForm = ({
     const [paymentDate, setPaymentDate] = useState<Dayjs | null>(dayjs())
 
     const amountInput = useValidatedInput(
-        String(0),
+        "",
         "Сумма платежа",
         inputDecoders.decimal,
         {
