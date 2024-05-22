@@ -149,6 +149,17 @@ export const Calculator: UI.Calculator = ({
         const [newPayments, newDebts] = deletePayment(payment, payments, debts)
         setDebts(newDebts)
         setPayments(newPayments)
+        clearCalculationResults()
+    }
+
+    const onDebtsSet = (debts: Debt[]) => {
+        clearCalculationResults()
+        setDebts(debts)
+    }
+
+    const onPaymentsSet = (payments: Payment[]) => {
+        clearCalculationResults()
+        setPayments(payments)
     }
 
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
@@ -169,12 +180,12 @@ export const Calculator: UI.Calculator = ({
                 onChange={setCalculationDate}
                 sx={{ alignSelf: "flex-start" }}
             />
-            <DebtsList config={config} debts={debts} setDebts={setDebts} />
+            <DebtsList config={config} debts={debts} setDebts={onDebtsSet} />
             <PaymentsList
                 debts={debts}
                 setDebts={setDebts}
                 payments={payments}
-                setPayments={setPayments}
+                setPayments={onPaymentsSet}
                 deletePayment={onPaymentDelete}
                 distributePayment={distributePayment}
             />
