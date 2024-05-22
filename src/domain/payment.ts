@@ -1,4 +1,5 @@
 import Opaque, { BaseType, create, widen } from "ts-opaque"
+import { dayjs } from "./dayjs"
 
 interface IPaymentModule {
     toPaymentId: (value: string | number) => PaymentId
@@ -10,6 +11,7 @@ interface IPaymentModule {
         period?: Date
     ) => Payment
     update: (paymentBody: PaymentBody, payment: Payment) => Payment
+    repr: (payment: Payment) => string
 }
 
 /**
@@ -61,11 +63,27 @@ export const toPaymentId: IPaymentModule["toPaymentId"] = (value) =>
 export const fromPaymentId: IPaymentModule["fromPaymentId"] = (paymentId) =>
     widen(paymentId)
 
+export const paymentRepr: IPaymentModule["repr"] = (payment) => {
+    const dateRepr = dayjs(payment.date).format("LL")
+    const amountRepr = new Intl.NumberFormat("ru-RU", {
+        style: "currency",
+        currency: "RUB",
+    }).format(payment.amount)
+    const periodRepr = payment.period
+        ? dayjs(payment.period).format("MMMM\u00A0YYYY")
+        : undefined
+
+    const periodText = periodRepr ? ` за ${periodRepr}` : ""
+
+    return `Оплата ${amountRepr} от ${dateRepr}${periodText}`
+}
+
 const paymentModule: IPaymentModule = {
     toPaymentId,
     fromPaymentId,
     create: createPayment,
     update: updatePayment,
+    repr: paymentRepr,
 }
 
 export default paymentModule

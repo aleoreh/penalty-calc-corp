@@ -95,6 +95,16 @@ export const periodKey = (period: Date) => {
     return dayjs(period).format("L")
 }
 
+export const debtRepr = (debt: Debt): string => {
+    const periodRepr = dayjs(debt.period).format("MMMM\u00A0YYYY")
+    const amountRepr = new Intl.NumberFormat("ru-RU", {
+        style: "currency",
+        currency: "RUB",
+    }).format(debt.amount)
+
+    return `Долг ${amountRepr} за ${periodRepr}`
+}
+
 const debts = {
     update: updateDebt,
     addDebtPayment,
@@ -106,6 +116,7 @@ const debts = {
     createEmptyDebt,
     getRemainingBalance,
     createDebtPayment,
+    debtRepr,
 }
 
 export default debts
