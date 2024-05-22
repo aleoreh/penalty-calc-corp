@@ -3,7 +3,12 @@ import Opaque, { BaseType, create, widen } from "ts-opaque"
 interface IPaymentModule {
     toPaymentId: (value: string | number) => PaymentId
     fromPaymentId: (paymentId: PaymentId) => BaseType<PaymentId>
-    create: (paymentId: string | number, date: Date, amount: Kopek) => Payment
+    create: (
+        paymentId: string | number,
+        date: Date,
+        amount: Kopek,
+        period?: Date
+    ) => Payment
     update: (paymentBody: PaymentBody, payment: Payment) => Payment
 }
 
@@ -25,6 +30,7 @@ export type PaymentHead = {
 export type PaymentBody = {
     date: Date
     amount: Kopek
+    period?: Date
 }
 
 export type Payment = PaymentHead & PaymentBody
@@ -32,11 +38,13 @@ export type Payment = PaymentHead & PaymentBody
 export const createPayment: IPaymentModule["create"] = (
     paymentId,
     date,
-    amount
+    amount,
+    period?
 ) => ({
     id: paymentId as PaymentId,
     date,
     amount,
+    period,
 })
 
 export const updatePayment: IPaymentModule["update"] = (
