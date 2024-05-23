@@ -1,7 +1,4 @@
-import {
-    ExpandMoreOutlined,
-    FileDownloadOutlined
-} from "@mui/icons-material"
+import { ExpandMoreOutlined, FileDownloadOutlined } from "@mui/icons-material"
 import Accordion from "@mui/material/Accordion"
 import AccordionDetails from "@mui/material/AccordionDetails"
 import AccordionSummary from "@mui/material/AccordionSummary"
@@ -25,13 +22,19 @@ import {
 import {
     CalculationResultItem as CalculationResultItemType,
     CalculationResult as CalculationResultType,
+    getTotalAmount,
 } from "../../../domain/calculation-result"
 import { formatKeyRatePart } from "../../../domain/keyrate-part"
-import {
-    formatCurrency,
-    formatPercent,
-    formatPeriod
-} from "../../../utils"
+import { formatCurrency, formatPercent, formatPeriod } from "../../../utils"
+
+function calculationResultsTotal(
+    calculationResults: CalculationResultType[]
+): number {
+    return calculationResults.reduce(
+        (acc, calculationResult) => acc + getTotalAmount(calculationResult),
+        0
+    )
+}
 
 // ~~~~~~~~~ CalculationResultRow ~~~~~~~~ //
 
@@ -50,9 +53,13 @@ const CalculationResultRow = ({ item }: CalculationResultRowProps) => {
             <TableCell>{item.totalDays}</TableCell>
             <TableCell>{formatKeyRatePart(item.ratePart)}</TableCell>
             <TableCell>{formatPercent(item.rate)}</TableCell>
-            <TableCell sx={(theme) => ({
-                fontSize: theme.typography.caption
-            })}>{item.formula}</TableCell>
+            <TableCell
+                sx={(theme) => ({
+                    fontSize: theme.typography.caption,
+                })}
+            >
+                {item.formula}
+            </TableCell>
             <TableCell align="right">
                 {formatCurrency(item.penaltyAmount)}
             </TableCell>
@@ -206,6 +213,11 @@ export const CalculationResults = ({
                             </ListItem>
                         ))}
                     </List>
+                    <Typography variant="h5" align="right">
+                        Итого: {formatCurrency(
+                            calculationResultsTotal(calculationResults)
+                        )}
+                    </Typography>
                 </Stack>
             </AccordionDetails>
         </Accordion>
