@@ -12,9 +12,9 @@ function generateFileName(calculationDate: Date): string {
 
 async function download(
     calculationDate: Date,
-    rows: CalculationResult | CalculationResult[]
+    rows: CalculationResult[]
 ): Promise<void> {
-    const data = (Array.isArray(rows) ? rows : [rows])
+    const data = rows
         .map((row) => [dayjs(row.period).format("MMMM YYYY"), row.rows])
         .flat(2)
     const fileName = !Array.isArray(rows)
@@ -93,7 +93,7 @@ export const downloadCalculationResult: DownloadCalculationResult = async (
     calculationDate,
     calculationResult
 ) => {
-    await download(calculationDate, calculationResult)
+    await download(calculationDate, [calculationResult])
 }
 
 // ~~~~~~~~~~~~ donwnload many ~~~~~~~~~~~ //
@@ -109,3 +109,4 @@ export const downloadCalculationResults: DownloadCalculationResults = async (
 ) => {
     await download(calculationDate, calculationResults)
 }
+
