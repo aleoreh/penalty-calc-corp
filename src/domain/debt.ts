@@ -6,7 +6,10 @@ type DebtPaymentId = number
 /**
  * Заголовочная часть погашения
  */
-export type DebtPaymentHead = { id: DebtPaymentId; paymentId: PaymentId }
+export type DebtPaymentHead = {
+    id: DebtPaymentId
+    paymentId: PaymentId
+}
 
 /**
  * Тело погашения
@@ -23,6 +26,11 @@ const generatePaymentId = (debt: Debt): DebtPaymentId =>
     debt.payments.length === 0
         ? 1
         : Math.max(...debt.payments.map((x) => x.id)) + 1
+
+export const generateUniqueDebtPaymentId = (
+    debt: Debt,
+    debtPaymentId: DebtPaymentId
+): `${string}.${DebtPaymentId}` => `${periodKey(debt.period)}.${debtPaymentId}`
 
 export type Debt = {
     period: Date
@@ -49,11 +57,11 @@ export const updateDebt =
 export const addDebtPayment =
     (paymentId: PaymentId, debtPayment: DebtPaymentBody) =>
     (debt: Debt): Debt => ({
-        ...debt,
-        payments: [
-            ...debt.payments,
+            ...debt,
+            payments: [
+                ...debt.payments,
             { ...debtPayment, id: generatePaymentId(debt), paymentId },
-        ],
+            ],
     })
 
 export const createDebtPayment = (
@@ -117,6 +125,7 @@ const debts = {
     getRemainingBalance,
     createDebtPayment,
     debtRepr,
+    generateUniqueDebtPaymentId,
 }
 
 export default debts
