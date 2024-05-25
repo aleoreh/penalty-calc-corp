@@ -41,6 +41,16 @@ function updateDebt(debts: Debt[], debt: Debt): Debt[] {
     )
 }
 
+function periodsEq(
+    period1: Date | undefined,
+    period2: Date | undefined
+): boolean {
+    return period1 === undefined || period2 === undefined
+        ? false
+        : period1.getFullYear() === period2.getFullYear() &&
+              period1.getMonth() === period2.getMonth()
+}
+
 function distributePayment(
     payment: Payment,
     debts: Debt[],
@@ -52,12 +62,18 @@ function distributePayment(
      * fifo - сортируем по возрастанию периода долга
      * lastIsFirst - сначала целевой период (payment.period), затем - fifo
      */
-    const sorter = (d1: Debt, d2: Debt) =>
-        method === "fifo"
+    const sorter = (d1: Debt, d2: Debt) => {
+        // для метода lastIsFirst:
+        // payment.period всегда меньше остальных,
+        // любой другой всегда больше payment.period
+        return method === "fifo"
             ? d1.period.getTime() - d2.period.getTime()
-            : dayjs(d1.period).isSame(payment.period, "month")
-            ? -Infinity
+            : periodsEq(d1.period, payment.period)
+            ? -1
+            : periodsEq(d2.period, payment.period)
+            ? 1
             : d1.period.getTime() - d2.period.getTime()
+    }
 
     const sortedDebts = [...debts].sort(sorter)
 
