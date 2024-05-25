@@ -25,6 +25,7 @@ import {
     Debt,
     DebtPayment,
     debtRepr,
+    generateUniqueDebtPaymentId,
     getRemainingBalance,
 } from "../../../domain/debt"
 import {
@@ -130,7 +131,10 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
                         ({ debt, debtPayment }) =>
                             debtPayment.amount > 0 && (
                                 <ListItem
-                                    key={debt.period.getTime()}
+                                    key={generateUniqueDebtPaymentId(
+                                        debt,
+                                        debtPayment.id
+                                    )}
                                     sx={{ padding: 0 }}
                                 >
                                     <Stack
@@ -302,7 +306,7 @@ const AddPaymentForm = ({
                 <TableContainer>
                     <Table>
                         <TableHead>
-                            <TableRow>
+                            <TableRow key="AddPaymentForm.head">
                                 <TableCell>Период</TableCell>
                                 <TableCell>Сумма</TableCell>
                                 <TableCell>Остаток</TableCell>
@@ -398,7 +402,7 @@ export const PaymentsList = ({
                             <TableContainer>
                                 <Table>
                                     <TableHead>
-                                        <TableRow>
+                                        <TableRow key={"PaymentsList.head"}>
                                             <TableCell>Оплата</TableCell>
                                             <TableCell colSpan={3}>
                                                 Погашает
@@ -416,7 +420,7 @@ export const PaymentsList = ({
                                                 debts={debts}
                                             />
                                         ))}
-                                        <TableRow>
+                                        <TableRow key="PaymentsList.total">
                                             <TableCell
                                                 align="right"
                                                 sx={{ border: "none" }}

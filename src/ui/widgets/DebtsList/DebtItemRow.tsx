@@ -16,6 +16,7 @@ import {
     DebtPaymentBody,
     getRemainingBalance,
     paymentsAmount,
+    periodKey,
 } from "../../../domain/debt"
 import { formatCurrency, formatDateLong, formatPeriod } from "../../../utils"
 import { Form } from "../../components/Form"
@@ -146,52 +147,46 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
-        <>
-            <TableRow
-                className="debt-item-row"
-                sx={{ verticalAlign: "baseline" }}
-            >
-                <TableCell>{formatPeriod(debt.period)}</TableCell>
-                <TableCell>{formatDateLong(debt.dueDate)}</TableCell>
-                <TableCell align="right">
-                    {formatCurrency(debt.amount)}
-                </TableCell>
-                <TableCell>
-                    {paymentsAmount(debt) > 0 ? (
-                        <DebtPayments debt={debt} setDebt={setDebt} />
-                    ) : (
-                        <Typography align="center">-</Typography>
-                    )}
-                </TableCell>
-                <TableCell align="right">
-                    {formatCurrency(getRemainingBalance(debt))}
-                </TableCell>
-                <TableCell>
-                    <Stack direction="row" gap={0} justifyContent="flex-end">
-                        <IconButton
-                            onClick={() => setAddPaymentOpened(true)}
-                            sx={{ display: "none" }}
-                        >
-                            <MoneyOutlined></MoneyOutlined>
-                        </IconButton>
-                        <IconButton
-                            onClick={() => setEditDebtOpened(true)}
-                            sx={{ display: "none" }}
-                        >
-                            <CreateOutlined></CreateOutlined>
-                        </IconButton>
-                        <IconButton
-                            onClick={deleteDebt}
-                            title={`Удалить долг за ${formatPeriod(
-                                debt.period
-                            )}`}
-                        >
-                            <DeleteOutline></DeleteOutline>
-                        </IconButton>
-                    </Stack>
-                </TableCell>
-            </TableRow>
-
+        <TableRow
+            key={periodKey(debt.period)}
+            className="debt-item-row"
+            sx={{ verticalAlign: "baseline" }}
+        >
+            <TableCell>{formatPeriod(debt.period)}</TableCell>
+            <TableCell>{formatDateLong(debt.dueDate)}</TableCell>
+            <TableCell align="right">{formatCurrency(debt.amount)}</TableCell>
+            <TableCell>
+                {paymentsAmount(debt) > 0 ? (
+                    <DebtPayments debt={debt} setDebt={setDebt} />
+                ) : (
+                    <Typography align="center">-</Typography>
+                )}
+            </TableCell>
+            <TableCell align="right">
+                {formatCurrency(getRemainingBalance(debt))}
+            </TableCell>
+            <TableCell>
+                <Stack direction="row" gap={0} justifyContent="flex-end">
+                    <IconButton
+                        onClick={() => setAddPaymentOpened(true)}
+                        sx={{ display: "none" }}
+                    >
+                        <MoneyOutlined></MoneyOutlined>
+                    </IconButton>
+                    <IconButton
+                        onClick={() => setEditDebtOpened(true)}
+                        sx={{ display: "none" }}
+                    >
+                        <CreateOutlined></CreateOutlined>
+                    </IconButton>
+                    <IconButton
+                        onClick={deleteDebt}
+                        title={`Удалить долг за ${formatPeriod(debt.period)}`}
+                    >
+                        <DeleteOutline></DeleteOutline>
+                    </IconButton>
+                </Stack>
+            </TableCell>
             <Popup {...editDebtPopup}>
                 <DebtEditForm
                     debt={debt}
@@ -205,7 +200,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                     close={addPaymentPopup.close}
                 />
             </Popup>
-        </>
+        </TableRow>
     )
 }
 

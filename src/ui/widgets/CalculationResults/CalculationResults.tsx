@@ -40,11 +40,12 @@ function calculationResultsTotal(
 
 type CalculationResultRowProps = {
     item: CalculationResultItemType
+    index: number
 }
 
-const CalculationResultRow = ({ item }: CalculationResultRowProps) => {
+const CalculationResultRow = ({ item, index }: CalculationResultRowProps) => {
     return (
-        <TableRow className="calculation-result-row">
+        <TableRow key={index} className="calculation-result-row">
             <TableCell align="right">
                 {formatCurrency(item.debtAmount)}
             </TableCell>
@@ -143,8 +144,8 @@ const CalculationResult = ({
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {calculationResult.rows.map((item) => (
-                            <CalculationResultRow item={item} />
+                        {calculationResult.rows.map((item, i) => (
+                            <CalculationResultRow item={item} index={i} />
                         ))}
                     </TableBody>
                 </Table>
@@ -214,7 +215,8 @@ export const CalculationResults = ({
                         ))}
                     </List>
                     <Typography variant="h5" align="right">
-                        Итого: {formatCurrency(
+                        Итого:{" "}
+                        {formatCurrency(
                             calculationResultsTotal(calculationResults)
                         )}
                     </Typography>

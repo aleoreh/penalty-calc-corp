@@ -254,7 +254,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                             <Table>
                                 {debts.length > 0 && (
                                     <TableHead>
-                                        <TableRow>
+                                        <TableRow key="DebtsList.head">
                                             <TableCell>Период</TableCell>
                                             <TableCell>
                                                 Начало просрочки
@@ -269,7 +269,6 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                 <TableBody>
                                     {debts.map((debt) => (
                                         <DebtItemRow
-                                            key={periodKey(debt.period)}
                                             debt={debt}
                                             setDebt={setDebt}
                                             deleteDebt={() =>
@@ -278,7 +277,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                         />
                                     ))}
                                     {totalRemainingBalance(debts) > 0 && (
-                                        <TableRow>
+                                        <TableRow key="DebtsList.total">
                                             <TableCell
                                                 colSpan={3}
                                                 sx={{ border: "none" }}
