@@ -269,6 +269,7 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                 <TableBody>
                                     {debts.map((debt) => (
                                         <DebtItemRow
+                                            key={periodKey(debt.period)}
                                             debt={debt}
                                             setDebt={setDebt}
                                             deleteDebt={() =>

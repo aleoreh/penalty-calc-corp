@@ -147,11 +147,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
-        <TableRow
-            key={periodKey(debt.period)}
-            className="debt-item-row"
-            sx={{ verticalAlign: "baseline" }}
-        >
+        <TableRow className="debt-item-row" sx={{ verticalAlign: "baseline" }}>
             <TableCell>{formatPeriod(debt.period)}</TableCell>
             <TableCell>{formatDateLong(debt.dueDate)}</TableCell>
             <TableCell align="right">{formatCurrency(debt.amount)}</TableCell>
