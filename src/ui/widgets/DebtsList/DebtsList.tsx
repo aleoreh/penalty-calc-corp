@@ -58,7 +58,7 @@ function addDebt(
             ...newDebt,
             amount,
         },
-    ]
+    ].sort((x, y) => x.period.getTime() - y.period.getTime())
 }
 
 function updateDebt(debts: Debt[], debt: Debt): Debt[] {
