@@ -16,7 +16,10 @@ function generateFileName(calculationDate: Date): string {
 function getResultsTotal(calculationResults: CalculationResult[]): number {
     return calculationResults
         .map((calculationResult) =>
-            calculationResult.rows.reduce((acc, x) => acc + x.penaltyAmount, 0)
+            calculationResult.rows.reduce(
+                (acc, x) => acc + Math.round(x.penaltyAmount * 100) / 100,
+                0
+            )
         )
         .reduce((acc, x) => acc + x, 0)
 }

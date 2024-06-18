@@ -20,7 +20,10 @@ export type CalculationResult = {
 }
 
 export const getTotalAmount = (value: CalculationResult): Kopek =>
-    value.rows.reduce((acc, x) => acc + x.penaltyAmount, 0) as Kopek
+    value.rows.reduce(
+        (acc, x) => acc + Math.round(x.penaltyAmount * 100) / 100,
+        0
+    ) as Kopek
 
 export const filterCalculationResult =
     (predicate: (value: CalculationResultItem, index: number) => boolean) =>
@@ -35,3 +38,4 @@ const calculationResults = {
 }
 
 export default calculationResults
+
