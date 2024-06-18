@@ -2,6 +2,7 @@ import {
     AddOutlined,
     DeleteOutline,
     ExpandMoreOutlined,
+    PlaylistAddOutlined,
 } from "@mui/icons-material"
 import Accordion from "@mui/material/Accordion"
 import AccordionDetails from "@mui/material/AccordionDetails"
@@ -41,6 +42,7 @@ import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
 import { formatCurrency, formatDateLong, formatPeriod } from "../../../utils"
+import { PaymentsClipboardLoader } from "../PaymentsClipboardLoader"
 
 type DistributeMethod = "fifo" | "lastIsFirst"
 
@@ -121,7 +123,7 @@ const PaymentView = ({ deletePayment, payment, debts }: PaymentViewProps) => {
     }
 
     return (
-        <TableRow key={payment.id} sx={{ verticalAlign: "baseline" }}>
+        <TableRow sx={{ verticalAlign: "baseline" }}>
             <TableCell align="right">
                 <Typography variant="body2">{paymentRepr(payment)}</Typography>
             </TableCell>
@@ -370,6 +372,42 @@ export const PaymentsList = ({
         setPayments(addPayment(payments, payment))
     }
 
+    // ~~~~~~ add multiple payments form ~~~~~ //
+
+    const [addPaymentsPopupOpened, setAddPaymentsPopupOpened] =
+        useState<boolean>(false)
+
+    const addPaymentsPopup = usePopup(addPaymentsPopupOpened, () => {
+        setAddPaymentsPopupOpened(false)
+    })
+
+    // ~~~~~~~~~~~~~~~ helpers ~~~~~~~~~~~~~~~ //
+
+    const submitMany = (
+        paymentsList: { date: Date; amount: number; period?: Date }[]
+    ) => {
+        const newPayments = paymentsList.reduce(
+            (acc, { date, amount, period }) =>
+                addPayment(
+                    acc,
+                    createPayment(
+                        toPaymentId(dayjs().unix()),
+                        date,
+                        amount as Kopek,
+                        period
+                    )
+                ),
+            [] as Payment[]
+        )
+
+        newPayments.forEach((payment) => {
+            const distributedPayment = distributePayment(payment, debts, "fifo")
+            setDebts(distributedPayment.debts)
+        })
+
+        setPayments(newPayments)
+    }
+
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
@@ -387,17 +425,29 @@ export const PaymentsList = ({
                 </AccordionSummary>
                 <AccordionDetails>
                     <Stack>
-                        <Button
-                            title="Добавить"
-                            type="button"
-                            onClick={() => {
-                                setAddPaymentOpened(true)
-                            }}
-                            sx={{ alignSelf: "flex-start" }}
-                            startIcon={<AddOutlined />}
-                        >
-                            Добавить оплату
-                        </Button>
+                        <Stack direction="row">
+                            <Button
+                                title="Добавить"
+                                type="button"
+                                onClick={() => {
+                                    setAddPaymentOpened(true)
+                                }}
+                                sx={{ alignSelf: "flex-start" }}
+                                startIcon={<AddOutlined />}
+                            >
+                                Добавить оплату
+                            </Button>
+                            <Button
+                                title="Добавить несколько долгов"
+                                type="button"
+                                onClick={() => {
+                                    setAddPaymentsPopupOpened(true)
+                                }}
+                                startIcon={<PlaylistAddOutlined />}
+                            >
+                                Добавить несколько
+                            </Button>
+                        </Stack>
                         {payments.length > 0 && (
                             <TableContainer>
                                 <Table>
@@ -413,6 +463,7 @@ export const PaymentsList = ({
                                     <TableBody>
                                         {payments.map((payment) => (
                                             <PaymentView
+                                                key={payment.id}
                                                 payment={payment}
                                                 deletePayment={() =>
                                                     deletePayment(payment)
@@ -449,6 +500,14 @@ export const PaymentsList = ({
                     addPayment={handleAddPayment}
                     distributePayment={distributePayment}
                     close={addPaymentPopup.close}
+                />
+            </Popup>
+            <Popup {...addPaymentsPopup}>
+                <PaymentsClipboardLoader
+                    submit={submitMany}
+                    closePopup={() => {
+                        setAddPaymentsPopupOpened(false)
+                    }}
                 />
             </Popup>
         </>

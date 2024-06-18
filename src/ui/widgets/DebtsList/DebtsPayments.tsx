@@ -39,7 +39,7 @@ const DebtPayment = ({ payment, setPayment, onDelete }: DebtPaymentProps) => {
     })
 
     return (
-        <ListItem key={payment.id} sx={{ padding: 0 }}>
+        <ListItem sx={{ padding: 0 }}>
             <Stack
                 className="debt-payment"
                 direction="row"
@@ -177,6 +177,7 @@ export const DebtPayments = ({ debt, setDebt }: Props) => {
                     (payment) =>
                         payment.amount > 0 && (
                             <DebtPayment
+                                key={payment.id}
                                 payment={payment}
                                 setPayment={setPayment}
                                 onDelete={onPaymentDelete}
