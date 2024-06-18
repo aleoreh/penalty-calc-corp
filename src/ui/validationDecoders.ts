@@ -7,12 +7,23 @@ export const inputDecoders = {
         .transform((x) => x.replaceAll(",", "."))
         .transform(parseFloat),
     date: string
-        .transform((x) => dayjs(x).toDate())
+        .transform((x) =>
+            dayjs(x, [
+                "DD.MM.YYYY",
+                "DD.MM.YY",
+                "YYYY-MM-DD",
+                "YY-MM-DD",
+            ]).toDate()
+        )
         .pipe(date)
         .describe("Ожидается дата"),
-    monthYear: string
-        .transform((x) => dayjs(x, 'MMMM YYYY').toDate())
+    fullMonth_year: string
+        .transform((x) => dayjs(x, "MMMM YYYY").toDate())
         .pipe(date)
         .describe("Ожидается дата в формате MMMM YYYY"),
+    year_fullMonth: string
+        .transform((x) => dayjs(x, "YYYY MMMM").toDate())
+        .pipe(date)
+        .describe("Ожидается дата в формате YYYY MMMM"),
 }
 

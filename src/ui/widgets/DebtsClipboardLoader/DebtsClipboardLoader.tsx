@@ -7,6 +7,7 @@ import DataGrid from "react-data-grid"
 import { Form } from "../../components/Form"
 import { useValidatedForm } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
+import Debug from "../../../debug-log.debug"
 
 type TableRowData = {
     period: Date
@@ -19,7 +20,14 @@ const columns = [
 ]
 
 const clipboardToRows = (clipboard: string): D.DecodeResult<TableRowData[]> => {
-    const rowDecoder = D.tuple(inputDecoders.monthYear, inputDecoders.decimal)
+    const rowDecoder = D.tuple(
+        D.either(
+            inputDecoders.fullMonth_year,
+            inputDecoders.year_fullMonth,
+            inputDecoders.date
+        ),
+        inputDecoders.decimal
+    )
 
     const lines = clipboard
         .trim()

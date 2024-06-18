@@ -25,7 +25,7 @@ const clipboardToRows = (clipboard: string): D.DecodeResult<TableRowData[]> => {
         D.tuple(
             inputDecoders.date,
             inputDecoders.decimal,
-            inputDecoders.monthYear
+            inputDecoders.fullMonth_year
         ),
         D.tuple(inputDecoders.date, inputDecoders.decimal).transform(
             ([date, amount]) =>
