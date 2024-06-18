@@ -1,8 +1,12 @@
-import { AddOutlined, ExpandMoreOutlined } from "@mui/icons-material"
+import {
+    AddOutlined,
+    ExpandMoreOutlined,
+    PlaylistAddOutlined,
+} from "@mui/icons-material"
 import Accordion from "@mui/material/Accordion"
 import AccordionDetails from "@mui/material/AccordionDetails"
 import AccordionSummary from "@mui/material/AccordionSummary"
-import IconButton from "@mui/material/IconButton"
+import Button from "@mui/material/Button"
 import Stack from "@mui/material/Stack"
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody"
@@ -30,8 +34,8 @@ import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { UI } from "../../types"
 import { inputDecoders } from "../../validationDecoders"
+import { DebtsClipboardLoader } from "../DebtsClipboardLoader/DebtsClipboardLoader"
 import { DebtItemRow } from "./DebtItemRow"
-import Button from "@mui/material/Button"
 
 function periodIsIn(periods: Date[]) {
     return (period: Dayjs) =>
@@ -194,6 +198,15 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         setAddDebtPopupOpened(false)
     })
 
+    // ~~~~~~~ add multiple debts form ~~~~~~~ //
+
+    const [addDebtsPopupOpened, setAddDebtsPopupOpened] =
+        useState<boolean>(false)
+
+    const addDebtsPopup = usePopup(addDebtsPopupOpened, () => {
+        setAddDebtsPopupOpened(false)
+    })
+
     // ~~~~~~~~ confirm delete dialog ~~~~~~~~ //
 
     const [isConfirmDeleteOpened, setIsConfirmDeleteOpened] = useState(false)
@@ -222,6 +235,15 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
         setDebts(updateDebt(debts, debt))
     }
 
+    const submitMany = (debtsList: { period: Date; amount: number }[]) => {
+        const newDebts = debtsList.reduce(
+            (acc, { period, amount }) =>
+                addDebt(acc, dayjs(period), config.daysToPay, amount as Kopek),
+            [] as Debt[]
+        )
+        setDebts(newDebts)
+    }
+
     // ~~~~~~~~~~~~~~~~~ jsx ~~~~~~~~~~~~~~~~~ //
 
     return (
@@ -239,17 +261,28 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Stack>
-                        <Button
-                            title="Добавить"
-                            type="button"
-                            onClick={() => {
-                                setAddDebtPopupOpened(true)
-                            }}
-                            sx={{ alignSelf: "flex-start" }}
-                            startIcon={<AddOutlined />}
-                        >
-                            Добавить долг
-                        </Button>
+                        <Stack direction="row">
+                            <Button
+                                title="Добавить"
+                                type="button"
+                                onClick={() => {
+                                    setAddDebtPopupOpened(true)
+                                }}
+                                startIcon={<AddOutlined />}
+                            >
+                                Добавить долг
+                            </Button>
+                            <Button
+                                title="Добавить несколько долгов"
+                                type="button"
+                                onClick={() => {
+                                    setAddDebtsPopupOpened(true)
+                                }}
+                                startIcon={<PlaylistAddOutlined />}
+                            >
+                                Добавить несколько
+                            </Button>
+                        </Stack>
                         <TableContainer>
                             <Table>
                                 {debts.length > 0 && (
@@ -322,6 +355,14 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                     }}
                     closePopup={() => {
                         setAddDebtPopupOpened(false)
+                    }}
+                />
+            </Popup>
+            <Popup {...addDebtsPopup}>
+                <DebtsClipboardLoader
+                    submit={submitMany}
+                    closePopup={() => {
+                        setAddDebtsPopupOpened(false)
                     }}
                 />
             </Popup>
