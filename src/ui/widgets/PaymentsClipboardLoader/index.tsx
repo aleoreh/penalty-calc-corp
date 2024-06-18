@@ -1,0 +1,1 @@
+export { PaymentsClipboardLoader } from "./PaymentsClipboardLoader"
