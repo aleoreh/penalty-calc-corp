@@ -1,3 +1,4 @@
+import Typography from "@mui/material/Typography"
 import dayjs from "dayjs"
 import * as D from "decoders"
 import { useEffect, useState } from "react"
@@ -74,6 +75,9 @@ export const DebtsClipboardLoader = ({
 
     return (
         <Form {...form} title="Добавить долги">
+            <Typography variant="caption">
+                Вставьте таблицу (без заголовков) из буфера обмена (Ctrl + V | Command ⌘ + V)
+            </Typography>
             <DataGrid
                 columns={columns}
                 rows={rows.map((row) => ({
@@ -84,3 +88,4 @@ export const DebtsClipboardLoader = ({
         </Form>
     )
 }
+
