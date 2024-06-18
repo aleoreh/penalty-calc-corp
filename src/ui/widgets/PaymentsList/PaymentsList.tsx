@@ -404,11 +404,21 @@ export const PaymentsList = ({
             [] as Payment[]
         )
 
+        let newDebts = [...debts].map((x) => ({
+            ...x,
+            payments: [] as DebtPayment[],
+        }))
+
         newPayments.forEach((payment) => {
-            const distributedPayment = distributePayment(payment, debts, "fifo")
-            setDebts(distributedPayment.debts)
+            const distributedPayment = distributePayment(
+                payment,
+                newDebts,
+                "fifo"
+            )
+            newDebts = distributedPayment.debts
         })
 
+        setDebts(newDebts)
         setPayments(newPayments)
     }
 
