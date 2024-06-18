@@ -452,14 +452,14 @@ export const PaymentsList = ({
                                 Добавить оплату
                             </Button>
                             <Button
-                                title="Добавить несколько долгов"
+                                title="Загрузить несколько платежей"
                                 type="button"
                                 onClick={() => {
                                     setAddPaymentsPopupOpened(true)
                                 }}
                                 startIcon={<PlaylistAddOutlined />}
                             >
-                                Добавить несколько
+                                Загрузить несколько
                             </Button>
                         </Stack>
                         {payments.length > 0 && (

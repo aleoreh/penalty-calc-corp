@@ -273,14 +273,14 @@ export const DebtsList: UI.DebtList = ({ config, debts, setDebts }) => {
                                 Добавить долг
                             </Button>
                             <Button
-                                title="Добавить несколько долгов"
+                                title="Загрузить несколько долгов"
                                 type="button"
                                 onClick={() => {
                                     setAddDebtsPopupOpened(true)
                                 }}
                                 startIcon={<PlaylistAddOutlined />}
                             >
-                                Добавить несколько
+                                Загрузить несколько
                             </Button>
                         </Stack>
                         <TableContainer>

@@ -1,3 +1,4 @@
+import Snackbar from "@mui/material/Snackbar"
 import Typography from "@mui/material/Typography"
 import dayjs from "dayjs"
 import * as D from "decoders"
@@ -45,6 +46,8 @@ export const DebtsClipboardLoader = ({
     submit,
     closePopup,
 }: DebtsClipboardLoaderProps) => {
+    const [pasteError, setPasteError] = useState<string | null>(null)
+
     const [rows, setRows] = useState<TableRowData[]>([])
 
     useEffect(() => {
@@ -63,7 +66,13 @@ export const DebtsClipboardLoader = ({
 
         const res = clipboardToRows(clipboard)
 
-        res.ok && setRows(res.value)
+        if (res.ok) {
+            setPasteError(null)
+            setRows(res.value)
+        } else {
+            setPasteError("Не удалось вставить данные из буфера обмена")
+            setRows([])
+        }
     }
 
     const form = useValidatedForm(
@@ -74,9 +83,10 @@ export const DebtsClipboardLoader = ({
     )
 
     return (
-        <Form {...form} title="Добавить долги">
+        <Form {...form} title="Загрузить долги">
             <Typography variant="caption">
-                Вставьте таблицу (без заголовков) из буфера обмена (Ctrl + V | Command ⌘ + V)
+                Вставьте таблицу (без заголовков) из буфера обмена (Ctrl + V |
+                Command ⌘ + V)
             </Typography>
             <DataGrid
                 columns={columns}
@@ -84,6 +94,13 @@ export const DebtsClipboardLoader = ({
                     ...row,
                     period: dayjs(row.period).format("YYYY MMMM"),
                 }))}
+            />
+            <Snackbar
+                open={pasteError !== null}
+                autoHideDuration={6000}
+                message={pasteError}
+                onClick={() => setPasteError(null)}
+                onClose={() => setPasteError(null)}
             />
         </Form>
     )

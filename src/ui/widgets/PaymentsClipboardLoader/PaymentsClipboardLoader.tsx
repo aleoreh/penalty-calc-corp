@@ -1,3 +1,4 @@
+import Snackbar from "@mui/material/Snackbar"
 import Typography from "@mui/material/Typography"
 import dayjs from "dayjs"
 import * as D from "decoders"
@@ -58,6 +59,8 @@ export const PaymentsClipboardLoader = ({
     submit,
     closePopup,
 }: PaymentsClipboardLoaderProps) => {
+    const [pasteError, setPasteError] = useState<string | null>(null)
+
     const [rows, setRows] = useState<TableRowData[]>([])
 
     useEffect(() => {
@@ -76,7 +79,13 @@ export const PaymentsClipboardLoader = ({
 
         const res = clipboardToRows(clipboard)
 
-        res.ok && setRows(res.value)
+        if (res.ok) {
+            setPasteError(null)
+            setRows(res.value)
+        } else {
+            setPasteError("Не удалось вставить данные из буфера обмена")
+            setRows([])
+        }
     }
 
     const form = useValidatedForm(
@@ -87,7 +96,7 @@ export const PaymentsClipboardLoader = ({
     )
 
     return (
-        <Form {...form} title="Добавить платежи">
+        <Form {...form} title="Загрузить платежи">
             <Typography variant="caption">
                 Вставьте таблицу (без заголовков) из буфера обмена (Ctrl + V |
                 Command ⌘ + V)
@@ -101,6 +110,13 @@ export const PaymentsClipboardLoader = ({
                         ? dayjs(row.period).format("YYYY MMMM")
                         : undefined,
                 }))}
+            />
+            <Snackbar
+                open={pasteError !== null}
+                autoHideDuration={6000}
+                message={pasteError}
+                onClick={() => setPasteError(null)}
+                onClose={() => setPasteError(null)}
             />
         </Form>
     )
