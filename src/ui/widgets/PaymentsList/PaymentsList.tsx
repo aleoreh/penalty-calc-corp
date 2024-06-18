@@ -391,7 +391,11 @@ export const PaymentsList = ({
                 addPayment(
                     acc,
                     createPayment(
-                        toPaymentId(dayjs().unix()),
+                        toPaymentId(
+                            `${Date.now().toString(36)}-${Math.random()
+                                .toString(36)
+                                .slice(2)}`
+                        ),
                         date,
                         amount as Kopek,
                         period
