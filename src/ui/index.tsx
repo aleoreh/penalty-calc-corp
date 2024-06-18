@@ -1,3 +1,4 @@
+import "react-data-grid/lib/styles.css"
 import "./styles/index.css"
 
 import { createTheme, ThemeProvider } from "@mui/material/styles"
