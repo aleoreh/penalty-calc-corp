@@ -73,7 +73,7 @@ export const DebtsClipboardLoader = ({
     )
 
     return (
-        <Form {...form} title="Добавить несколько долгов">
+        <Form {...form} title="Добавить долги">
             <DataGrid
                 columns={columns}
                 rows={rows.map((row) => ({
