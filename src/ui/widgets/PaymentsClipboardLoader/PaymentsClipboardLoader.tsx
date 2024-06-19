@@ -15,8 +15,8 @@ type TableRowData = {
 }
 
 const columns = [
-    { key: "date", name: "Дата", editable: false },
-    { key: "amount", name: "Сумма", editable: false },
+    { key: "date", name: "Дата*", editable: false },
+    { key: "amount", name: "Сумма*", editable: false },
     { key: "period", name: "Период", editable: false },
 ]
 
@@ -99,7 +99,7 @@ export const PaymentsClipboardLoader = ({
         <Form {...form} title="Загрузить платежи">
             <Typography variant="caption">
                 Вставьте таблицу (без заголовков) из буфера обмена (Ctrl + V |
-                Command ⌘ + V)
+                Cmd ⌘ + V)
             </Typography>
             <DataGrid
                 columns={columns}
@@ -111,6 +111,7 @@ export const PaymentsClipboardLoader = ({
                         : undefined,
                 }))}
             />
+            <Typography variant="caption">* - обязательные поля</Typography>
             <Snackbar
                 open={pasteError !== null}
                 autoHideDuration={6000}

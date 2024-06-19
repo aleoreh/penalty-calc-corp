@@ -7,7 +7,6 @@ import DataGrid from "react-data-grid"
 import { Form } from "../../components/Form"
 import { useValidatedForm } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
-import Debug from "../../../debug-log.debug"
 
 type TableRowData = {
     period: Date
@@ -15,8 +14,8 @@ type TableRowData = {
 }
 
 const columns = [
-    { key: "period", name: "Период", editable: false },
-    { key: "amount", name: "Сумма", editable: false },
+    { key: "period", name: "Период*", editable: false },
+    { key: "amount", name: "Сумма*", editable: false },
 ]
 
 const clipboardToRows = (clipboard: string): D.DecodeResult<TableRowData[]> => {
@@ -94,7 +93,7 @@ export const DebtsClipboardLoader = ({
         <Form {...form} title="Загрузить долги">
             <Typography variant="caption">
                 Вставьте таблицу (без заголовков) из буфера обмена (Ctrl + V |
-                Command ⌘ + V)
+                Cmd ⌘ + V)
             </Typography>
             <DataGrid
                 columns={columns}
@@ -103,6 +102,7 @@ export const DebtsClipboardLoader = ({
                     period: dayjs(row.period).format("YYYY MMMM"),
                 }))}
             />
+            <Typography variant="caption">* - обязательные поля</Typography>
             <Snackbar
                 open={pasteError !== null}
                 autoHideDuration={6000}
