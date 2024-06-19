@@ -205,7 +205,7 @@ export const CalculationResults = ({
                     <List>
                         {calculationResults.map((calculationResult) => (
                             <ListItem
-                                key={calculationResult.period.toISOString()}
+                                key={calculationResult.period.getTime()}
                             >
                                 <CalculationResult
                                     calculationDate={calculationDate}
