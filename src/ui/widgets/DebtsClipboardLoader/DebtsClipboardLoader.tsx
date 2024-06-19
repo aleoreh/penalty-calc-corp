@@ -78,6 +78,7 @@ export const DebtsClipboardLoader = ({
             setRows(res.value)
         } else {
             setPasteError("Не удалось вставить данные из буфера обмена")
+            console.error(JSON.stringify(res.error, undefined, 2))
             setRows([])
         }
     }
