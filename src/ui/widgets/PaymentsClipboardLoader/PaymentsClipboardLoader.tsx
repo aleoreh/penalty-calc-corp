@@ -38,6 +38,7 @@ const clipboardToRows = (clipboard: string): D.DecodeResult<TableRowData[]> => {
         .split("\n")
         .map((x) => x.trim())
         .map((line) => line.split("\t"))
+        .map((xs) => xs.filter((x) => x.trim().length > 0))
 
     return D.array(rowDecoder)
         .transform((xs) =>
