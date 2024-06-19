@@ -3,8 +3,10 @@ import { date, regex, string } from "decoders"
 
 export const inputDecoders = {
     decimal: string
-        .pipe(regex(/^\d*[.,]?\d*$/, "Ожидается число"))
         .transform((x) => x.replaceAll(",", "."))
+        .transform((x) => x.replaceAll(" ", ""))
+        .transform((x) => x.replaceAll(" ", ""))
+        .pipe(regex(/^\d*[.,]?\d*$/, "Ожидается число"))
         .transform(parseFloat),
     date: string
         .transform((x) =>
@@ -18,12 +20,9 @@ export const inputDecoders = {
         .pipe(date)
         .describe("Ожидается дата"),
     fullMonth_year: string
-        .transform((x) => dayjs(x, "MMMM YYYY").toDate())
+        .transform((x) => x.toLowerCase())
+        .transform((x) => dayjs(x, ["MMMM YYYY", "YYYY MMMM"]).toDate())
         .pipe(date)
-        .describe("Ожидается дата в формате MMMM YYYY"),
-    year_fullMonth: string
-        .transform((x) => dayjs(x, "YYYY MMMM").toDate())
-        .pipe(date)
-        .describe("Ожидается дата в формате YYYY MMMM"),
+        .describe("Ожидается дата в форматах: 'Январь 2001' или '2001 Январь'"),
 }
 

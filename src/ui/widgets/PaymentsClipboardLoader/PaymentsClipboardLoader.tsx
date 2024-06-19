@@ -84,6 +84,7 @@ export const PaymentsClipboardLoader = ({
             setRows(res.value)
         } else {
             setPasteError("Не удалось вставить данные из буфера обмена")
+            console.error(JSON.stringify(res.error, undefined, 2))
             setRows([])
         }
     }
@@ -107,7 +108,7 @@ export const PaymentsClipboardLoader = ({
                     ...row,
                     date: dayjs(row.date).format("DD.MM.YYYY"),
                     period: row.period
-                        ? dayjs(row.period).format("YYYY MMMM")
+                        ? dayjs(row.period).format("MMMM YYYY")
                         : undefined,
                 }))}
             />

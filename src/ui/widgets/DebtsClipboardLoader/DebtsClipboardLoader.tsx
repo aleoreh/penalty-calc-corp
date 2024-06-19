@@ -22,7 +22,7 @@ const clipboardToRows = (clipboard: string): D.DecodeResult<TableRowData[]> => {
     const rowDecoder = D.tuple(
         D.either(
             inputDecoders.fullMonth_year,
-            inputDecoders.year_fullMonth,
+            inputDecoders.fullMonth_year,
             inputDecoders.date
         ),
         inputDecoders.decimal
@@ -91,15 +91,18 @@ export const DebtsClipboardLoader = ({
 
     return (
         <Form {...form} title="Загрузить долги">
-            <Typography variant="caption">
+            <Typography component="p" variant="caption">
                 Вставьте таблицу (без заголовков) из буфера обмена (Ctrl + V |
                 Cmd ⌘ + V)
+            </Typography>
+            <Typography component="p" variant="caption">
+                Период должен быть в формате 'Январь 2001' или '2001 Январь'
             </Typography>
             <DataGrid
                 columns={columns}
                 rows={rows.map((row) => ({
                     ...row,
-                    period: dayjs(row.period).format("YYYY MMMM"),
+                    period: dayjs(row.period).format("MMMM YYYY"),
                 }))}
             />
             <Typography variant="caption">* - обязательные поля</Typography>
