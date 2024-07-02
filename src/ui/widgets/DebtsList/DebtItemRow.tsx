@@ -8,15 +8,15 @@ import {
 import IconButton from "@mui/material/IconButton"
 import Stack from "@mui/material/Stack"
 import TableCell from "@mui/material/TableCell"
+import Typography from "@mui/material/Typography"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import dayjs, { Dayjs } from "dayjs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
     Debt,
     DebtPaymentBody,
     getRemainingBalance,
     paymentsAmount,
-    periodKey,
 } from "../../../domain/debt"
 import { formatCurrency, formatDateLong, formatPeriod } from "../../../utils"
 import { Form } from "../../components/Form"
@@ -25,7 +25,6 @@ import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
 import { DebtPayments } from "./DebtsPayments"
-import Typography from "@mui/material/Typography"
 
 type DebtEditFormProps = {
     debt: Debt
@@ -35,6 +34,10 @@ type DebtEditFormProps = {
 
 const DebtEditForm = ({ debt, setDebt, close }: DebtEditFormProps) => {
     const [dueDate, setDueDate] = useState<Dayjs | null>(dayjs())
+
+    useEffect(() => {
+        setDueDate(dayjs(debt.dueDate))
+    }, [debt.dueDate])
 
     const debtAmountInput = useValidatedInput(
         String(debt.amount),
@@ -57,7 +60,9 @@ const DebtEditForm = ({ debt, setDebt, close }: DebtEditFormProps) => {
             })
     }
 
-    const form = useValidatedForm([debtAmountInput], submit, close)
+    const form = useValidatedForm([debtAmountInput], submit, close, () =>
+        setDueDate(dayjs(debt.dueDate))
+    )
 
     return (
         <Form {...form}>
@@ -67,7 +72,6 @@ const DebtEditForm = ({ debt, setDebt, close }: DebtEditFormProps) => {
                     value={dueDate}
                     onChange={setDueDate}
                 />
-                <Input {...debtAmountInput} />
             </Stack>
         </Form>
     )
@@ -169,10 +173,7 @@ export const DebtItemRow = ({ debt, setDebt, deleteDebt }: Props) => {
                     >
                         <MoneyOutlined></MoneyOutlined>
                     </IconButton>
-                    <IconButton
-                        onClick={() => setEditDebtOpened(true)}
-                        sx={{ display: "none" }}
-                    >
+                    <IconButton onClick={() => setEditDebtOpened(true)}>
                         <CreateOutlined></CreateOutlined>
                     </IconButton>
                     <IconButton
