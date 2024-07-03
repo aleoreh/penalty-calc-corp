@@ -7,7 +7,12 @@ import TableContainer from "@mui/material/TableContainer"
 import TableRow from "@mui/material/TableRow"
 import { useState } from "react"
 
-import { CalculatorConfig } from "../../../domain/calculator-config"
+import {
+    CalculatorConfig,
+    LegalPersonType,
+    isLegalPersonType,
+    withLegalPersonType,
+} from "../../../domain/calculator-config"
 import { dayjs } from "../../../domain/dayjs"
 import {
     Percent,
@@ -26,13 +31,18 @@ import { ExpandMoreOutlined } from "@mui/icons-material"
 import Accordion from "@mui/material/Accordion"
 import AccordionDetails from "@mui/material/AccordionDetails"
 import AccordionSummary from "@mui/material/AccordionSummary"
+import FormControl from "@mui/material/FormControl"
 import IconButton from "@mui/material/IconButton"
+import InputLabel from "@mui/material/InputLabel"
+import MenuItem from "@mui/material/MenuItem"
+import Select, { SelectChangeEvent } from "@mui/material/Select"
 import Typography from "@mui/material/Typography"
 
 type SettingsTableProps = {
     calculationDate: Date
     config: CalculatorConfig
     setConfig: (value: CalculatorConfig) => void
+    defaultConfig: CalculatorConfig
 }
 
 const SettingsTable = ({ config, setConfig }: SettingsTableProps) => {
@@ -133,6 +143,20 @@ const SettingsTable = ({ config, setConfig }: SettingsTableProps) => {
 }
 
 export const CalculatorSettings: UI.CalculatorSettings = (props) => {
+    const { setConfig, config, defaultConfig } = props
+
+    const [legalPersonType, setLegalPersonType] =
+        useState<LegalPersonType>("natural")
+
+    const handleLegalPersonTypeChange = (event: SelectChangeEvent) => {
+        const value = event.target.value as string
+
+        if (!isLegalPersonType(value)) return
+
+        setConfig(withLegalPersonType(value, config, defaultConfig))
+        setLegalPersonType(value)
+    }
+
     return (
         <>
             <Stack className="calculator-settings">
@@ -148,6 +172,23 @@ export const CalculatorSettings: UI.CalculatorSettings = (props) => {
                         </Stack>
                     </AccordionDetails>
                 </Accordion>
+                <FormControl fullWidth>
+                    <InputLabel id="legal-person-type-select-label">
+                        Порядок расчёта
+                    </InputLabel>
+                    <Select
+                        labelId="legal-person-type-select-label"
+                        id="legal-person-type-select"
+                        value={legalPersonType}
+                        label="Порядок расчёта"
+                        onChange={handleLegalPersonTypeChange}
+                    >
+                        <MenuItem value={"natural"}>Физическое лицо</MenuItem>
+                        <MenuItem value={"juridical"}>
+                            Юридическое лицо
+                        </MenuItem>
+                    </Select>
+                </FormControl>
             </Stack>
         </>
     )

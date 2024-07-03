@@ -10,6 +10,12 @@ export type CalculatorConfig = {
     fractionChangeDay: number
 }
 
+export type LegalPersonType = "juridical" | "natural"
+
+export const isLegalPersonType = (value: string): value is LegalPersonType => {
+    return value === "juridical" || value === "natural"
+}
+
 export const doesMoratoriumActs = (
     config: CalculatorConfig,
     date: Date
@@ -26,9 +32,28 @@ export const getKeyRatePart = (
         ? { numerator: 1, denominator: 300 }
         : { numerator: 1, denominator: 130 }
 
+export const withLegalPersonType = (
+    legalPersonType: LegalPersonType,
+    calculatorConfig: CalculatorConfig,
+    defaultConfig: CalculatorConfig
+): CalculatorConfig => {
+    switch (legalPersonType) {
+        case "natural":
+            return defaultConfig
+        case "juridical":
+            return {
+                ...calculatorConfig,
+                deferredDaysCount: 0,
+                fractionChangeDay: -Infinity,
+            }
+    }
+}
+
 const calculatorConfigs = {
     doesMoratoriumActs,
     getKeyRatePart,
+    withLegalPersonType,
+    isLegalPersonType,
 }
 
 export default calculatorConfigs
