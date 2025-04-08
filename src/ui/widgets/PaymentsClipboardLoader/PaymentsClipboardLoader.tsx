@@ -15,7 +15,6 @@ import { DistributionMethod } from "../../../domain/distribution-method"
 import { Form } from "../../components/Form"
 import { useValidatedForm } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
-import Debug from "../../../debug-log.debug"
 
 type TableRowData = {
     date: Date
