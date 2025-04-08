@@ -29,27 +29,26 @@ import {
     generateUniqueDebtPaymentId,
     getRemainingBalance,
 } from "../../../domain/debt"
+import { DistributionMethod } from "../../../domain/distribution-method"
 import {
     Payment,
     createPayment,
     paymentRepr,
     toPaymentId,
 } from "../../../domain/payment"
+import { formatCurrency, formatDateLong, formatPeriod } from "../../../utils"
 import { ConfirmDialog, useConfirmDialog } from "../../components/ConfirmDialog"
 import { Form } from "../../components/Form"
 import { Input } from "../../components/Input"
 import { Popup, usePopup } from "../../components/Popup"
 import { useValidatedForm, useValidatedInput } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
-import { formatCurrency, formatDateLong, formatPeriod } from "../../../utils"
 import { PaymentsClipboardLoader } from "../PaymentsClipboardLoader"
-
-type DistributeMethod = "fifo" | "lastIsFirst"
 
 type DistributePayments = (
     payment: Payment,
     debts: Debt[],
-    method: DistributeMethod
+    method: DistributionMethod
 ) => { debts: Debt[]; remainder: number }
 
 function addPayment(payments: Payment[], payment: Payment): Payment[] {
@@ -217,10 +216,13 @@ const AddPaymentForm = ({
     })
 
     const [lastDistributeMethod, setLastDistributeMethod] = useState<
-        DistributeMethod | undefined
+        DistributionMethod | undefined
     >(undefined)
 
-    const distribute = (date: typeof paymentDate, method: DistributeMethod) => {
+    const distribute = (
+        date: typeof paymentDate,
+        method: DistributionMethod
+    ) => {
         if (!date || !amountInput.validatedValue.ok) return
 
         setDistributedPayments(
@@ -384,6 +386,7 @@ export const PaymentsList = ({
     // ~~~~~~~~~~~~~~~ helpers ~~~~~~~~~~~~~~~ //
 
     const submitMany = (
+        distributionMethod: DistributionMethod,
         paymentsList: { date: Date; amount: number; period?: Date }[]
     ) => {
         const newPayments = paymentsList.reduce(
@@ -413,7 +416,7 @@ export const PaymentsList = ({
             const distributedPayment = distributePayment(
                 payment,
                 newDebts,
-                "fifo"
+                distributionMethod
             )
             newDebts = distributedPayment.debts
         })

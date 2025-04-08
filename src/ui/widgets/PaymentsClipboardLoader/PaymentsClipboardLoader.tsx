@@ -1,12 +1,21 @@
+import {
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+} from "@mui/material"
 import Snackbar from "@mui/material/Snackbar"
 import Typography from "@mui/material/Typography"
 import dayjs from "dayjs"
 import * as D from "decoders"
 import { useEffect, useState } from "react"
 import DataGrid from "react-data-grid"
+import { DistributionMethod } from "../../../domain/distribution-method"
 import { Form } from "../../components/Form"
 import { useValidatedForm } from "../../formValidation"
 import { inputDecoders } from "../../validationDecoders"
+import Debug from "../../../debug-log.debug"
 
 type TableRowData = {
     date: Date
@@ -52,7 +61,10 @@ const clipboardToRows = (clipboard: string): D.DecodeResult<TableRowData[]> => {
 }
 
 type PaymentsClipboardLoaderProps = {
-    submit: (rows: TableRowData[]) => void
+    submit: (
+        distributionMethod: DistributionMethod,
+        rows: TableRowData[]
+    ) => void
     closePopup: () => void
 }
 
@@ -61,8 +73,9 @@ export const PaymentsClipboardLoader = ({
     closePopup,
 }: PaymentsClipboardLoaderProps) => {
     const [pasteError, setPasteError] = useState<string | null>(null)
-
     const [rows, setRows] = useState<TableRowData[]>([])
+    const [distributionMethod, setDistributionMethod] =
+        useState<DistributionMethod>("fifo")
 
     useEffect(() => {
         document.addEventListener("paste", handlePaste)
@@ -92,13 +105,34 @@ export const PaymentsClipboardLoader = ({
 
     const form = useValidatedForm(
         [],
-        () => submit(rows),
+        () => submit(distributionMethod, rows),
         closePopup,
         () => setRows([])
     )
 
+    const handleDistributionMethodChange = (
+        event: SelectChangeEvent<DistributionMethod>
+    ) => {
+        setDistributionMethod(event.target.value as DistributionMethod)
+    }
+
     return (
         <Form {...form} title="Загрузить платежи">
+            <FormControl fullWidth>
+                <InputLabel id="distributionMethodSelect">
+                    Способ распределения оплаты
+                </InputLabel>
+                <Select
+                    labelId="distributionMethodSelect"
+                    id="demo-simple-select"
+                    value={distributionMethod}
+                    label="Способ распределения оплаты"
+                    onChange={handleDistributionMethodChange}
+                >
+                    <MenuItem value={"fifo"}>С самого раннего</MenuItem>
+                    <MenuItem value={"lastIsFirst"}>Сначала указанный</MenuItem>
+                </Select>
+            </FormControl>
             <Typography variant="caption">
                 Вставьте таблицу (без заголовков) из буфера обмена (Ctrl + V |
                 Cmd ⌘ + V)
