@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/penalty-calc-corp/static/css/main.004b2337.css",
-    "main.js": "/penalty-calc-corp/static/js/main.e6ae0d2f.js",
+    "main.css": "/penalty-calc-corp/static/css/main.acc9398e.css",
+    "main.js": "/penalty-calc-corp/static/js/main.b23e9021.js",
     "static/js/453.4dba312f.chunk.js": "/penalty-calc-corp/static/js/453.4dba312f.chunk.js",
     "index.html": "/penalty-calc-corp/index.html",
-    "main.004b2337.css.map": "/penalty-calc-corp/static/css/main.004b2337.css.map",
-    "main.e6ae0d2f.js.map": "/penalty-calc-corp/static/js/main.e6ae0d2f.js.map",
+    "main.acc9398e.css.map": "/penalty-calc-corp/static/css/main.acc9398e.css.map",
+    "main.b23e9021.js.map": "/penalty-calc-corp/static/js/main.b23e9021.js.map",
     "453.4dba312f.chunk.js.map": "/penalty-calc-corp/static/js/453.4dba312f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.004b2337.css",
-    "static/js/main.e6ae0d2f.js"
+    "static/css/main.acc9398e.css",
+    "static/js/main.b23e9021.js"
   ]
 }
